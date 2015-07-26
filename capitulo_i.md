@@ -5,7 +5,7 @@ Antes de sumergirse en el desarrollo de Odoo, es necesario configurar el entorno
 
 En este capítulo,	se aprendera como configurar el entorno de desarrollo, donde luego se desarrollarán las aplicaciones Odoo. 
 
-Se aprenderá a configurar sistemas Debian o Ubuntu para alojar las instancias del servidor de desarrollo, y como instalar Odoo desde el código fuente en GitHub.	Luego aprenderá a configurar archivos compartidos con	Samba, permitiendo trabajar con archivos de Odoo desde una estación de trabajo con cualquier sistema oerativo.
+Se aprenderá a configurar sistemas Debian o Ubuntu para alojar las instancias del servidor de desarrollo, y como instalar Odoo desde el código fuente en GitHub.	Luego aprenderá a configurar archivos compartidos con	Samba, permitiendo trabajar con archivos de Odoo desde una estación de trabajo con cualquier sistema operativo.
 
 Odoo esta desarrollado usando el lenguaje de programación Python y usa PostgreSQL como base de datos para almacenar datos, estos son los requisitos principales para trabajar con Odoo. Para ejecutar Odoo desde el código fuente, es necesario instalar las librerias Python de las cuales depende. Luego el código fuente de Odoo debe descargarse desde GitHub y ejecutado desde el código fuente. Aunque es posible descargar un	zip	o	tarball,	es mejor obtener el código fuente usando GitHub,	así además tendremos Odoo instalado en nuestro equipo.
 
