@@ -5,5 +5,4 @@
 * [¿Qué se necesita para este libro?](que_se_necesita_para_este_libro.md)
 * [¿A quien va dirigido este libro?](a_quien_va_dirigido_este_libro.md)
 * [Convenciones](convenciones.md)
-* [First Chapter](chapter1.md)
 
