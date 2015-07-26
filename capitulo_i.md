@@ -57,7 +57,8 @@ La opción -m crea el directorio home. El -g	sudo	agrega al nuevo usuario a la l
 Ahora puede acceder con el nuevo usuario y configurar Odoo.
 
 **Instalar Odoo desde el código fuente**
-Los paquetes de Odoo listos para instalar pueden ser encontrados en [http://nightly.odoo.com]	nightly.odoo.com</a>,	disponibles para Windows (.exe),	Debian	(.deb),	CentOS	(.rpm),	y código fuente	(.tar.gz).
+Los paquetes de Odoo listos para instalar pueden ser encontrados en [nightly.odoo.com]	(http://nightly.odoo.com),	disponibles para Windows (.exe),	Debian	(.deb),	CentOS	(.rpm),	y código fuente	(.tar.gz).
+
 Como desarrolladoras y desarrolladores, preferimos hacer la instalación directamente desde el repositorio GitHub. Esto nos permitira tener más control sobre las sucesivas versiones y actualizaciones.
 Para mantener el orden de las cosas, se trabaja en el directorio /odoo-dev	que se encuentra en su diretorio /home. A lo largo del libro, se asume que este es el lugar donde esta instalado el servidor Odoo.
 Primero, asegurese que ha accedido con el usuario creado anteriormente, o durante el proceso de instlación, y no como root.	Asumiento que su usuario es odoo, puede confirmar esto con el siguiente comando:
@@ -79,7 +80,7 @@ $	~/odoo-dev/odoo/odoo.py
 
 De forma predeterminada,	las instancias de Odoo escuhan a través del puerto 8069,	si en un navegador web se apunta a http://&lt;server-address&gt;:8069	se llegará a esa instancia.	Cuando se acceso por primera vez, se mostrará un asistente para crear una nueva bse de datos,	como se muestra en la siguiente imágen:
 
-<IMG src="Odoo Development Essentials - Daniel Reis-52_1.jpg"/>
+Odoo Development Essentials - Daniel Reis-52_1.jpg
 
 Pero aprenderá como inicializar bases de datos nuevas desde la línea de comando, But	we	will	learn	how	to	initialize	new	databases	from	the	command	line,	ahora presione <i>Ctrl</i>	+	<i>C</i>	para detener el servidor y volver a la línea de comandos.
 
@@ -124,7 +125,7 @@ Al ejecuar esto se debe listar las dos bases de datos creadas hasta los momentos
 Para eliminar una base de datos que ya no necesite (o necesita crear nuevamente), use el comando	dropdb:
 $	dropdb	v8test 
 
-Ahora ya conoce lo básico para trabajar con varias bases de datos. Para aprender más sobre PostgresSQL, puede encontrar la documentación oficial en	<a href="http://www.postgresql.org/docs/">http://www.postgresql.org/docs/</a>
+Ahora ya conoce lo básico para trabajar con varias bases de datos. Para aprender más sobre PostgresSQL, puede encontrar la documentación oficial en [http://www.postgresql.org/docs/](http://www.postgresql.org/docs/)
 
 Nota 
 ADVERTENCIA:	Eliminar una base de datos destruira los datos de forma irrevocable. Tenga cuidado al ejecutar esta acción y mantenga siempre respaldos de sus bases de datos.
@@ -211,12 +212,12 @@ $	sudo	/etc/init.d/smbd	restart
 
 Consejo  
 Descargar el código de ejemplo  
-Puede descargar los archívos de código de ejemplo de todos los libros Packt que haya adquirido desde su cuenta en <a href="http://www.packtpub.com">	http://www.packtpub.com</a>. Si adquirio este libro en otra parte, puede visitar	<a href="http://www.packtpub.com/support">http://www.packtpub.com/support</a>	y registrarse para obtener los archivos enviados por correo electrónico enviados directamente a ud. 
+Puede descargar los archívos de código de ejemplo de todos los libros Packt que haya adquirido desde su cuenta en [http://www.packtpub.com]	(http://www.packtpub.com). Si adquirio este libro en otra parte, puede visitar	[http://www.packtpub.com/support](http://www.packtpub.com/support)	y registrarse para obtener los archivos enviados por correo electrónico enviados directamente a ud. 
 Para acceder a los archivos desde Windows, es posible asignar una unidad de red para la ruta	\\&lt;my-server-name&gt;\odoo usando el usuario específico y contraseña especificada con smbpasswd. Cuando trate de acceder con el usuario odoo, puede encontrar problemas con Windows al agregar el dominio al nombre de usuario (por ejemplo	MYPC\odoo). Para evitar esto, use un dominio vacío anteponiendo un	\ al nombre de usuario	(por ejemplo	\odoo). 
 
-<IMG src="Odoo Development Essentials - Daniel Reis-67_1.jpg"/> 
+Odoo Development Essentials - Daniel Reis-67_1.jpg 
 
-<IMG src="Odoo Development Essentials - Daniel Reis-67_2.jpg"/> 
+Odoo Development Essentials - Daniel Reis-67_2.jpg 
 
 Si ahora se abre la unidad de red asignada con	Windows	Explorer, debe ser posible acceder y editar los contenidos del directorio home del usuario odoo. 
 
@@ -224,7 +225,7 @@ Habilitar las herramientas técnicas
 Odoo incluye algunas herramientas que son muy útiles para las personas que desarrollan, y se usaran a lo largo de este libro. Estas son las Características Técnicas y el Modo de Desarrollo. 
 Estas están desabilitades de forma predeterminada, así que este es algún momento para aprender como habilitarlas. 
 
-<IMG src="Odoo Development Essentials - Daniel Reis-70_1.jpg"/> 
+Odoo Development Essentials - Daniel Reis-70_1.jpg 
 
 Activar las Características Técnicas  
 Las Características Técnicas proporcionan herramientas avanzadas de configuración del servidos. 
@@ -234,7 +235,7 @@ Ahora es necesario recargar la página en el navegador web. Deberá poder ver en
 
 La opción del menú	Técnico  permite inspeccionar y editar todas las configuraciones de Odoo almacenadas in la base de datos, desde la interfaz de usuario, la seguridad y otros parámetros del sistema. Aprenderá mas sobre esto a lo largo del libro. 
 
-<IMG src="Odoo Development Essentials - Daniel Reis-71_1.jpg"/> 
+Odoo Development Essentials - Daniel Reis-71_1.jpg 
 
 Activar el modo de Desarrollo  
 El modo de Desarrollo habilita una caja de selección cerca de la parte superior de la ventana Odoo, haciendo accesible algunas opciones de configuracion avanzadas en toda la aplicación. También deshabilita la modificación del codigo JavaScript	y	CSS usado por el cliente web, haciendo mas fácil la depuración del comportamiento del lado del cliente. 
@@ -245,7 +246,8 @@ Instalar módulos de terceras partes
 Hacer que nuevos módulos esten disponibles en una instancia de Odoo para que puedan ser instalados es algo que puede resultar confuso para las personas nuevas. Pero no necesariamente tiene que ser así, así que a continuación se desmitificará esta suposición. 
 
 Encontrar módulos de la comunidad  
-Existen muchos módulos para Odoo disponibles en Internet. El sitio web	<a href="http://apps.odoo.com">	apps.odoo.com	</a> es un catalogo de módulos que pueden ser descargados e instalados.  La	Odoo Community	Association 	(OCA ) coordina las contribuciones de la comunidad y mantiene unos pocos repositorios en GitHub,	en <a href="https://github.com/OCA/">	https://github.com/OCA/</a> 
+Existen muchos módulos para Odoo disponibles en Internet. El sitio web	[http://apps.odoo.com](	apps.odoo.com) es un catalogo de módulos que pueden ser descargados e instalados.  La	Odoo Community	Association 	(OCA ) coordina las contribuciones de la comunidad y mantiene unos pocos repositorios en GitHub,	en [https://github.com/OCA/] (https://github.com/OCA)
+
 Para agregar un módulo a la instalación de Odoo puede simplemente copiarlo dentro de el direcctorio de complementos, junto a los módulos oficiales.	En este caso, el direcctorio de complementos esta en	~/odoo-dev/odoo/addons/. Esta puede que no sea la mejor opción para Ud., debido a que su instalación esta basada en una versión controlada por el repositorio, y querra tenerla sincronizada con el repositorio de	GitHub. 
 Afortunadamente, es posible usar ubicaciones adicionales para los módulos, por lo que se puede tener los módulos personalizados en un directorio diferente, sin mezclarlos con los complementos adicionales. 
 Como ejemplo, se descargará el proyecto de departamente OCA y sus módulos se harán disonibles en la instalción de Odoo. Este proyecto es un conjunto de módulos muy simples que agregan un campo Departamento en muchos formularios, como en el de Proyectos u Oportunidades de CRM. 
@@ -266,7 +268,7 @@ $	./odoo.py	-d	v8dev	--addons-path=&#34;../department,./addons&#34;
 Si se observa en profundidad el registro del servidor notará una línea reportando la ruta de los cmplementos en uso: 
 INFO	?	openerp:	addons	paths: 	(…).	Confirm	that	it	contains	our	department	directory. 
 
-<IMG src="Odoo Development Essentials - Daniel Reis-76_1.jpg"/> 
+Odoo Development Essentials - Daniel Reis-76_1.jpg
 
 Actualizar la lista de módulos  
 Es necesario pedirle a Odoo que actualice su lista de módulos antes que estos módulos nuevos esten disponibles para ser instalados. 
