@@ -85,7 +85,7 @@ $	~/odoo-dev/odoo/odoo.py
 
 De forma predeterminada,	las instancias de Odoo escuhan a través del puerto 8069,	si en un navegador web se apunta a http://&lt;server-address&gt;:8069	se llegará a esa instancia.	Cuando se acceso por primera vez, se mostrará un asistente para crear una nueva bse de datos,	como se muestra en la siguiente imágen:
 
-![52_1](/images/Odoo Development Essentials - Daniel Reis-52_1.jpg "imagen 52_1")
+![52_1](/images/Odoo Development Essentials - Daniel Reis-52_1.jpg)
 
 Pero aprenderá como inicializar bases de datos nuevas desde la línea de comando, But	we	will	learn	how	to	initialize	new	databases	from	the	command	line,	ahora presione <i>Ctrl</i>	+	<i>C</i>	para detener el servidor y volver a la línea de comandos.
 
@@ -237,9 +237,9 @@ Puede descargar los archívos de código de ejemplo de todos los libros Packt qu
 
 Para acceder a los archivos desde Windows, es posible asignar una unidad de red para la ruta	\\&lt;my-server-name&gt;\odoo usando el usuario específico y contraseña especificada con smbpasswd. Cuando trate de acceder con el usuario odoo, puede encontrar problemas con Windows al agregar el dominio al nombre de usuario (por ejemplo	MYPC\odoo). Para evitar esto, use un dominio vacío anteponiendo un	\ al nombre de usuario	(por ejemplo	\odoo). 
 
-Odoo Development Essentials - Daniel Reis-67_1.jpg 
+![67_1](Odoo Development Essentials - Daniel Reis-67_1.jpg) 
 
-Odoo Development Essentials - Daniel Reis-67_2.jpg 
+![67_2](Odoo Development Essentials - Daniel Reis-67_2.jpg)
 
 Si ahora se abre la unidad de red asignada con	Windows	Explorer, debe ser posible acceder y editar los contenidos del directorio home del usuario odoo. 
 
@@ -247,7 +247,7 @@ Si ahora se abre la unidad de red asignada con	Windows	Explorer, debe ser posibl
 Odoo incluye algunas herramientas que son muy útiles para las personas que desarrollan, y se usaran a lo largo de este libro. Estas son las Características Técnicas y el Modo de Desarrollo. 
 Estas están desabilitades de forma predeterminada, así que este es algún momento para aprender como habilitarlas. 
 
-Odoo Development Essentials - Daniel Reis-70_1.jpg 
+![70_1](Odoo Development Essentials - Daniel Reis-70_1.jpg)
 
 **Activar las Características Técnicas**
 Las Características Técnicas proporcionan herramientas avanzadas de configuración del servidos. 
@@ -257,7 +257,7 @@ Ahora es necesario recargar la página en el navegador web. Deberá poder ver en
 
 La opción del menú	Técnico  permite inspeccionar y editar todas las configuraciones de Odoo almacenadas in la base de datos, desde la interfaz de usuario, la seguridad y otros parámetros del sistema. Aprenderá mas sobre esto a lo largo del libro. 
 
-Odoo Development Essentials - Daniel Reis-71_1.jpg 
+![71_1](Odoo Development Essentials - Daniel Reis-71_1.jpg)
 
 **Activar el modo de Desarrollo**
 El modo de Desarrollo habilita una caja de selección cerca de la parte superior de la ventana Odoo, haciendo accesible algunas opciones de configuracion avanzadas en toda la aplicación. También deshabilita la modificación del codigo JavaScript	y	CSS usado por el cliente web, haciendo mas fácil la depuración del comportamiento del lado del cliente. 
@@ -296,7 +296,7 @@ $	./odoo.py	-d	v8dev	--addons-path=&#34;../department,./addons&#34;
 Si se observa en profundidad el registro del servidor notará una línea reportando la ruta de los cmplementos en uso: 
 INFO	?	openerp:	addons	paths: 	(…).	Confirm	that	it	contains	our	department	directory. 
 
-Odoo Development Essentials - Daniel Reis-76_1.jpg
+![76_1](Odoo Development Essentials - Daniel Reis-76_1.jpg)
 
 **Actualizar la lista de módulos**
 Es necesario pedirle a Odoo que actualice su lista de módulos antes que estos módulos nuevos esten disponibles para ser instalados. 
