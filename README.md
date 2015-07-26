@@ -1,7 +1,7 @@
 Prefacio
 ====
 
-Odoo	es una plataforma poderosa de codigo abierto para aplicaciones de negocio.	Sobre esta se encuentra una suite de aplicaciones estrechamente integradas,	que cubren todas las áreas de negocio desde CRM y Ventas hasta Contabilidad y Suministros.	Odoo	tiene una comunidad dinámica y en constante crecimiento, constantemente se agregan características, conectores, y aplicaciones de negocio adicionales.
+Odoo es una plataforma poderosa de codigo abierto para aplicaciones de negocio.	Sobre esta se encuentra una suite de aplicaciones estrechamente integradas,	que cubren todas las áreas de negocio desde CRM y Ventas hasta Contabilidad y Suministros. Odoo tiene una comunidad dinámica y en constante crecimiento, constantemente se agregan características, conectores, y aplicaciones de negocio adicionales.
 
 Lo Esencial del Desarrollo con Odoo	provee una guia paso a paso para el desarrollo con Odoo, para escalar rapidamente la curva de aprendizaje y emprender productivamente en la plataforma Odoo.
 
