@@ -85,7 +85,7 @@ $	~/odoo-dev/odoo/odoo.py
 
 De forma predeterminada,	las instancias de Odoo escuhan a través del puerto 8069,	si en un navegador web se apunta a http://&lt;server-address&gt;:8069	se llegará a esa instancia.	Cuando se acceso por primera vez, se mostrará un asistente para crear una nueva bse de datos,	como se muestra en la siguiente imágen:
 
-Odoo Development Essentials - Daniel Reis-52_1.jpg
+![52_1](/images/Odoo Development Essentials - Daniel Reis-52_1.jpg "imagen 52_1")
 
 Pero aprenderá como inicializar bases de datos nuevas desde la línea de comando, But	we	will	learn	how	to	initialize	new	databases	from	the	command	line,	ahora presione <i>Ctrl</i>	+	<i>C</i>	para detener el servidor y volver a la línea de comandos.
 
