@@ -1,5 +1,5 @@
 Prefacio
-=======
+====
 
 Odoo	es una plataforma poderosa de codigo abierto para aplicaciones de negocio.	Sobre esta se encuentra una suite de aplicaciones estrechamente integradas,	que cubren todas las áreas de negocio desde CRM y Ventas hasta Contabilidad y Suministros.	Odoo	tiene una comunidad dinámica y en constante crecimiento, constantemente se agregan características, conectores, y aplicaciones de negocio adicionales.
 
