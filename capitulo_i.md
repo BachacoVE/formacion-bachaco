@@ -51,7 +51,7 @@ Los siguientes comandos creará un usuario odoo:
 #	useradd	-m	-g	sudo	-s	/bin/bash	odoo		#	Crea un usuario 'Odoo' con poderes sudo
 #	passwd	odoo		#	Solicita y configura una contraseña para el nuevo usuario 
 
-Puede cambiar odoo por cualqier nombre ue desee. 
+Puede cambiar odoo por cualqier nombre que desee. 
 
 La opción -m crea el directorio home. El -g	sudo	agrega al nuevo usuario a la lista de usuarios sudo,	por lo tanto podrá ejecutar comandos como root, y -s	/bin/bash	configura la línea de comando predeterminada a bash, la cual es mas amigable de usar que la fijada por omisión estándar sh.
 Ahora puede acceder con el nuevo usuario y configurar Odoo.
@@ -66,6 +66,7 @@ $	whoami odoo
 $	echo	$HOME/home/odoo 
 
 Ahora es posible usar este	script.	Muestra como instalar Odoo desde el código fuente en un sistema Debian:
+
 $	sudo	apt-get	update	&amp;&amp;	sudo	apt-get	upgrade		#	Instala las actualizaciones del sistema
 $	sudo	apt-get	install	git		#	Instala	Git
 $	mkdir	~/odoo-dev		#	Crear el diretorio de trabajo
@@ -74,7 +75,10 @@ $	git	clone	https://github.com/odoo/odoo.git	-b	8.0		#	Obtiene el código fuente
 $	./odoo/odoo.py	setup_deps		#	Instala las dependencias del sistema Odoo
 $	./odoo/odoo.py	setup_pg		#	Instala PostgreSQL	y el usuario administrador para un usuario unix 
 
-Al finalizar, Odoo estará listo para ser usado.	El simbolo ~	es un atajo para su directorio raíz (por ejemplo, /home/odoo).	La opción git	-b	8.0	explicitamente solicita descargar la rama 8.0 de Odoo.	En el momento de escribir este libro, esto es redundante, ya que 8.0 es la rama  predeterminada, pero esto puede cambiar, lo que hara más flexible los aqui descrito.
+Al finalizar, Odoo estará listo para ser usado.	
+
+El simbolo ~	es un atajo para su directorio raíz (por ejemplo, /home/odoo).	La opción git	-b	8.0	explicitamente solicita descargar la rama 8.0 de Odoo.	En el momento de escribir este libro, esto es redundante, ya que 8.0 es la rama  predeterminada, pero esto puede cambiar, lo que hara más flexible los aqui descrito.
+
 Para iniciar una instancia del servidor Odoo, simplemente ejecute	odoo.py:
 $	~/odoo-dev/odoo/odoo.py 
 
@@ -84,8 +88,9 @@ Odoo Development Essentials - Daniel Reis-52_1.jpg
 
 Pero aprenderá como inicializar bases de datos nuevas desde la línea de comando, But	we	will	learn	how	to	initialize	new	databases	from	the	command	line,	ahora presione <i>Ctrl</i>	+	<i>C</i>	para detener el servidor y volver a la línea de comandos.
 
-Inicializar una base de datos nueva en Odoo
+**Inicializar una base de datos nueva en Odoo**
 Para poder crear una base de datos nueva, su usuario debe ser un super usuario de PostgreSQL.	Lo siguiente hace esto por usted ./odoo.py	setup_pg;	de lo contrario use el siguiente comando para crear un super usuario PostgreSQL para el usuario Unix actual:
+
 $	sudo	createuser	--superuser	$(whoami) 
 
 Para crear una base de datos nueva use este el comando createdb.	Cree la base de datos	v8dev:
@@ -93,6 +98,7 @@ Para crear una base de datos nueva use este el comando createdb.	Cree la base de
 $	createdb	v8dev  
 
 Para inicializar esta base de datos con el esquema de datos de Odoo debe ejecutar Odoo en la base de datos vacía usando la opción	-d:
+
 $	~/odoo-dev/odoo/odoo.py	-d	v8dev 
 
 Tomará unos minutos inicializar la base de datos	v8dev, y terminará con un mensaje de registro INFO	Módulos cargados . Luego el servidor estará listo para atender las peticiones del cliente.
@@ -107,16 +113,19 @@ Si esta alojano Odoo en una máquina virtual probablemente necesite hacer alguna
 
 La cuenta de usuario predeterminada es admin con la contraseña admin. Una vez acceda se mostrará el menú	Coniguración , revelando los módulos instalados. Elmine el filtro de	Instalado   y podrá ver e instalar cualquiera de los módulos oficiales.
 
-En cualquier momento que desee detener la instancia del servidor Odoo y volver a la línea de comando, presione	<i>Ctrl</i>	+	<i>C</i>.	En consola, presiona la tecla de flecha Arriba para mostrar el comando anterior ejecutado,	esta es una forma rápida de iniciar Odoo con las mismas opciones.	Notará que <i>Ctrl</i>	+	<i>C</i>	seguido de la flecha Arriba	y	<i>Enter</i>	es una combinación frecuentemente usada para re-iniciar el servidor Odoo durante el desarrollo.
+En cualquier momento que desee detener la instancia del servidor Odoo y volver a la línea de comando, presione	*Ctrl*	+	*C*.	En consola, presiona la tecla de flecha Arriba para mostrar el comando anterior ejecutado,	esta es una forma rápida de iniciar Odoo con las mismas opciones.	Notará que *Ctrl*	+	*C*	seguido de la flecha Arriba	y	*Enter*	es una combinación frecuentemente usada para re-iniciar el servidor Odoo durante el desarrollo.
 
-Gestionar la base de datos
+**Gestionar la base de datos**
 Ha visto como crear e iniciaizar bases de datos nuevas en Odoo desde la línea de comando.Existen mas comandos que valen la pena conocer para gestionar bases de datos.
 
 Ya sabe como usar el comando	createdb	para crear una base de datos vacía, pero también puede crear una base de datos copiando una existente, usando la opción --template.
 
 Asegurese que su instancia de Odoo este detenida y no tenga otra conexión abierta con la base de datos v8dev	creada anteriormente, y ejecute:
+
 $	createdb	--template=v8dev	v8test 
+
 De hecho, cada vez que se crea una base de datos, es usada una pantilla. Si no se especifica ninguna, se usa una predefinida llamada template1.
+
 Para listas las bases de dats existentes en su sistema use la utilidad psql de PostgreSQL	con la opcion -l:
 $	psql	-l 
 
@@ -127,10 +136,10 @@ $	dropdb	v8test
 
 Ahora ya conoce lo básico para trabajar con varias bases de datos. Para aprender más sobre PostgresSQL, puede encontrar la documentación oficial en [http://www.postgresql.org/docs/](http://www.postgresql.org/docs/)
 
-Nota 
+*Nota*
 ADVERTENCIA:	Eliminar una base de datos destruira los datos de forma irrevocable. Tenga cuidado al ejecutar esta acción y mantenga siempre respaldos de sus bases de datos.
 
-Unas palabras sobre las versiones de Odoo
+**Unas palabras sobre las versiones de Odoo**
 A la fecha de publicación, la última versión estable de Odoo es la 8, marcada en GitHub	como	branch	8.0. Esta es la versión con la que se trabajará a lo largo de este libro.
 
 Es importante saber que las bases de dats de Odoo son incompatibles ente versiones principales de Odoo. Esto significa que si ejecuta un servidor Odoo 8 contra una base de datos Odoo/OpenERP	7, no funcionará. Es necesario un trabajo de migración significativo para que una base de datos pueda ser usada con una versión más reciente del producto.
