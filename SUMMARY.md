@@ -6,4 +6,5 @@
 * [¿A quien va dirigido este libro?](a_quien_va_dirigido_este_libro.md)
 * [Convenciones](convenciones.md)
 * [Capítulo I: Comenzando con Odoo](capitulo_i.md)
+* Capítulo II:
 
