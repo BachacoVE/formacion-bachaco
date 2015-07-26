@@ -26,4 +26,5 @@ $	mkdir	~/odoo-dev/custom-addons
 *Las advertencias o notas importantes aparecen en una caja como esta.*
 
 **Tip**
+
 Los tips y notas aparecen así.
