@@ -2,6 +2,7 @@ Capítulo	1.	Comenzando con Odoo
 ====
 **Desarrollo**
 Antes de sumergirse en el desarrollo de Odoo, es necesario configurar el entorno de desarrollo, y para esto se debe aprender las tareas básicas de administración.
+
 En este capítulo,	se aprendera como configurar el entorno de desarrollo, donde luego se desarrollarán las aplicaciones Odoo. 
 
 Se aprenderá a configurar sistemas Debian o Ubuntu para alojar las instancias del servidor de desarrollo, y como instalar Odoo desde el código fuente en GitHub.	Luego aprenderá a configurar archivos compartidos con	Samba, permitiendo trabajar con archivos de Odoo desde una estación de trabajo con cualquier sistema oerativo.
@@ -156,7 +157,7 @@ $	./odoo.py	--help
 
 Vale la pena tener una idea general de las más importantes.
 
-Archivos de configuración del servidor Odoo
+**Archivos de configuración del servidor Odoo**
 La mayoria de las opciones pueden ser guardadas en un archivo de configuración. De forma predeterminada, Odoo usará el archivo .openerp-serverrc	 en su directorio home. Convenientemente, existe una opción --save para guardar la instancia actual de configuración dentro de ese archivo:
 $	~/odoo-dev/odoo/odoo.py	--save	--stop-after-init		#	guarda la configuración en	 archivo 
 
@@ -180,48 +181,60 @@ $	~/odoo-dev/odoo.py	--xmlrpc-port=8071
 
 Y allí lo tiene: dos instancias de Odoo en el mismo servidor escuchando a través de diferentes puertos. Las dos instancias pueden ser usadas en la misma o en diferentes base de datos.	Y ambas pueden ejecutar versiones iguales o diferentes de Odoo.
 
-Registro
+**Registro**
 La opción	--log-level	permite configurar el nivel de detalle del registro.	Esto puede ser muy útil para entender lo que esta pasando en el servidor. Por ejemplo, para habilitar el nivel de registro de depuración utilice: --log-level=debug 
+
 Los siguientes niveles de registro pueden ser particularmente interesantes: 
 debug_sql	para inspeccionar el SQL generado por el servidor 
 debug_rpc	para detallar las solicitudes recividas por el servidor 
 debug_rpc	para detallar las respuestas enviadas por el servidor 
-La salida del registro es enviada de forma predeterminada a la salida estandar (la terminal),	pero puede ser dirigida a un archivo de registro con la opción	--logfile=&lt;filepath&gt;. 
-Finalmente, la opción --debug	le enviará al depurador Python	(pdb) cuando aparezca una excepción.	Es útil hacer un análsis post-mortem de un error del servidor. Note que esto no tiene ningún efecto en el nivel de detalle del registro. Se pueden encontrar más detalles sobre los comandos del depurador de Python aquí:<a href="https://docs.python.org/2/library/pdb.html#debugger-commands">	https://docs.python.org/2/library/pdb.html#debugger-commands</a>. 
 
-Desarrollar desde la estación de trabajo  
+La salida del registro es enviada de forma predeterminada a la salida estandar (la terminal),	pero puede ser dirigida a un archivo de registro con la opción	--logfile=&lt;filepath&gt;. 
+
+Finalmente, la opción --debug	le enviará al depurador Python	(pdb) cuando aparezca una excepción.	Es útil hacer un análsis post-mortem de un error del servidor. Note que esto no tiene ningún efecto en el nivel de detalle del registro. Se pueden encontrar más detalles sobre los comandos del depurador de Python aquí: [https://docs.python.org/2/library/pdb.html#debugger-commands]	(https://docs.python.org/2/library/pdb.html#debugger-commands). 
+
+**Desarrollar desde la estación de trabajo**
 Puede ejecutar Odoo con un sistema Debian/Ubuntu, en una máquina virtual local o en un servidor remoto. Pero posiblemente prefiera hacer el trabajo de desarrollo en su estación de trabajo personal, usando su editor de texto o IDE favorito. 
+
 Este puede ser el caso para las personas que desarrollan en estaciones de trabajo con	Windows.	Pero puede también ser el caso para las personas que usan Linux que necesiten trabajar en un servidor Odoo desde una red local. 
+
 Una solución para esto es habilitar el uso compartido de archivos en el servidor Odoo, así los archívos son fáciles de editar desde su estación de trabajo. Para las operaciones del servidor Odoo, como reniciar el servidor, es posible usar un intérprete de comando SSH (como PUTTY en Windows) junto a su editor favorito. 
 
-Usar un editor de texto Linux  
+**Usar un editor de texto Linux**
 Tarde o temprano, será necesaio editar archivos desde la línea de comandos. En muchos sistemas Debian el editor de texto predeterminado es vi. Si no se siente a gusto con este, puede usar una alternativa más amigable. En sistemas Ubuntu el editor de texto predeterminado es nano. Puede que prefiera usar este ya que es más fácil de usar. En caso que no este disponible en su servidor, puede instalarlo con: 
+
 $	sudo	apt-get	install	nano  
+
 En las siguientes secciones se asumirá como el editor de preferencia. Si prefiere cualquier otro editor, sientase libre de adaptar los comandos de acuerdo a su elección. 
 
-Instalar y configurar Samba  
+**Instalar y configurar Samba**
 El proyecto Samba proporciona a Linux servicios para compartir archivos compatibles con sistemas Microsoft Windows. Se puede instalar en el servidor Debian/Ubuntu con: 
+
 $	sudo	apt-get	install	samba	samba-common-bin  
 
 El paquete samba instala el servicio para compartir archivos y el paquete samba-common-bin es neesario para la herramienta	smbpasswd. De forma predeterminada los usuarios autorizados para acceder a los archivos compartido necesitan ser registrados. Es necesario registrar el usuario odoo y asignarle una contraseña para su acceso a los archivos compartidos: 
+
 $	sudo	smbpasswd	-a	odoo  
 
 Despues de esto el usuario odoo podrá acceder a un recurso compartido de arhivos para su directorio home, pero será de solo lectura. Se requiere el acceso a escritura, asi que es necesario editar los archivos de configuracion de Samba para cambiar eso: 
+
 $	sudo	nano	/etc/samba/smb.conf  
 
 En el archivo de configuración, busque la sección [homes]. Edite las líneas de configuración para que sean iguales a los siguientes ajustes: 
+
 [homes] 			
 comment	=	Home	Directories 			
 browseable	=	yes 			
 read	only	=	no 			
 create	mask	=	0640 			
 directory	mask	=	0750 
+
 Para que estos cambios en la configuración tengan efecto, reinicie el servicio: 
 $	sudo	/etc/init.d/smbd	restart  
 
-Consejo  
-Descargar el código de ejemplo  
+**Descargar el código de ejemplo**
 Puede descargar los archívos de código de ejemplo de todos los libros Packt que haya adquirido desde su cuenta en [http://www.packtpub.com]	(http://www.packtpub.com). Si adquirio este libro en otra parte, puede visitar	[http://www.packtpub.com/support](http://www.packtpub.com/support)	y registrarse para obtener los archivos enviados por correo electrónico enviados directamente a ud. 
+
 Para acceder a los archivos desde Windows, es posible asignar una unidad de red para la ruta	\\&lt;my-server-name&gt;\odoo usando el usuario específico y contraseña especificada con smbpasswd. Cuando trate de acceder con el usuario odoo, puede encontrar problemas con Windows al agregar el dominio al nombre de usuario (por ejemplo	MYPC\odoo). Para evitar esto, use un dominio vacío anteponiendo un	\ al nombre de usuario	(por ejemplo	\odoo). 
 
 Odoo Development Essentials - Daniel Reis-67_1.jpg 
@@ -230,13 +243,13 @@ Odoo Development Essentials - Daniel Reis-67_2.jpg
 
 Si ahora se abre la unidad de red asignada con	Windows	Explorer, debe ser posible acceder y editar los contenidos del directorio home del usuario odoo. 
 
-Habilitar las herramientas técnicas
+**Habilitar las herramientas técnicas**
 Odoo incluye algunas herramientas que son muy útiles para las personas que desarrollan, y se usaran a lo largo de este libro. Estas son las Características Técnicas y el Modo de Desarrollo. 
 Estas están desabilitades de forma predeterminada, así que este es algún momento para aprender como habilitarlas. 
 
 Odoo Development Essentials - Daniel Reis-70_1.jpg 
 
-Activar las Características Técnicas  
+**Activar las Características Técnicas**
 Las Características Técnicas proporcionan herramientas avanzadas de configuración del servidos. 
 Estas estan desabilitadas de forma predeterminada, y para habilitarlas, es neceario acceder con el usuario administrador. En el menú Configuraciones ,	seleccione Ususarios  y edite el usuario Administrador. En la pestaña	Derechos de Acceso , encontrará una casilla de selección de Caracterśticas Técnicas . Seleccionala y guarde los cambios. 
 
@@ -246,46 +259,56 @@ La opción del menú	Técnico  permite inspeccionar y editar todas las configura
 
 Odoo Development Essentials - Daniel Reis-71_1.jpg 
 
-Activar el modo de Desarrollo  
+**Activar el modo de Desarrollo**
 El modo de Desarrollo habilita una caja de selección cerca de la parte superior de la ventana Odoo, haciendo accesible algunas opciones de configuracion avanzadas en toda la aplicación. También deshabilita la modificación del codigo JavaScript	y	CSS usado por el cliente web, haciendo mas fácil la depuración del comportamiento del lado del cliente. 
+
 Para habilitarlo, abra el menú desplegable en la esquina superior derecha de l ventana del navegador, al lado del nombre de usuario, y seleccione la opción	Acerca de	Odoo . En la ventana de dialogo Acerca de 	dialog, haga	click sobre el botón Activar el modo de desarrollo 	en la esquina superior derecha. 
 Luego de esto, verá una caja de selección Vista de Depuración  en la parte superior izquierda del área actual del formulario. 
 
-Instalar módulos de terceras partes  
+**Instalar módulos de terceras partes**
 Hacer que nuevos módulos esten disponibles en una instancia de Odoo para que puedan ser instalados es algo que puede resultar confuso para las personas nuevas. Pero no necesariamente tiene que ser así, así que a continuación se desmitificará esta suposición. 
 
-Encontrar módulos de la comunidad  
+**Encontrar módulos de la comunidad**
 Existen muchos módulos para Odoo disponibles en Internet. El sitio web	[http://apps.odoo.com](	apps.odoo.com) es un catalogo de módulos que pueden ser descargados e instalados.  La	Odoo Community	Association 	(OCA ) coordina las contribuciones de la comunidad y mantiene unos pocos repositorios en GitHub,	en [https://github.com/OCA/] (https://github.com/OCA)
 
 Para agregar un módulo a la instalación de Odoo puede simplemente copiarlo dentro de el direcctorio de complementos, junto a los módulos oficiales.	En este caso, el direcctorio de complementos esta en	~/odoo-dev/odoo/addons/. Esta puede que no sea la mejor opción para Ud., debido a que su instalación esta basada en una versión controlada por el repositorio, y querra tenerla sincronizada con el repositorio de	GitHub. 
+
 Afortunadamente, es posible usar ubicaciones adicionales para los módulos, por lo que se puede tener los módulos personalizados en un directorio diferente, sin mezclarlos con los complementos adicionales. 
 Como ejemplo, se descargará el proyecto de departamente OCA y sus módulos se harán disonibles en la instalción de Odoo. Este proyecto es un conjunto de módulos muy simples que agregan un campo Departamento en muchos formularios, como en el de Proyectos u Oportunidades de CRM. 
+
 Para obtener el código fuente desde	GitHub: 
 $	cd	~/odoo-dev 
 $	git	clone	https://github.com/OCA/department.git	-b	8.0  
 
 Se uso la opción -b	para asegurar que se desacargan los módulos de la versión	8.0. 	
 Pero deido a que en el momento de escribir esto la versión 8.0 en la rama predeterminada del proyecto la opción -b podría haber sido omitida. 
+
 Luego, se tendrá un directorio /department	nuevo junto al directorio /odoo, que contendrá los módulos. Ahora es necesario hacer saber a Odoo sobre este nuevo directorio. 
 
-Configurar la ruta de complementos  
+**Configurar la ruta de complementos**
 El servidor Odoo tiene una opción llamada ruta de complementos que define donde buscar los módulo. De forma predeterminada este apunta al directorio	/addons del servidor Odoo que se esta ejecutando. 
 Afortunadamente, es posible asignar no un, si no una lista de disrectorios donde se pueden encontrar los módulos. Esto permite mantener los módulos personlizados en un directrio diferente, sn mezclarlos con los complementos oficiales. 
+
 Se ejecutará el servidor con una ruta de complemento incluendo el nuevo directorio de módulos: 
 $	cd	~/odoo-dev/odoo 
 $	./odoo.py	-d	v8dev	--addons-path=&#34;../department,./addons&#34;  
+
 Si se observa en profundidad el registro del servidor notará una línea reportando la ruta de los cmplementos en uso: 
 INFO	?	openerp:	addons	paths: 	(…).	Confirm	that	it	contains	our	department	directory. 
 
 Odoo Development Essentials - Daniel Reis-76_1.jpg
 
-Actualizar la lista de módulos  
+**Actualizar la lista de módulos**
 Es necesario pedirle a Odoo que actualice su lista de módulos antes que estos módulos nuevos esten disponibles para ser instalados. 
+
 Para esto es necesario habilitar el menú Técnico , debido a que esta provee la opción de menú	Actualizar Lista de Módulos . Esta puede ser encontrada en la sección Módulos  en el menú	Configuraciones . 
 Luego de ejecutar la actualización de la lista de módulos se puede confirmar que los módulos nuevos están disponibles para ser instalados. En la lista de Módulos Locales , quite el filtro de Aplicaciones y busque por departamente. Debería poder ver los módulos nuevos disponibles. 
 
-Resumen  
+**Resumen**
 En este capítulo, aprendio como configurar un sistema Debian para alojar Odoo e instalarlo desde GitHub. También aprendió como crear bases de datos en Odoo y ejecutar instancias Odoo. Para permitir que las personas que desarrollan usen sus herramientas favoritas en sus estaciones de trabajo, se explicó como configurar archivos compartidos en el servidor Odoo. 
+
 En estos momentos debería tener un ambiente Odoo completamente funcional para trabajar con y comodamente con el manejo de bases de datos e instancias. 
+
 Con esto claro, es momento de ir directo a la acción. En el próximo capítulo se creará el primer modulo Odoo y entenderá los elementos principales involucrados. 
+
 Comencemos! 
