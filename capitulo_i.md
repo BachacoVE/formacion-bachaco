@@ -270,9 +270,9 @@ Puede descargar los archívos de código de ejemplo de todos los libros Packt qu
 
 Para acceder a los archivos desde Windows, es posible asignar una unidad de red para la ruta	\\&lt;my-server-name&gt;\odoo usando el usuario específico y contraseña especificada con smbpasswd. Cuando trate de acceder con el usuario odoo, puede encontrar problemas con Windows al agregar el dominio al nombre de usuario (por ejemplo	MYPC\odoo). Para evitar esto, use un dominio vacío anteponiendo un	\ al nombre de usuario	(por ejemplo	\odoo). 
 
-![67_1](Odoo Development Essentials - Daniel Reis-67_1.jpg) 
+![67_1](/images/Odoo Development Essentials - Daniel Reis-67_1.jpg) 
 
-![67_2](Odoo Development Essentials - Daniel Reis-67_2.jpg)
+![67_2](/images/Odoo Development Essentials - Daniel Reis-67_2.jpg)
 
 Si ahora se abre la unidad de red asignada con	Windows	Explorer, debe ser posible acceder y editar los contenidos del directorio home del usuario odoo. 
 
@@ -281,7 +281,7 @@ Si ahora se abre la unidad de red asignada con	Windows	Explorer, debe ser posibl
 Odoo incluye algunas herramientas que son muy útiles para las personas que desarrollan, y se usaran a lo largo de este libro. Estas son las Características Técnicas y el Modo de Desarrollo. 
 Estas están desabilitades de forma predeterminada, así que este es algún momento para aprender como habilitarlas. 
 
-![70_1](Odoo Development Essentials - Daniel Reis-70_1.jpg)
+![70_1](/images/Odoo Development Essentials - Daniel Reis-70_1.jpg)
 
 **Activar las Características Técnicas**
 
@@ -293,7 +293,7 @@ Ahora es necesario recargar la página en el navegador web. Deberá poder ver en
 
 La opción del menú	Técnico  permite inspeccionar y editar todas las configuraciones de Odoo almacenadas in la base de datos, desde la interfaz de usuario, la seguridad y otros parámetros del sistema. Aprenderá mas sobre esto a lo largo del libro. 
 
-![71_1](Odoo Development Essentials - Daniel Reis-71_1.jpg)
+![71_1](/images/Odoo Development Essentials - Daniel Reis-71_1.jpg)
 
 **Activar el modo de Desarrollo**
 
@@ -342,7 +342,7 @@ Si se observa en profundidad el registro del servidor notará una línea reporta
 ```
 INFO	?	openerp:	addons	paths: 	(…).	Confirm	that	it	contains	our	department	directory. 
 ```
-![76_1](Odoo Development Essentials - Daniel Reis-76_1.jpg)
+![76_1](/images/Odoo Development Essentials - Daniel Reis-76_1.jpg)
 
 **Actualizar la lista de módulos**
 
