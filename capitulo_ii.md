@@ -4,10 +4,11 @@ Desarrollar en Odoo la mayoría de las veces significa crear sus propios módulo
 
 Con a inspiración del notable proyecto [todomvc.com](http://todomvc.com), se desarrollara una simple aplicación para el registro de cosas por hacer. Debera permitir agregar nuevas tareas, marcarlas como culminadas, y finalmente borrar de la lista todas las tareas finalizadas. 
 
-You	will	learn	how	Odoo	follows	an	MVC	architecture,	and	we	will	go	through	the following	
-layers	during	the	to-do	application	implementation: 
+Aprendera com oOdoo sigue una arquitectura MVC, y recorrera las siguientes capas durante la implementacin de la aplicación:
 
-The	model ,	defining	the	structure	of	the	data The	view ,	describing	the	user	interface The	controller ,	supporting	the	business	logic	of	the	application 
+El modelo, define la estructura de los datos.
+La vista, describe la interfaz con el usuario o la usuaria.
+El controlador, soporta la lógica de negocio de la aplicación.
 
 The	model	layer	is	defined	with	Python	objects	that	have	their	data	is	stored	in	the PostgreSQL	database.	The	database	mapping	is	automatically	managed	by	Odoo,	and	the mechanism	responsible	for	this	is	the	object	relational	model ,	(ORM ). 
 
