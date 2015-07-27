@@ -1,4 +1,4 @@
-Capítulo	1.	Comenzando con Odoo
+Capítulo 1.	Comenzando con Odoo
 ====
 
 **Desarrollo**
