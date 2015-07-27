@@ -1,4 +1,4 @@
-Capítulo	2. Desarrollar la Primera Aplicación Odoo 
+Capítulo 2. Primera Aplicación con Odoo 
 ===
 Desarrollar en Odoo la mayoría de las veces significa crear sus propios módulos. En este capítulo, se creará la primera aplicación Odoo, y aprenderá los pasos necesarios para habilitarlos e instalarlos en Odoo. 
 
@@ -100,7 +100,7 @@ Now	let’s	ask	Odoo	to	acknowledge	the	new	module	we	just	added.
 
 For	that,	in	the	Modules 	section	of	the	Settings 	menu,	select	the	Update	Modules	List  option.	This	will	update	the	module	list	adding	any	modules	added	since	the	last	update	to the	list.	Remember	that	we	need	the	Technical	Features	enabled	for	this	option	to	be visible.	That	is	done	by	selecting	the	Technical	Features 	checkbox	for	our	user. 
  
-![90_1](Odoo Development Essentials - Daniel Reis-90_1.jpg) 
+![90_1](/images/Odoo Development Essentials - Daniel Reis-90_1.jpg) 
 
 Installing	the	new	module  The	Local	Modules 	option	shows	us	the	list	of	available	modules.	By	default	it	shows only	Apps 	modules.	Since	we	created	an	application	module	we	don’t	need	to	remove	that filter	to	see	it.	Type	“todo”	in	the	search	and	you	should	see	our	new	module,	ready	to	be installed. 
 
@@ -156,7 +156,7 @@ The	last	three	lines	define	the	model’s	fields.	It’s	worth	noting	that	name	
 Right	now,	this	file	is	not	yet	used	by	the	module.	We	must	tell	Odoo	to	load	it	with	the module	in	the	`__init__.py`	file.	Let’s	edit	it	to	add	the	following	line: 
 from	.	import	todo_model 
  
-![95_1](Odoo Development Essentials - Daniel Reis-95_1.jpg)
+![95_1](/images/Odoo Development Essentials - Daniel Reis-95_1.jpg)
 
 That’s	it.	For	our	changes	to	take	effect	the	module	has	to	be	upgraded.	Locate	the	To-Do  application	in	the	Local	Modules 	and	click	on	its	Upgrade 	button. 
 
@@ -196,7 +196,7 @@ Now	we	need	to	tell	the	module	to	use	the	new	XML	data	file.	That	is	done	in	the
 ```
 Now	we	need	to	upgrade	the	module	again	for	these	changes	to	take	effect.	Go	to	the Messaging 	menu	and	you	should	see	our	new	menu	option	available. 
  
-![98_1](Odoo Development Essentials - Daniel Reis-98_1.jpg)
+![98_1](/images/Odoo Development Essentials - Daniel Reis-98_1.jpg)
 
 Clicking	on	it	will	open	an	automatically	generated	form	for	our	model,	allowing	us	to	add and	edit	records. 
 
@@ -294,56 +294,101 @@ We	will	use	the	new	API	introduced	in	Odoo	8.0.	For	backward	compatibility,	by	d
 from	openerp	import	models,	fields,	api  
 ```
 The	Toggle	Done 	button’s	action	will	be	very	simple:	just	toggle	the	Is	Done? 	flag.	For logic	on	a	record,	the	simplest	approach	is	to	use	the	@api.one	decorator.	Here	self	will represent	one	record.	If	the	action	was	called	for	a	set	of	records,	the	API	would	handle that	and	trigger	this	method	for	each	of	the	records. 
+
 Inside	the	TodoTask	class	add: 
-@api.one def	do_toggle_done(self): 				self.is_done	=	not	self.is_done 				return	True 
+```
+@api.one def	do_toggle_done(self): 				
+    self.is_done	=	not	self.is_done 				
+    return	True 
+```
 As	you	can	see,	it	simply	modifies	the	is_done	field,	inverting	its	value.	Methods,	then, can	be	called	from	the	client	side	and	must	always	return	something.	If	they	return	None, client	calls	using	the	XMLRPC	protocol	won’t	work.	If	we	have	nothing	to	return,	the common	practice	is	to	just	return	the	True	value. 
+
 After	this,	if	we	restart	the	Odoo	server	to	reload	the	Python	file,	the	Toggle	Done 	button should	now	work. 
+
 For	the	Clear	All	Done 	button	we	want	to	go	a	little	further.	It	should	look	for	all	active records	that	are	done,	and	make	them	inactive.	Form	buttons	are	supposed	to	act	only	on the	selected	record,	but	to	keep	things	simple	we	will	do	some	cheating,	and	it	will	also	act on	records	other	than	the	current	one: 
-@api.multi def	do_clear_done(self): 				done_recs	=	self.search([('is_done',	'=',	True)]) 				done_recs.write({'active':	False}) 				return	True 
+```
+@api.multi def	do_clear_done(self): 				
+    done_recs	=	self.search([('is_done',	'=',	True)])
+    done_recs.write({'active':	False}) 				
+    return	True 
+```
 On	methods	decorated	with	@api.multi	the	self	represents	a	recordset.	It	can	contain	a single	record,	when	used	from	a	form,	or	several	records,	when	used	from	a	list	view.	We will	ignore	the	self	recordset	and	build	our	own	done_recs	recordset	containing	all	the tasks	that	are	marked	as	done.	Then	we	set	the	active	flag	to	False,	in	all	of	them. 
 The	search	is	an	API	method	returning	the	records	meeting	some	conditions.	These conditions	are	written	in	a	domain,	that	is	a	list	of	triplets.	We’ll	explore	domains	in	more detail	later. 
  
- 110> The	write	method	sets	values	at	once	on	all	elements	of	the	recordset.	The	values	to	write are	described	using	a	dictionary.	Using	write	here	is	more	efficient	than	iterating	through the	recordset	to	assign	the	value	to	them	one	by	one. 
+The	write	method	sets	values	at	once	on	all	elements	of	the	recordset.	The	values	to	write are	described	using	a	dictionary.	Using	write	here	is	more	efficient	than	iterating	through the	recordset	to	assign	the	value	to	them	one	by	one. 
+
 Note	that	@api.one	is	not	the	most	efficient	for	these	actions,	since	it	will	run	for	each selected	record.	The	@api.multi	ensures	that	our	code	runs	only	once	even	if	there	is more	than	one	record	selected	when	running	the	action.	This	could	happen	if	an	option	for it	were	to	be	added	on	the	list	view. 
  
- 111>  
- 112>  Odoo Development Essentials - Daniel Reis-112_1.jpg  
+![112_1](/images/Odoo Development Essentials - Daniel Reis-112_1.jpg)
+
 Setting	up	access	control	security  You	might	have	noticed,	upon	loading	our	module	is	getting	a	warning	message	in	the server	log:	The	model	todo.task	has	no	access	rules,	consider	adding	one.  
+
 The	message	is	pretty	clear:	our	new	model	has	no	access	rules,	so	it	can’t	be	used	by anyone	other	than	the	admin	super	user.	As	a	super	user	the	admin	ignores	data	access rules,	that’s	why	we	were	able	to	use	the	form	without	errors.	But	we	must	fix	this	before other	users	can	use	it. 
+
 To	get	a	picture	of	what	information	is	needed	to	add	access	rules	to	a	model,	use	the	web client	and	go	to:	Settings |Technical |Security |Access	Controls	List . 
 Here	we	can	see	the	ACL	for	the	mail.mail	model.	It	indicates,	per	group,	what	actions are	allowed	on	records. 
+
 This	information	needs	to	be	provided	by	the	module,	using	a	data	file	to	load	the	lines into	the	ir.model.access	model.	We	will	add	full	access	on	the	model	to	the	employee group.	Employee	is	the	basic	access	group	nearly	everyone	belongs	to. 
+
 This	is	usually	done	using	a	CSV	file	named	security/ir.model.access.csv.	Models have	automatically	generated	identifiers:	for	todo.task	the	identifier	is	model_todo_task. Groups	also	have	identifiers	set	by	the	modules	creating	them.	The	employee	group	is created	by	the	base	module	and	has	identifier	base.group_user.	The	line’s	name	is	only informative	and	it’s	best	if	it’s	kept	unique.	Core	modules	usually	use	a	dot-separated string	with	the	model	name	and	the	group.	Following	this	convention	we	would	use 
 todo.task.user. 
+
 Now	we	have	everything	we	need	to	know,	let’s	add	the	new	file	with	the	following content: 
+
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlin k access_todo_task_group_user,todo.task.user,model_todo_task,base.group_user, 1,1,1,1 
-We	must	not	forget	to	add	the	reference	to	this	new	file	in	the	__openerp__.py descriptor’s	data	attribute,	so	that	should	look	like	this: 
+
+We	must	not	forget	to	add	the	reference	to	this	new	file	in	the	`__openerp__.py` descriptor’s	data	attribute,	so	that	should	look	like	this: 
+```
 'data':	[ 
- 
- 113> 				'todo_view.xml', 				'security/ir.model.access.csv', ], 
+	'todo_view.xml', 				
+	'security/ir.model.access.csv', 
+], 
+```
 As	before,	upgrade	the	module	for	these	additions	to	take	effect.	The	warning	message should	be	gone,	and	you	can	confirm	the	permissions	are	OK 	by	logging	in	with	the	user 
 demo	(password	is	also	demo)	and	trying	the	to-do	tasks	feature. 
  
- 114>  
- 115> Row-level	access	rules  Odoo	is	a	multi-user	system,	and	we	would	like	the	to-do	tasks	to	be	private	to	each	user. Fortunately	for	us,	Odoo	also	supports	row-level	access	rules.	In	the	Technical 	menu	they can	be	found	in	the	Record	Rules 	option,	alongside	the	Access	Control	List . 
+**Row-level	access	rules**  
+
+Odoo	is	a	multi-user	system,	and	we	would	like	the	to-do	tasks	to	be	private	to	each	user. Fortunately	for	us,	Odoo	also	supports	row-level	access	rules.	In	the	Technical 	menu	they can	be	found	in	the	Record	Rules 	option,	alongside	the	Access	Control	List . 
+
 Record	rules	are	defined	in	the	ir.rule	model.	As	usual,	we	need	a	distinctive	name.	We also	need	the	model	they	operate	on	and	the	domain	to	force	access	restriction.	The domain	filter	uses	the	same	domain	syntax	mentioned	before,	and	used	across	Odoo. 
+
 Finally,	rules	may	be	either	global	(the	global	field	is	set	to	True)	or	only	for	particular security	groups.	In	our	case,	it	could	perfectly	be	a	global	rule,	but	to	illustrate	the	most common	case,	we	will	make	it	a	group-specific	rule,	applying	only	to	the	employees group. 
+
 We	should	create	a	security/todo_access_rules.xml	file	with	this	content: 
+
 &lt;?xml	version=&#34;1.0&#34;	encoding=&#34;utf-8&#34;?&gt; &lt;openerp&gt; 		&lt;data	noupdate=&#34;1&#34;&gt; 				&lt;record	id=&#34;todo_task_user_rule&#34;	model=&#34;ir.rule&#34;&gt; 								&lt;field	name=&#34;name&#34;&gt;ToDo	Tasks	only	for	owner&lt;/field&gt; 								&lt;field	name=&#34;model_id&#34;	ref=&#34;model_todo_task&#34;/&gt; 								&lt;field	name=&#34;domain_force&#34;&gt;[('create_uid','=',user.id)] 								&lt;/field&gt; 								&lt;field	name=&#34;groups&#34;	eval=&#34;[(4,ref('base.group_user'))]&#34;/&gt; 				&lt;/record&gt; 		&lt;/data&gt; &lt;/openerp&gt; 
+
 Notice	the	noupdate=&#34;1&#34;	attribute.	It	means	this	data	will	not	be	updated	in	module upgrades.	This	will	allow	it	to	be	customized	later,	since	module	upgrades	won’t	destroy user-made	changes.	But	beware	that	this	will	also	be	so	while	developing,	so	you	might want	to	set	noupdate=&#34;0&#34;	during	development,	until	you’re	happy	with	the	data	file. 
-In	the	groups	field,	you	will	also	find	a	special	expression.	It’s	a	one-to-many	relational field,	and	they	have	special	syntax	to	operate	with.	In	this	case,	the	(4,	x)	tuple	indicates to	append	x	to	the	records,	and	x	is	a	reference	to	the	employees	group,	identified	by 
-base.group_user. 
-As	before,	we	must	add	the	file	to	__openerp__.py	before	it	can	be	loaded	to	the	module: 
-'data':	[ 				'todo_view.xml', 				'security/ir.model.access.csv', 				'security/todo_access_rules.xml', ], 
- 
- 116>  
- 117> Adding	an	icon	to	the	module  Our	module	is	looking	good.	Why	not	add	an	icon	to	it	to	make	it	look	even	better?	For that	we	just	need	to	add	to	the	module	a	static/description/icon.png	file	with	the	icon to	use. 
+
+In	the	groups	field,	you	will	also	find	a	special	expression.	It’s	a	one-to-many	relational field,	and	they	have	special	syntax	to	operate	with.	In	this	case,	the	(4,	x)	tuple	indicates to	append	x	to	the	records,	and	x	is	a	reference	to	the	employees	group,	identified	by base.group_user. 
+
+As	before,	we	must	add	the	file	to	`__openerp__.py`	before	it	can	be	loaded	to	the	module: 
+```
+'data':	[ 				
+    'todo_view.xml', 				
+    'security/ir.model.access.csv', 				
+    'security/todo_access_rules.xml', 
+], 
+``` 
+**Adding	an	icon	to	the	module**  
+
+Our	module	is	looking	good.	Why	not	add	an	icon	to	it	to	make	it	look	even	better?	For that	we	just	need	to	add	to	the	module	a	static/description/icon.png	file	with	the	icon to	use. 
+
 The	following	commands	add	an	icon	copied	form	the	core	Notes	module: 
-$	mkdir	-p	~/odoo-dev/custom-addons/todo_app/static/description $	cd	~/odoo-dev/custom-addons/todo_app/static/description $	cp	../odoo/addons/note/static/description/icon.png	./  
+```
+$	mkdir	-p	~/odoo-dev/custom-addons/todo_app/static/description 
+$	cd	~/odoo-dev/custom-addons/todo_app/static/description 
+$	cp	../odoo/addons/note/static/description/icon.png	./  
+```
 Now,	if	we	update	the	module	list,	our	module	should	be	displayed	with	the	new	icon. 
  
- 118>  
- 119> Summary  We	created	a	new	module	from	the	start,	covering	the	most	frequently	used	elements	in	a module:	models,	the	three	base	types	of	views	(form,	list,	and	search),	business	logic	in model	methods,	and	access	security. 
+**Summary**  
+
+We	created	a	new	module	from	the	start,	covering	the	most	frequently	used	elements	in	a module:	models,	the	three	base	types	of	views	(form,	list,	and	search),	business	logic	in model	methods,	and	access	security. 
+
 In	the	process,	you	got	familiar	with	the	module	development	process,	which	involves module	upgrades	and	application	server	restarts	to	make	the	gradual	changes	effective	in Odoo. 
+
 Always	remember,	when	adding	model	fields,	an	upgrade	is	needed.	When	changing Python	code,	including	the	manifest	file,	a	restart	is	needed.	When	changing	XML	or	CSV files,	an	upgrade	is	needed;	also	when	in	doubt,	do	both:	upgrade	the	modules	and	restart the	server. 
+
 In	the	next	chapter,	you	will	learn	about	building	modules	that	stack	on	existing	ones	to add	features. 
