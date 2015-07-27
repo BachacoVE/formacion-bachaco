@@ -1,8 +1,8 @@
 Capítulo 2. Primera Aplicación con Odoo 
 ===
-Desarrollar en Odoo la mayoría de las veces significa crear sus propios módulos. En este capítulo, se creará la primera aplicación Odoo, y aprenderá los pasos necesarios para habilitarlos e instalarlos en Odoo. 
+Desarrollar en Odoo la mayoría de las veces significa crear sus propios módulos. En este capítulo, se creará la primera aplicación con Odoo, y aprenderá los pasos necesarios para habilitarlas e instalarlas en Odoo. 
 
-Inspirados por el notable proyecto	 http://todomvc.com todomvc.com	 , se desarrollara una simple aplicación para el registro de cosas por hacer. Debera permitir agregar nuevas tareas, marcarlas como culminadas, y finalmente borrar de la lista todas las tareas finalizadas. 
+Con a inspiración del notable proyecto [todomvc.com](http://todomvc.com), se desarrollara una simple aplicación para el registro de cosas por hacer. Debera permitir agregar nuevas tareas, marcarlas como culminadas, y finalmente borrar de la lista todas las tareas finalizadas. 
 
 You	will	learn	how	Odoo	follows	an	MVC	architecture,	and	we	will	go	through	the following	
 layers	during	the	to-do	application	implementation: 
