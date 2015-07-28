@@ -10,8 +10,11 @@ El modelo, define la estructura de los datos.
 La vista, describe la interfaz con el usuario o la usuaria.
 El controlador, soporta la lógica de negocio de la aplicación.
 
-The	model	layer	is	defined	with	Python	objects	that	have	their	data	is	stored	in	the PostgreSQL	database.	The	database	mapping	is	automatically	managed	by	Odoo,	and	the mechanism	responsible	for	this	is	the	object	relational	model ,	(ORM ). 
+La capa de modelo está definida por objetos Python que almacenan sus datos en la base de datos PostgreSQL. El mapeo de la base de datos es automáticamente gestionada por Odoo, y el mecanismo responsable de esto es el modelo objeto-relacional (ORM)
 
+
+La capa de la vista describe la interfaz de usuario y usuaria. Las vistas son definidas usando XML, el cual es usado por el framework del cliente web para generar vistas HTML enfocada a datos.
+Las vistas de cliente web ejecutan acciones de persistencia de datos interactuando con el resivdor ORM.
 The	view	layer	describes	the	user	interface.	Views	are	defined	using	XML,	which	is	used by	the	web	client	framework	to	generate	data-aware	HTML	views. 
 The	web	client	views	perform	data	persistent	actions	by	interacting	with	the	server	ORM. These	can	be	basic	operations	such	as	write	or	delete,	but	can	also	invoke	methods	defined in	the	ORM	Python	objects,	performing	more	complex	business	logic.	This	is	what	we refer	to	as	the	controller	layer. 
 
