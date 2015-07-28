@@ -14,12 +14,11 @@ La capa de modelo está definida por objetos Python que almacenan sus datos en l
 
 
 La capa de la vista describe la interfaz de usuario y usuaria. Las vistas son definidas usando XML, el cual es usado por el framework del cliente web para generar vistas HTML enfocada a datos.
-Las vistas de cliente web ejecutan acciones de persistencia de datos interactuando con el resivdor ORM.
-The	view	layer	describes	the	user	interface.	Views	are	defined	using	XML,	which	is	used by	the	web	client	framework	to	generate	data-aware	HTML	views. 
-The	web	client	views	perform	data	persistent	actions	by	interacting	with	the	server	ORM. These	can	be	basic	operations	such	as	write	or	delete,	but	can	also	invoke	methods	defined in	the	ORM	Python	objects,	performing	more	complex	business	logic.	This	is	what	we refer	to	as	the	controller	layer. 
+Las vistas de cliente web ejecutan acciones de persistencia de datos interactuando con el servidor ORM. Estas pueden ser operaciones básicas tales como escribir o eliminar, pero también pueden invocar métodos definidos en los objetos Python ORM, ejecutand lógicas de negocio más complejas. A esto es que nos referimos con capa controlador.
 
-*Note*
+*Nota*
 
+*Nótese que el conepto e controlador mencionado aquí es diferente de los controladores de desarrollo web de odoo *
 *Note	that	the	concept	of	controller	mentioned	here	is	different	from	the	Odoo	web development	controllers.	Those	are	program	endpoints	that	web	pages	can	call	to	perform actions.*
 
 With	this	approach,	you	will	be	able	to	gradually	learn	about	the	basic	building	blocks	that make	up	an	application	and	experience	the	iterative	process	of	building	an	Odoo	module from	scratch. 
