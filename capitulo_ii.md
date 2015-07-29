@@ -109,7 +109,7 @@ Mira detenidamente en el registro del servidor. debería haber una línea INFO ?
 
 Recuerde incluir cualquier otro directorio que pueda estar usando. Por ejemplo, si siguió las instrucciones del último capítulo para instalar el repositorio department, puede querer incluirlo y usar la opción:
 ```
---addons-path="custom-addons,departmernt,odoo/addons"  
+--addons-path="custom-addons,department,odoo/addons"  
 ```
 Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
 
