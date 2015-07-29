@@ -110,7 +110,7 @@ Mira detenidamente en el registro del servidor. debería haber una línea INFO ?
 Recuerde incluir cualquier otro directorio que pueda estar usando. Por ejemplo, si siguió las instrucciones del último capítulo para instalar el repositorio department, puede querer incluirlo y usar la opción:
 ```
 --addons-path="custom-addons,departmernt,odoo/addons"  
-``
+```
 Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
 
 Para esto, En la sección Módulos del menú Configuraciones, seleccione la opción Actualizar Lista de Módulos. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de Características Técnicas para nuestra cuenta de usuario.
