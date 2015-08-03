@@ -1,4 +1,4 @@
-Chapter 3. Herencia - Extendiendo la Funcionalidad de las Aplicaciones Existentes
+Capítulo 3. Herencia - Extendiendo la Funcionalidad de las Aplicaciones Existentes
 ===
 
 Una de las características más poderosas de Odoo es la capacidad para agregar características son modificar directamente los objetos subyacentes. Esto se logra a través de mecanismos de herencia, que funcionan como capas para la modificación por encima de los objetos existentes. 
