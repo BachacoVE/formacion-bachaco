@@ -7,10 +7,11 @@ Los módulos pueden también tener datos iniciales y de demostración (accesorio
 
 Antes de entrar en casosprácticos, primero exploraremos el conceptop de identificador externo, el cual es la clave a la serialización de datos de Odoo 
 
-
 ![150_1](/images/Odoo Development Essentials - Daniel Reis-150_1.jpg)
 
-Understanding	external	identifiers  All	records	in	the	Odoo	database	have	a	unique	identifier,	the	id	field. 
+Understanding	external	identifiers
+
+All	records	in	the	Odoo	database	have	a	unique	identifier,	the	id	field. 
 
 It	is	a	sequential	number	automatically	assigned	by	the	database.	However,	this	automatic identifier	can	be	a	challenge	when	loading	interrelated	data:	how	can	we	reference	a related	record if	we	can’t	know	beforehand	what	database	ID 	will	be	assigned	to	it? 
 
