@@ -1,13 +1,13 @@
-Chapter	4.	Data	Serialization	and	Module Data
+Capítulo	4.	Serialización de Datos y Datos de Módulos
 ====
 
-Most	Odoo	configurations,	from	user	interfaces	to	security	rules,	are	actually	data	records stored	in	internal	Odoo	tables.	The	XML	and	CSV	files	found	in	modules	are	not	used	to run	Odoo	applications.	They	are	just	a	means	to	load	those	configurations	into	the database	tables. 
-Because	of	this,	an	important	part	of	Odoo	modules	is	about	representing	(serializing)	that data	into	files	so	that	it	can	be	later	loaded	into	a	database. 
+La mayoría de las configuraciones de Odoo, desde interfaces de usuario hasta reglas de seguridad, son en realidad registros de datos almacenados en tablas internas de Odoo. Los archivos XML y CSV que se encuentran en los módulos no son usados para ejecutar aplicaciones Odoo. Ellos solo son un medio para cargar esas configuraciones a las tablas de la base de datos.
 
-Modules	can	also	have	initial	and	demonstration	(fixture)	data.	Data	serialization	allows adding	that	to	our	modules.	Additionally,	understanding	Odoo	data	serialization	formats	is important	in	order	to	export	and	import	data	in	the	context	of	a	project	implementation. 
+Los módulos pueden también tener datos iniciales y de demostración (accesorios). La serialización de datos permite añadir eso a nuestros módulos. Adicionalmente, entendiendo los formatos de serialización de datos de Odoo es importante para exportar e importar datos en el contexto de la implementación de un proyecto.
 
-Before	we	go	into	practical	cases,	we	will	first	explore	the	external	identifier	concept, which	is	the	key	to	Odoo	data	serialization. 
- 
+Antes de entrar en casosprácticos, primero exploraremos el conceptop de identificador externo, el cual es la clave a la serialización de datos de Odoo 
+
+
 ![150_1](/images/Odoo Development Essentials - Daniel Reis-150_1.jpg)
 
 Understanding	external	identifiers  All	records	in	the	Odoo	database	have	a	unique	identifier,	the	id	field. 
