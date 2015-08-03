@@ -5,7 +5,7 @@ Una de las características más poderosas de Odoo es la capacidad para agregar 
 
 Estas modificaciones puede suceder en todos los niveles: modelos, vistas, y lógica de negocio. En vez de modificar directamente un módulo existente, creamos un módulo nuevo para agregar las modificaciones previstas.
 
-Aquí, aprenderá como escribir sus propios módulos de extensión, confiriendole facultades para aprovechar las aplicaciones base o comunitarias. Como ejemplo, aprenderá como agregar las características de mensajería y redes sociales de Odoo a sus propios módulos.
+Aquí, aprenderá como escribir sus propios módulos de extensión, confiriéndole facultades para aprovechar las aplicaciones base o comunitarias. Como ejemplo, aprenderá como agregar las características de mensajería y redes sociales de Odoo a sus propios módulos.
  
 ![122_1](/images/Odoo Development Essentials - Daniel Reis-122_1.jpg)
 
@@ -15,6 +15,7 @@ Aquí, aprenderá como escribir sus propios módulos de extensión, confiriendol
 Nuestra aplicación To-Do actualmente permite a los usuarios y las usuarias gestionar de forma privada sus tareas por hacer. ¿No sería grandioso llevar nuestra aplicación a otro nivel agregando características colaborativas y de redes sociales? Seriamos capaces de compartir las tareas y discutirlas con otras personas.
 
 Haremos esto con un módulo nuevo para ampliar la funcionalidad de la aplicación To-Do creada anteriormente y agregar estas características nuevas. Esto es lo que esperamos lograr al final de este capítulo:
+
 
 **Camino a seguir para las características colaborativas**
 
@@ -50,7 +51,7 @@ Ahora, comencemos a agregar le las nuevas características.
 
 Los modelos nuevos son definidos a través de las clases Python. Ampliarlos también es hecho a través de las clases Python, pero usando un mecanismo específico de Odoo.
 
-Para amplicar un modelo usamos una clase Python con un atributo `__inherit`. Este identifica el modelo que será ampliado. La clase nueva hereda todas las características del modelo padre, y solo necesitamos declarar las modificaciones que queremos introducir.
+Para aplicar un modelo usamos una clase Python con un atributo `__inherit`. Este identifica el modelo que será ampliado. La clase nueva hereda todas las características del modelo padre, y solo necesitamos declarar las modificaciones que queremos introducir.
 
 De hecho, los modelos de Odoo existen fuera de nuestro módulo particular, en un registro central. Podemos referirnos a este registro como la piscina, y puede ser accedido desde los métodos del modelo usando `self.env[<model name>]. Por ejemplo, para referirnos al modelo `res.partner` escribiremos `self.env['res.partner'].
 
@@ -74,13 +75,15 @@ class TodoTask(models.Model):
     date_deadline	= fields.Date('Deadline')
 ```
 El nombre de la clase es local para este archivo Python, y en general es irrelevante para los otros módulos. El atributo `_inherit` de la clase es la clave aquí: esta le dice a Odoo que esta clase hereda el modelo `todo.task`. Note la ausencia del atributo `_name`. Este no es necesario porque ya es heredado desde el modelo padre.
-Las siguientes dos líneas son declaraciones de campos comúnes. El `user_id` representa un usuario desde el modelo Users, `res.users`. Es un campo de “Many2one” equivalente a una clave foránea en el argot de base de datos. El `date_deadline` es un simple campo de fecha. En el Capítulo 5, explicaremos con mas detalle los tipos de  campos disponibles en Odoo.
+
+Las siguientes dos líneas son declaraciones de campos comunes. El `user_id` representa un usuario desde el modelo Users, `res.users`. Es un campo de “Many2one” equivalente a una clave foránea en el argot de base de datos. El `date_deadline` es un simple campo de fecha. En el Capítulo 5, explicaremos con mas detalle los tipos de  campos disponibles en Odoo.
 
 Aun nos falta agregar al archivo `__init__.py` la declaración “import” para incluir lo en el módulo:
 ```
 from . import todo_task 
 ```
 Para tener los campos nuevos agregados a la table soportada por el modelo, necesitamos ejecutar una actualización al módulo. Si todo sale como es esperado, debería poder ver los campos nuevos cuando revise el modelo `todo.task`, en el menú Técnico, Estructura de Base de Datos | opción Modelos.
+
 
 **Modificar los campos existentes**
 
@@ -99,11 +102,11 @@ La herencia también funciona en la lógica de negocio. Agregar métodos nuevos 
 
 Para ampliar la lógica existente, un método puede ser sobreescrito declarando otro método con el mismo nombre, y el método nuevo reemplazará al anterior. Pero este puede extender el código de la clase heredada, usando la palabra clave de Python `super()` para llamar al método padre.
 
-Es mejor evitar cambiar la función distintiva del metodo (esto es, mantener los mismos argumentos) para asegurarnos que las llamadas a el sigan funcionando adecuadamente. En caso que necesite agregar parámetros adicionales, hágalos opcionales (con un valor predeterminado).
+Es mejor evitar cambiar la función distintiva del método (esto es, mantener los mismos argumentos) para asegurarnos que las llamadas a el sigan funcionando adecuadamente. En caso que necesite agregar parámetros adicionales, hágalos opcionales (con un valor predeterminado).
 
 La acción original de Borrar Todas las tareas Finalizadas no es apropiada para nuestro módulos de tareas compartidas, ya que borra todas las tareas sin importar a quien le pertenecen. Necesitamos modificarla para que borre solo las tareas del usuario actual.
 
-Para esto, sobreescribiremos el método original con una nueva versión que primero encuentre las tareas completadas del usario actual, y luego las desactive:
+Para esto, sobrescribiremos el método original con una nueva versión que primero encuentre las tareas completadas del usuario actual, y luego las desactive:
 ```
 @api.multi def do_clear_done(self):
     domain = [('is_done', '=', True),
@@ -119,12 +122,11 @@ El filtro “domain” usado es definido en la primera instrucción: es una list
 
 Estas condiciones son unidas implícitamente con un operador AND (`&` en la sintaxis de dominio). Para agregar una operación OR se usa una “tubería” (`|`) en el lugar de la tupla, y afectara las siguientes dos condiciones. Ahondaremos más sobre este tema en el Capítulo 6.
 
-
 El dominio usado aquí filtra todas las tareas finalizadas(`'is_done', '=', True`) que también tengan al usuario actual como responsable (`'user_id','=',self.env.uid`) o no tengan fijado un usuario (`'user_id', '=', False`).
 
-Lo que acabamos de hacer fue sobreescribir completamente el método padre, reemplazandolo con una implementación nueva. 
+Lo que acabamos de hacer fue sobrescribir completamente el método padre, reemplazándolo con una implementación nueva. 
 
-Pero esto no es lo que usualmente querremos hacer. En vez de esto, ampliaremos la lógica actual y agregaremos operaciones adicionales. De lo contrario podemos dañar operaciones existentes. La lógica existente es insertada dentro de un método sobreescrito usando el comando `super()` de Python para llamar a la versión padre del método.
+Pero esto no es lo que usualmente querremos hacer. En vez de esto, ampliaremos la lógica actual y agregaremos operaciones adicionales. De lo contrario podemos dañar operaciones existentes. La lógica existente es insertada dentro de un método sobrescrito usando el comando `super()` de Python para llamar a la versión padre del método.
 
 Veamos un ejemplo de esto: podemos escribir una versión mejor de `do_toggle_done()` que solo ejecute la acción sobre las Tareas asignadas a nuestro usuario:
 ```
@@ -134,14 +136,14 @@ Veamos un ejemplo de esto: podemos escribir una versión mejor de `do_toggle_don
     else:
         return super(TodoTask, self).do_toggle_done()
 ```
-Estas son las técnicas básicas para sobreescribir y ampliar la lógica de negocio definida en las clases del modelo. Veremos ahora como extender las vistas de la interfaz con las usuarias y usuarios.
+Estas son las técnicas básicas para sobrescribir y ampliar la lógica de negocio definida en las clases del modelo. Veremos ahora como extender las vistas de la interfaz con las usuarias y usuarios.
 
 
 **Ampliar las vistas**
 
-Forms,	lists,	and	search	views	are	defined	using	the	arch	XML	structures.	To	extend views	we	need	a	way	to	modify	this	XML.	This	means	locating	XML	elements	and	then introducing	modifications	on	those	points. 
+Vistas de formulario, listas y búsqueda son definidas usando las estructuras de arco de XML. Para ampliar las vistas necesitamos una manera de modificar este XML. Esto significa localizar los elementos XML y luego introducir modificaciones en esos puntos. Las vistas heredadas permiten esto.
 
-Inherited	views	allow	just	that.	An	inherited	view	looks	like	this: 
+Una vista heredada se ve así:
 ```
 <record	id="view_form_todo_task_inherited" model="ir.ui.view">
     <field name="name">Todo Task form – User extension</field>
@@ -152,239 +154,258 @@ Inherited	views	allow	just	that.	An	inherited	view	looks	like	this:
     </field> 
 </record>
 ```
-The "inherit_id" field identifies the view to be extended,	by	referring	to	its	external identifier	using	the	special	ref	attribute.	External	identifiers	will	be	discussed	in	more detail	in  Chapter	4 ,	`Data	Serialization	and	Module	Data`.
- 
-The	natural	way	to	locate	elements	in	XML	is	to	use	XPath	expressions.	For	example, taking	the	form	view	defined	in	the	previous	chapter,	the	XPath	expression	to	locate	the 
-`<field	name="is_done">	element	is: //field[@name]='is_done'`.	This	expression	finds a	field	element	with	a	name	attribute	equal	to	"is_done".	You	can	find	more	information	on XPath	at:[https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support](https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support).
- 
-Having	name	attributes	on	elements	is	important	because	it	makes	it	a	lot	easier	to	select them	for	extension	points.	Once	the	extension	point	is	located,	it	can	be	modified	or	have XML	elements	added	near	it. 
+El campo `inherit_id` identifica la vista que sera ampliada, a través de la referencia de su identificador externo usando el atributo especial “ref”. Los identificadores externos serán discutidos con mayor detalle en el Capítulo 4.
 
-As	a	practical	example,	to	add	the	date_deadline	field	before	the	is_done	field,	we would	write	in	the	arch: 
+La forma natural de localizar los elementos XML es usando expresiones XPath. Por ejemplo, tomando la vista que fue definida en el capítulo anterior, la expresión XPtah  para localizar el elemento `<field name=”is_done> es `//field[@name]='is_done'`. Esta expresión encuentra un elemento con un atributo “name” igual a “is_done”. Puede encontrar mayor información sobre XPath en: [https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support](https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support).
+
+Tener atributos “name” en los elementos es importante porque los hace mucho más fácil de seleccionar como puntos de extensión. Una vez que el punto de extensión es localizado, puede ser modificado o puede tener elementos XML agregados cerca de él.
+
+Como un ejemplo práctico, para agregar el campo `date_deadline` antes del campo “is_done”, debemos escribir en el arco:
 ```
 <xpath expr="//field[@name]='is_done'" position="before">
     <field name="date_deadline" /> 
 </xpath> 
 ```
-Fortunately	Odoo	provides	shortcut	notation	for	this,	so	most	of	the	time	we	can	avoid	the XPath	syntax	entirely.	Instead	of	the	xpath	element	above	we	can	use	the	element	type	we want	to	locate	and	its	distinctive	attributes.	The	above	could	also	be	written	as: `<field	name="is_done"	position="before"> 		<field	name="date_deadline"	/> </field>`
- 
-Adding	new	fields	next	to	existing	fields	is	done	often,	so	the	`<field>`	tag	is	frequently used	as	the	locator.	But	any	other	tag	can	be	used:	`<sheet>`,	`<group>`,	`<div>`,	and	so	on. The	name	attribute	is	usually	the	best	choice	for	matching	elements,	but	sometimes,	we may	need	to	use	string	(the	displayed	label	text)	or	the	CSS	class	element. 
+Afortunadamente Odoo proporciona una notación simplificada para eso, así que la mayoría de las veces podemos omitir la sintaxis XPath. En vez del elemento “xpath” anterior podemos usar el tipo de elementos que queramos localizar y su atributo distintivo. 
 
-The	position	attribute	used	with	the	locator	element	is	optional,	and	can	have	the following	values:
- 
-- after:	This	is	added	to	the	parent	element,	after	the	matched	node. 
-- before:	This	is	added	to	the	parent	element,	before	the	matched	node. 
-- inside	(the	default	value):	This	is	appended	to	the	content	of	the	matched	node. 
-- replace:	This	replaces	the	matched	node.	If	used	with	empty	content,	it	deletes	an element. 
-- attributes:	This	modifies	the	XML	attributes	of	the	matched	element	(there	are more	details	described	following	this	list). 
-
-The	attribute	position	allows	us	to	modify	the	matched	element’s	attributes.	This	is	done using	`<attribute	name="attr-name">`	elements	with	the	new	attribute	values. 
-
-In	the	Task	form,	we	have	the	Active 	field,	but	having	it	visible	is	not	that	useful.	Maybe, we	can	hide	it	from	the	user.	This	can	be	done	setting	its	invisible	attribute: 
+Lo anterior también puede ser escrito como: 
 ```
-<field	name="active"	position="attributes">
-    <attribute	name="invisible">1<attribute/> 
+<field name="is_done" position="before">
+<field name="date_deadline" /> </field>`
+```
+Agregar campos nuevos, cerca de campos existentes es hecho frecuentemente, por lo tanto la etiqueta `<field>` es usada frecuentemente como el localizador. Pero cualquier otra etiqueta puede ser usada: `<sheet>`, `<group>`, `<div>`, entre otras. El atributo “name” es generalmente la mejor opción para hacer coincidir elementos, pero a veces, podemos necesitar usar cadenas (el texto mostrado en un “label”) o el elemento de clase CSS.
+
+El atributo de posición usado con el elemento localizador es opcional, y puede tener los siguientes valores:
+
+
+- after: Este es agregado al elemento padre, después del nodo de coincidencia.
+- before: Este es agregado al elemento padre, antes del nodo de coincidencia.
+- inside (el valor predeterminado): Este es anexado al contenido del nodo de coincidencia.
+- replace: Este reemplaza el nodo de coincidencia. Si es usado con un contenido vacío, borra un elemento.
+- attributes: Este modifica los atributos XML del elemento de coincidencia (más detalles luego de esta lista).
+La posición del atributo nos permite modificar los atributos del elemento de coincidencia. Esto es hecho usando los elementos `<attribute name=”attr-name”>` con los valores del atributo nuevo.
+
+En el formulario de Tareas, tenemos el campo Activo, pero tenerlo visible no es muy útil. Quizás podamos esconderlo de la usuaria y el usuario. Esto puede ser realizado configurando su atributo invisible: 
+```
+<field name="active" position="attributes">
+    <attribute name="invisible">1<attribute/> 
 </field> 
 ```
-Setting	the	invisible	attribute	to	hide	an	element	is	a	good	alternative	to	using	the  replace	locator	to	remove	nodes.	Removing	should	be	avoided,	since	it	can	break extension	models	that	may	depend	on	the	deleted	node. 
+Configurar el atributo “invisible” para esconder un elemento es una buena alternativa para usar el localizador de reemplazo para eliminar nodos. Debería evitarse la eliminación, ya que puede dañar las extensiones de modelos que pueden depender del nodo eliminado.
 
-Finally,	we	can	put	all	of	this	together,	add	the	new	fields,	and	get	the	following	complete inheritance	view	to	extend	the	to-do	tasks	form: 
+Finalmente, podemos poner todo junto, agregar los campos nuevos, y obtener la siguiente vista heredada completa para ampliar el formulario de tareas por hacer:
 ```
-<record	id="view_form_todo_task_inherited" model="ir.ui.view">
-    <field	name="name">Todo	Task	form	–	User	extension</field>
-    <field	name="model">todo.task</field>
-    <field	name="inherit_id"	ref="todo_app.view_form_todo_task"/>
-    <field	name="arch"	type="xml">
-        <field	name="name"	position="after">
-            <field	name="user_id"	/>
+<record id="view_form_todo_task_inherited" model="ir.ui.view">
+    <field name="name">Todo Task form – User extension</field>
+    <field name="model">todo.task</field>
+    <field name="inherit_id" ref="todo_app.view_form_todo_task"/>
+    <field name="arch" type="xml">
+        <field name="name" position="after">
+            <field name="user_id" />
         </field>
-        <field	name="is_done"	position="before">
-            <field	name="date_deadline"	/> 
+        <field name="is_done" position="before">
+            <field name="date_deadline" /> 
         </field>
-        <field	name="name"	position="attributes">
-            <attribute	name="string">I	have	to…<attribute/>
+        <field name="name" position="attributes">
+            <attribute name="string">I have to…<attribute/>
         </field>
     </field> 
 </record>
 ``` 
-This	should	be	added	to	a	todo_view.xml	file	in	our	module,	inside	the	`<openerp>`	and `<data>`	tags,	as	shown	in	the	previous	chapter. 
+Esto debe ser agregado al archivo `todo_view.xml` en nuestro módulo, dentro de las etiquetas `<openerp>` y `<data>`, como fue mostrado en el capítulo anterior.
 
-*Note* 
-*Inherited	views	can	also	be	inherited,	but	since	this	creates	more	intricate	dependencies,	it should	be	avoided. *
+*Nota*
+* Las vistas heredadas también pueden ser heredadas, pero debido a que esto crea dependencias más complicadas, debe ser evitado *.
 
-Also,	we	should	not	forget	to	add	the	data	attribute	to	the	`__openerp__.py`	descriptor	file: 
+No podemos olvidar agregar el atributo datos al archivo descriptor `__openerp__.py`:
 ``` 
 'data':	['todo_view.xml'], 
 ``` 
 
-**Extending	tree	and	search	views**
- 
-Tree	and	search	view	extensions	are	also	defined	using	the	arch	XML	structure,	and	they can	be	extended	in	the	same	way	as	form	views.	We	will	follow	example	of	a	extending the	list	and	search	views. 
 
-For	the	list	view,	we	want	to	add	the	user	field	to	it: 
+**Ampliando mas vistas de árbol y búsqueda**
+
+Las extensiones de las vistas de árbol y búsqueda son también definidas usando la estructura de arco XML, y pueden ser ampliadas de la misma manera que las vistas de formulario. Seguidamente mostramos un ejemplo de la ampliación  de vistas de lista y búsqueda.
+
+Para la vista de lista, queremos agregar el campo usuario:
 ```
-<record	id="view_tree_todo_task_inherited"	model="ir.ui.view">
-    <field	name="name">Todo	Task	tree	–	User	extension</field>
-    <field	name="model">todo.task</field>
-    <field	name="inherit_id"	ref="todo_app.view_tree_todo_task"/>
-    <field	name="arch"	type="xml">
-        <field	name="name"	position="after">
-            <field	name="user_id"	/>
+<record id="view_tree_todo_task_inherited" model="ir.ui.view">
+    <field name="name">Todo Task tree – User extension</field>
+    <field name="model">todo.task</field>
+    <field name="inherit_id" ref="todo_app.view_tree_todo_task"/>
+    <field name="arch"	type="xml">
+        <field name="name" position="after">
+            <field name="user_id" />
         </field>
     </field> 
 </record> 
 ```
-For	the	search	view,	we	will	add	search	by	user,	and	predefined	filters	for	the	user’s	own tasks	and	tasks	not	assigned	to	anyone: 
+Para la vista de búsqueda, agregaremos una búsqueda por usuario, y filtros predefinidos para las tareas propias del usuario y tareas no asignadas a alguien.
 ```
-<record	id="view_filter_todo_task_inherited"	model="ir.ui.view">
-    <field	name="name">Todo	Task	tree	–	User	extension</field>
-    <field	name="model">todo.task</field>
-    <field	name="inherit_id"	ref="todo_app.view_filter_todo_task"/>
-    <field	name="arch"	type="xml">
-        <field	name="name"	position="after">
-            <field	name="user_id"	/>
-            <filter	name="filter_my_tasks"	string="My	Tasks" 	domain="[('user_id','in',[uid,False])]"	/>
-            <filter	name="filter_not_assigned"	string="Not	Assigned" domain="[('user_id','=',False)]" />
+<record id="view_filter_todo_task_inherited" model="ir.ui.view">
+    <field name="name">Todo Task tree – User extension</field>
+    <field name="model">todo.task</field>
+    <field name="inherit_id"	ref="todo_app.view_filter_todo_task"/>
+    <field name="arch"	type="xml">
+        <field name="name" position="after">
+            <field name="user_id" />
+            <filter name="filter_my_tasks" string="My	Tasks" 	           
+                    domain="[('user_id','in',[uid,False])]"	/>
+            <filter name="filter_not_assigned" string="Not Assigned" 
+                    domain="[('user_id','=',False)]" />
         </field>
     </field> 
 </record> 
 ```
-Don’t	worry	too	much	about	the	views-specific	syntax.	We’ll	cover	that	in	more	detail	in Chapter	6, 	*Views	-	Designing	the	User	Interface*. 
+No se preocupe demasiado por la sintaxis específica de las vistas. Describiremos esto con más detalle en el Capítulo 6.
+
+
+** Más sobre el uso de la herencia para ampliar los modelos **
+
+Hemos visto lo básico en lo que se refiere a la ampliación de modelos “in place”, lo cual es la forma más frecuente de uso de la herencia. Pero la herencia usando el atributo `_inherit` tiene mayores capacidades, como la mezcla de clases.
+
+También tenemos disponible el método de herencia delegada, usando el atributo `_inherits`. Esto permite a un modelo contener otros modelos de forma transparente a la vista, mientras por detrás de escena cada modelo gestiona sus propios datos. 
+
+Exploremos esas posibilidades en más detalle.
  
 
-**More	on	using	inheritance	to	extend models** 
-We	have	seen	the	basic	in	place	extension	of	models,	which	is	also	the	most	frequent	use of	inheritance.	But	inheritance	using	the	_inherit	attribute	has	more	powerful capabilities,	such	as	mixin 	classes. 
-We	also	have	available	the	delegation	inheritance	method,	using	the	_inherits	attribute. It	allows	for	a	model	to	contain	other	models	in	a	transparent	way	for	the	observer,	while behind	the	scenes	each	model	is	handling	its	own	data. 
+** Copiar características usando herencia por prototipo **
 
-Let’s	explore	these	possibilities	in	more	detail. 
+El método que usamos anteriormente para ampliar el modelo solo usa el atributo `_inherit`. Definimos una clase que hereda el modelo `todo.task`, y le agregamos algunas características. La clase `_name` no fue fijada explícitamente; implícitamente fue también `todo.task`.
+
+Pero usando el atributo `_name` nos permitió crear una mezcla de clases, configurando le el modelo que queremos ampliar. Aquí mostramos un ejemplo:
+```
+from openerp import models 
+class TodoTask(models.Model): 
+    _name = 'todo.task'
+    _inherit = 'mail.thread' 
+```
+Esto amplia el modelo `todo.task` copiando las características del modelo `mail.thread`. El modelo `mail.thread` implementa la mensajería de Odoo y la función de seguidores, y es re usable, por lo tanto es fácil agregar esas características a cualquier modelo.
+
+Copiar significa que los métodos y los campos heredados estarán disponibles en el modelo heredero. Por campos significa que estos serán creadas y almacenados en las tablas de la base de datos del modelo objetivo. Los registros de datos de el modelo original (heredado) y el nuevo modelo (heredero) son conservados sin relación entre ellos. Solo son compartidas las definiciones.
+
+Estas mezclas son usadas frecuentemente como modelos abstractos, como el `mail.thread` usado en el ejemplo. Los modelos abstractos son como los modelos regulares excepto que no es creada ninguna representación de ellos en la base de datos. Actúan como plantillas, describen campos y la lógica para ser reusado en modelos regulares. 
+
+Los campos que definen solo serán creados en aquellos modelos regulares que hereden de ellos. En un momento discutiremos en detalle como usar eso para agregar `mail.thread` y sus características de redes sociales a nuestro módulo. En la práctica cuando se usan las mezclas rara vez heredamos de modelos regulares, porque esto puede causar duplicación de las mismas estructuras de datos.
+
+Odoo proporciona un mecanismo de herencia delegada, el cual impide la duplicación de estructuras de datos, por lo que es usualmente usada cuando se hereda de modelos regulares. Veamos esto con mayor detalle.
  
 
-**Copying	features	using	prototype	inheritance**
- 
-The	method	we	used	before	to	extend	a	model	used	just	the	`_inherit`	attribute.	We defined	a	class	inheriting	the	todo.task	model,	and	added	some	features	to	it.	The	class `_name`	was	not	explicitly	set;	implicitly	it	was	todo.task	also. 
+** Integrar Modelos usando herencia delegada **
 
-But	using	the	`_name`	attribute	allows	us	to	create	mixin	classes,	by	setting	it	to	the	model we	want	to	extend.	Here	is	an	example: 
+La herencia delegada es el método de extensión de modelos usado con menos frecuencia, pero puede proporcionar soluciones muy convenientes. Es usada a través del atributo `_inherits` (note la 's' adicional) con un mapeo de diccionario de modelos heredados con campos relacionados a él.
+
+Un buen ejemplo de esto es el modelo estándar Users, `res.users`, que tiene un modelo Partner integrado:
 ```
-from	openerp	import	models class	TodoTask(models.Model): 
-    _name	=	'todo.task'
-    _inherit	=	'mail.thread' 
+from openerp import models, fields 
+
+class	User(models.Model):
+    _name      = 'res.users'
+    _inherits  = {'res.partner': 'partner_id'}
+    partner_id = fields.Many2one('res.partner') 
 ```
-This	extends	the	`todo.task`	model	by	copying	to	it	the	features	of	the	`mail.thread model`.	The	mail.thread	model	implements	the	Odoo	messages	and	followers	features, and	is	reusable,	so	that	it’s	easy	to	add	those	features	to	any	model. 
+Con la herencia delegada el modelos `res.users` integra el modelo heredado `res.partner`, por lo tanto cuando un usuario (User) nuevo es creado, un socio (Partner) también es creado y se mantiene una referencia a este a través del campo `partner_id` de User. Es similar al concepto de polimorfismo en la programación orientada a objetos.
 
-Copying	means	that	the	inherited	methods	and	fields	will	also	be	available	in	the inheriting	model.	For	fields	this	means	that	they	will	be	also	created	and	stored	in	the target	model’s	database	tables.	The	data	records	of	the	original	(inherited)	and	the	new (inheriting)	models	are	kept	unrelated.	Only	the	definitions	are	shared. 
+Todos los campos del modelo heredado, Partner, están disponibles como si fueran campos de User, a través del mecanismo de delegación. Por ejemplo, el nombre del socio y los campos de dirección son expuestos como campos de User, pero de hecho son almacenados en el modelo Partner enlazado, y no ocurre ninguna duplicación de la estructura de datos.
 
-These	mixins	are	mostly	used	with	abstract	models,	such	as	the	`mail.thread`	used	in	the example.	Abstract	models	are	just	like	regular	models	except	that	no	database representation	is	created	for	them.	They	act	like	templates,	describing	fields	and	logic	to be	reused	in	regular	models.	The	fields	they	define	will	only	be	created	on	those	regular models	inheriting	from	them.	In	a	moment	we	will	discuss	in	detail	how	to	use	this	to	add  `mail.thread`	and	its	social	networking	features	to	our	module.	In	practice	when	using mixins	we	rarely	inherit	from	regular	models,	because	this	causes	duplication	of	the	same data	structures. 
+La ventaja de esto, comparada a la herencia por prototipo, es que no hay necesidad de repetir la estructura de datos en muchas tablas, como las direcciones. Cualquier modelo que necesite incluir un dirección puede delegar esto a un modelo Partner vinculado. Y si son introducidas algunas modificaciones en los campos de dirección del socio o validaciones, estas estarán disponibles inmediatamente para todos los modelos que vinculen con él!
 
-Odoo	provides	the	delegation	inheritance	mechanism,	which	avoids	data	structure duplication,	so	it	is	usually	preferred	when	inheriting	from	regular	models.	Let’s	look	at	it in	more	detail. 
- 
+*Nota* 
+*Note que con la herencia delegada, los campos con heredados, pero los métodos no.
 
-**Embedding	models	using	delegation	inheritance**
 
-Delegation	inheritance	is	the	less	frequently	used	model	extension	method,	but	it	can provide	very	convenient	solutions.	It	is	used	through	the	_inherits	attribute	(note	the additional	-s)	with	a	dictionary	mapping	inherited	models	with	fields	linking	to	them. 
-A	good	example	of	this	is	the	standard	Users	model,	res.users,	that	has	a	Partner	model embedded	in	it: 
+**Usar la herencia para agregar características redes sociales** 
+
+El módulo de red social (nombre técnico mail) proporciona la pizarra de mensajes que se encuentra en la parte inferior de muchos formularios, también llamado Charla Abierta (Open Chatter), los seguidores se exhiben junto a la lógica relativa a los mensajes y notificaciones. Esto es algo que frecuentemente querremos agregar a nuestros modelos, así que aprendamos como hacerlo.
+
+Las características de mensajería de red social son proporcionadas por el modelo `mail.thread` del modelo mail. Para agregarlo a un módulo personalizado necesitamos:
+
+- Que el módulo dependa de mail.
+- Que la clase herede de `mail.thread`.
+- Tener agregados a la vista de formulario los widgets Seguidores e Hilo.
+
+Opcionalmente, configurar las reglas de registro para seguidores.
+
+Sigamos esta lista de verificación:
+
+- En relación a la *#1*, debido a que nuestro módulo ampliado depende de `todo_app`, el cual a su vez depende de mail, la dependencia de mail esta implícita, por lo tanto no se requiere ninguna acción.
+
+- En relación a la *#2*, la herencia a `mail.thread` es hecha usando el atributo `_inherit`. Pero nuestra clase ampliada de tareas por hacer ya esta usando el atributo `_inherit`.
+
+Afortunadamente, también puede aceptar una lista de modelos desde los cuales heredar, así que podemos usar esto para hacer que incluya la herencia a `mail.thread`:
 ```
-from	openerp	import	models,	fields class	User(models.Model):
-    _name	=	'res.users'
-    _inherits	=	{'res.partner':	'partner_id'}
-    partner_id	=	fields.Many2one('res.partner') 
+_name    = 'todo.task'
+_inherit = ['todo.task', 'mail.thread'] 
 ```
-With	delegation	inheritance	the	model	res.users	embeds	the	inherited	model `res.partner`,	so	that	when	a	new	User	is	created,	a	partner	is	also	created	and	a	reference to	it	is	kept	in	the	partner_id	field	of	the	User.	It	is	similar	to	the	polymorphism	concept in	object	oriented	programming. 
+El modelo `mail.thread` es un modelo abstracto. Los modelos abstracto son como los modelos regulares excepto que no tienen una representación en la base de datos; no son creadas tablas para ellos. Los modelos abstractos no están destinado a ser usados directamente. Pero se espera que sean usados en la mezcla de clases, como acabamos de hacer. 
 
-All	fields	of	the	inherited	model,	Partner,	are	available	as	if	they	were	User	fields,	through the	delegation	mechanism.	For	example,	the	partner	name	and	address	fields	are	exposed as	User	fields,	but	in	fact	they	are	being	stored	in	the	linked	Partner	model,	and	no	data structure	duplication	occurs. 
+Podemos pensar en los modelos abstractos como plantillas con características listas para usar. Para crear una clase abstracta solo necesitamos usar modelos abstractos. AbstractModel en vez de `models.Model`.
 
-The	advantage	of	this,	compared	to	prototype	inheritance,	is	that	there	is	no	need	to	repeat data	structures	in	many	tables,	such	as	addresses.	Any	new	model	that	needs	to	include	an address	can	delegate	that	to	an	embedded	Partner	model.	And	if	modifications	are introduced	in	the	partner	address	fields	or	validations,	these	are	immediately	available	to all	the	models	embedding	it! 
-
-*Note* 
-*Note	that	with	delegation	inheritance,	fields	are	inherited,	but	methods	are	not.* 
- 
-
-**Using	inheritance	to	add	social	network features** 
-
-The	social	network	module	(technical	name	mail)	provides	the	message	board	found	at the	bottom	of	many	forms,	also	called	Open	Chatter,	the followers	are	featured	along	with the	logic	regarding	messages	and	notifications.	This	is	something	we	will	often	want	to add	to	our	models,	so	let’s	learn	how	to	do	it. 
-
-The	social	network	messaging	features	are	provided	by	the `mail.thread`	model	of	the mail	module.	To	add	it	to	a	custom	model	we	need	to: 
-
-- Have	the	module	depend	on	mail. 
-- Have	the	class	inherit	from	`mail.thread`. 
-- Have	the	Followers	and	Thread	widgets	added	to	the	form	view. 
-
-Optionally,	set	up	record	rules	for	followers. 
-
-Let’s	follow	this	checklist: 
-
-Regarding	*#1*,	since	our	extension	module	depends	on	`todo_app`,	which	in	turn	depends on	mail,	the	dependency	on	mail	is	already	implicit,	so	no	action	is	needed. 
-
-Regarding	*#2*,	the	inheritance	on	mail.thread	is	done	using	the	`_inherit`	attribute	we used	before.	But	our	to-do	task	extension	class	is	already	using	the	`_inherit`	attribute. 
-
-Fortunately	it	can	also	accept	a	list	of	models	to	inherit	from,	so	we	can	use	that	to	make	it also	include	the	inheritance	on	`mail.thread`: 
+- Para la número *#3*, queremos agregar el widget de red social en la parte inferior del formulario. Podemos re usar la vista heredada que recien creamos, `view_form_todo_task_inherited`, y agregar esto a sus datos arco:
 ```
-_name	=	'todo.task'
-_inherit	=	['todo.task',	'mail.thread'] 
-```
-The	`mail.thread`	model	is	an	abstract	model.	Abstract	models	are	just	like	regular	models except	that	they	don’t	have	a	database	representation;	no	actual	tables	are	created	for them.	Abstract	models	are	not	meant	to	be	used	directly.	Instead	they	are	expected	to	be used	in	mixin	classes,	as	we	just	did.	We	can	think	of	them	as	templates	with	ready-to-use features.	To	create	an	abstract	class	we	just	need	it	to	use	models. AbstractModel	instead of	`models.Model`. 
-
-For	*#3*,	we	want	to	add	the	social	network	widgets	at	the	bottom	of	the	form.	We	can	reuse the	inherited	view	we	already	created,	`view_form_todo_task_inherited`,	and	add	this into	its	arch	data: 
-```
-<sheet	position="after">
-    <div	class="oe_chatter">
-        <field	name="message_follower_ids"	widget="mail_followers"	/>
-        <field	name="message_ids"	widget="mail_thread"	/>
+<sheet position="after">
+    <div class="oe_chatter">
+        <field name="message_follower_ids" widget="mail_followers" />
+        <field name="message_ids" widget="mail_thread" />
     </div>
 </sheet> 
 ```
-The	two	fields	we	add	here	haven’t	been	explicitly	declared	by	us,	but	they	are	provided by	the	`mail.thread`	model. 
+Los dos campos que hemos agregado aquí no han sido declarados por explícitamente, pero son provistos por el modelo `mail.thread`.
+
+El paso final es fijar las reglas de los registros de seguidores, esto solo es necesario si nuestro modelo tiene implementadas reglas de registro que limitan el acceso a otros usuarios. En este caso, necesitamos asegurarnos que los seguidores para cada registro tengan al menos acceso de lectura.
+
+Tenemos reglas de registro en nuestro modelo de tareas por hacer así que necesitamos abordar esto, y es lo que haremos en la siguiente sección.
  
-The	final	step	is	to	set	up	record	rules	for	followers.	This	is	only	needed	if	our	model	has record	rules	implemented	that	limit	other	users’	access	to	its	records.	In	this	case,	we	need to	make	sure	that	the	followers	for	each	record	have	at	least	read	access	to	it. 
 
-We	do	have	record	rules	on	the	to-do	task	model	so	we	need	to	address	this,	and	that’s what	we	will	do	in	the	next	section. 
- 
+**Modificar datos**
 
-**Modifying	data**
+A diferencia de las vistas, los registros de datos no tienen una estructura de arco XML y no pueden ser ampliados usando expresiones XPath. Pero aún pueden ser modificados reemplazando valores en sus campos.
 
-Unlike	views,	regular	data	records	don’t	have	an	XML	arch	structure	and	can’t	be extended	using	XPath	expressions.	But	they	can	still	be	modified	to	replace	values	in	their fields. 
+El elemento `<record id=”x” model=”y”>` esta realizando una operación de inserción o actualización en un modelo: si x no existe, es creada; de otra forma, es actualizada / escrita.
 
-The	`<record	id="x"	model="y">`	element	is	actually	performing	an	insert	or	update operation	on	the	model:	if	x	does	not	exist,	it	is	created;	otherwise,	it	is	updated/written over. 
+Debido a que los registros en otros módulos pueden ser accedidos usando un identificador `<model>.<identifier>`, es perfectamente legal para nuestro módulo sobrescribir algo que fue escrito antes por otro módulo.
 
-Since	records	in	other	modules	can	be	accessed	using	a	`<model>.<identifier>`	identifier, it’s	perfectly	legal	for	our	module	to	overwrite	something	that	was	written	before	by another	module. 
+*Nota* 
+*Note que el punto esta reservado para separar el nombre del módulo del identificador del objeto, así que no debe ser usado en identificadores. Para esto use la barra baja (`_`). *
 
-*Note* 
-*Note	that	the	dot	is	reserved	to	separate	the	module	name	from	the	object	identifier,	so they	shouldn’t	be	used	in	identifiers.	Instead	use	the	underscore. *
-
-As	an	example,	let’s	change	the	menu	option	created	by	the	todo_app	module	to	into	My To	Do .	For	that	we	could	add	the	following	to	the	todo_user/todo_view.xml	file: 
+Como ejemplo, cambiemos la opción de menú creada por el módulo `todo_app` en “My To Do”. Para esto agregamos lo siguiente al archivo `todo_user/todo_view.xml`:
 ```
-<!--	Modify	menu	item	-->
-<record	id="todo_app.menu_todo_task"	model="ir.ui.menu">
-    <field	name="name">My	To-Do</field>
+<!-- Modify menu item -->
+<record id="todo_app.menu_todo_task" model="ir.ui.menu">
+    <field name="name">My To-Do</field>
 </record> 
-<!--	Action	to	open	To-Do	Task	list	-->
-<record	model="ir.actions.act_window"	id="todo_app.action_todo_task">
-    <field	name="context">
-        {'search_default_filter_my_tasks':	True}
+<!-- Action to open To-Do Task list -->
+<record model="ir.actions.act_window" id="todo_app.action_todo_task">
+    <field name="context">
+        {'search_default_filter_my_tasks': True}
     </field>
 </record> 
 ```
  
-**Extending	the	record	rules**
+**Ampliando las reglas de registro**
 
-The	To-Do	application	included	a	record	rule	to	ensure	that	each	task	would	only	be visible	to	the	user	that	created	it.	But	now,	with	the	addition	of	the	social	features,	we	need the	task	followers	to	also	have	access	to	them.	The	social	network	module	does	not	handle this	by	itself. 
+La aplicación Tareas por Hacer incluye una regla de registro para asegurar que cada tarea sea solo visible para el usuario que la he creado. Pero ahora, con al adición de las características sociales, necesitamos que los seguidores de la tarea también tengan acceso. El modelo de red social no maneja esto por si solo.
 
-Also,	now	tasks	can	have	users	assigned	to	them,	so	it	makes	more	sense	to	have	the access	rules	to	work	on	the	responsible	user	instead	of	the	user	who	created	the	task. 
-The	plan	would	be	the	same	as	we	did	for	the	menu	item: overwrite	the `todo_app.todo_task_user_rule`	to	modify	the	domain_force	field	to	a	new	value.
- 
-Unfortunately	this	won’t	work	this	time.	Remember	the	`<data	no_update="1">`	we	used in	the	security	rules	XML	file:	it	prevents	later	write	operations	on	it. 
+Ahora las tareas también pueden tener usuarios asignados a ellas, por lo tanto tiene más sentido tener reglas de acceso que funcionen para el usuario responsable en vez del usuario que creo la tarea.
 
-Since	updates	on	that	record	are	being	prevented,	we	need	a	workaround.	That	will	be	to delete	that	record	and	add	a	replacement	for	it	in	our	module. 
+El plan será el mismo que para la opción de menú: sobrescribir `todo_app.todo_task_user_rule` para modificar el campo `domain_force` a un valor nuevo.
 
-To	keep	things	organized,	we	will	create	a	security/todo_access_rules.xml	file	and add	the	following	content	to	it: 
+Desafortunadamente, esto no funcionará esta vez. Recuerde que el `<data no_update=”1”>` que usamos anteriormente en el archivo XML de las reglas de seguridad: previene las operaciones posteriores de escritura.
+
+Debido a que las actualizaciones del registro no están permitidas, necesitamos una solución alterna. Este será borrar el registro y agregar un reemplazo para este en nuestro módulo.
+
+Para mantener las cosas organizadas, crearemos un archivo `security/todo_access_rules.xml` y agregaremos lo siguiente:
 ```
-<?xml	version="1.0"	encoding="utf-8"?> 
+<?xml	version="1.0" encoding="utf-8"?> 
     <openerp>
-        <data	noupdate="1"> 
-	    <delete	model="ir.rule"	search="[('id',	'=',ref('todo_app.todo_task_user_rule'))]" /> 
-	    <record	id="todo_task_per_user_rule"	model="ir.rule">
-                <field	name="name">ToDo	Tasks	only	for	owner</field>
-                <field	name="model_id"	ref="model_todo_task"/>
-                <field	name="groups"	eval="[(4,	ref('base.group_user'))]"/>
-                <field	name="domain_force">
+        <data noupdate="1"> 
+	    <delete	model="ir.rule" 
+                 search="[('id''=',ref('todo_app.todo_task_user_rule'))]" /> 
+	    <record	id="todo_task_per_user_rule" model="ir.rule">
+                <field name="name">ToDo Tasks only for owner</field>
+                <field name="model_id" ref="model_todo_task"/>
+                <field name="groups" eval="[(4,	ref('base.group_user'))]"/>
+                <field name="domain_force">
                     ['|',('user_id','in',	[user.id,False]),
                     ('message_follower_ids','in',[user.partner_id.id])]
                 </field>
@@ -392,22 +413,24 @@ To	keep	things	organized,	we	will	create	a	security/todo_access_rules.xml	file	a
         </data>
     </openerp> 
 ```
-This	finds	and	deletes	the	`todo_task_user_rule`	record	rule	from	the	todo_app	module, and	then	creates	a	new	`todo_task_per_user_rule`	record	rule.	The	domain	filter	we	will now	use	makes	a	task	visible	to	the	responsible	user	`user_id`,	to	everyone	if	the responsible	user	is	not	set	(equals	False),	and	to	all	followers.	The	rule	will	run	in	a context	where	user	is	available	and	represents	the	current	session	user.	The	followers	are partners,	not	User	objects,	so	instead	of	`user.id`,	we	need	to	use	`user.partner_id.id`. 
+Esto encuentra y elimina la regla de registro `todo_task_user_rule` del módulo `todo_app`, y crea una nueva regla de registro `todo_task_per_user`. El filtro de dominio que usamos ahora hace la tarea visible para el usuario responsable `user_id`, para todo el mundo si el usuario responsable no ha sido definido (igual a False), y para todos los seguidores. La regla se ejecutará en un contexto donde el usuario este disponible y represente la sesión del usuario actual. Los seguidores son socios, no objetos User, así que en vez de `user_id`, necesitamos usar `user.partner_id.id`.
 
 *Tip* 
-*Working	on	data	files	with	`<data	noupdate="1">`	is	tricky	because	any	later	edit	won’t	be updated	on	Odoo.	To	avoid	that,	temporarily	use	`<data	noupdate="0">`	during development,	and	change	it	back	only	when	you’re	done	with	the	module.*
- 
-As	usual,	we	must	not	forget	to	add	the	new	file	to	the	`__openerp__.py`	descriptor	file	in the	data	attribute: 
+Cuando se trabaja en campos de datos con `<dara noupdate=”1”>` puede ser engañoso porque cualquier edición posterior no será actualizada en Odoo. Para evitar esto, use temporalmente `<data noupdate=”0”>` durante el desarrollo, y cambielo solo cuando haya terminado con el módulo.*
+
+Como de costumbre, no debemos olvidar agregar el archivo nuevo al archivo descriptor `__openerp__.py` en el atributo “data”:
 ```
-'data':	['todo_view.xml', 'security/todo_access_rules.xml'], 
+'data': ['todo_view.xml', 'security/todo_access_rules.xml'], 
 ```
-Notice	that	on	module	upgrade,	the	`<delete>`	element	will	produce	an	ugly	warning message,	because	the	record	to	delete	does	not	exist	anymore.	It	is	not	an	error	and	the upgrade	will	be	successful,	so	we	don’t	need	to	worry	about	it.
+Note que en la actualización de módulos, el elemento `<delete>` arrojará un mensaje de advertencia, porque el registro que será eliminado no existe más. Esto no es un error y la actualización se realizará con éxito, así que no es necesario preocuparse por esto.
  
  
-**Summary** 
+**Resumen** 
 
-You	should	now	be	able	to	create	new	modules	to	extend	existing	modules.	We	saw	how to	extend	the	To-Do	module	created	in	the	previous	chapter. 
+Ahora debe ser capaz de crear módulos nuevos para ampliar los módulos existentes. Vimos como ampliar el módulo To-Do creado en los capítulos anteriores.
 
-New	features	were	added	onto	the	several	layers	that	make	up	an	application.	We	extended the	Odoo	model	to	add	new	fields,	and	extended	the	methods	with	its	business	logic.	Next, we	modified	the	views	to	make	the	new	fields	available	on	them.	Finally,	you	learned	how to	extend	a	model	by	inheriting	from	other	models,	and	we	used	that	to	add	the	social network	features	to	our	To-Do	app. 
+Se agregaron nuevas características en las diferentes capas que forman la aplicación. Ampliamos el modelo Odoo para agregar campos nuevos, y ampliamos los métodos con su lógica de negocio. Luego, modificamos las vistas para hacer disponibles los campos nuevos. Finalmente, aprendió como ampliar un modelo heredando de otros modelos, y usamos esto para agregar características de red social a nuestra aplicación.
 
-With	these	three	chapters,	we	had	an	overview	of	the	common	activities	involved	in	Odoo development,	from	Odoo	installation	and	setup	to	module	creation	and	extension.	The next	chapters	will	focus	on	specific	areas,	most	of	which	we	visited	briefly	in	these overviews.	In	the	following	chapter,	we	will	address	data	serialization	and	the	usage	of XML	and	CSV	files	in	more	detail. 
+Con estos tres capítulos, tenemos una vista general de las actividades mas comunes dentro del desarrollo en Odoo, desde la instalación de Odoo y configuración a la creación de módulos y extensiones. 
+
+Los siguientes capítulos se enfocarán en áreas específicas, la mayoría de las cuales hemos tocado en estos primeros capítulos. En el siguiente capítulo, abordaremos la serialización de datos y el uso de archivos XML y CSV con más detalle.
