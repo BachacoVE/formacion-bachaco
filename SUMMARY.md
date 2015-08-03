@@ -10,4 +10,5 @@
 * [Capítulo II: Primera aplicación con Odoo](capitulo_ii.md)
 * [Capítulo III: Herencia](capitulo_iii_herencia.md)
 * [Capítulo IV: Serialización de Datos y Datos del Módulo](capitulo_iv_serializacion_de_datos_y_datos_del_modulo.md)
+* Capítulo V: Modelos
 
