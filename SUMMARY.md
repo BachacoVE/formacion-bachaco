@@ -8,5 +8,5 @@
 * [Convenciones](convenciones.md)
 * [Capítulo I: Comenzando con Odoo](capitulo_i.md)
 * [Capítulo II: Primera aplicación con Odoo](capitulo_ii.md)
-* Capítulo III: Herencia
+* [Capítulo III: Herencia](capitulo_iii_herencia.md)
 
