@@ -108,7 +108,8 @@ La acción original de Borrar Todas las tareas Finalizadas no es apropiada para 
 
 Para esto, sobrescribiremos el método original con una nueva versión que primero encuentre las tareas completadas del usuario actual, y luego las desactive:
 ```
-@api.multi def do_clear_done(self):
+@api.multi
+def do_clear_done(self):
     domain = [('is_done', '=', True),
              '|', ('user_id', '=', self.env.uid),
              ('user_id', '=', False)]
@@ -130,7 +131,8 @@ Pero esto no es lo que usualmente querremos hacer. En vez de esto, ampliaremos l
 
 Veamos un ejemplo de esto: podemos escribir una versión mejor de `do_toggle_done()` que solo ejecute la acción sobre las Tareas asignadas a nuestro usuario:
 ```
-@api.one def do_toggle_done(self):
+@api.one
+def do_toggle_done(self):
     if self.user_id != self.env.user:
         raise Exception('Only	the responsible can do this!')
     else:
@@ -156,7 +158,7 @@ Una vista heredada se ve así:
 ```
 El campo `inherit_id` identifica la vista que sera ampliada, a través de la referencia de su identificador externo usando el atributo especial “ref”. Los identificadores externos serán discutidos con mayor detalle en el Capítulo 4.
 
-La forma natural de localizar los elementos XML es usando expresiones XPath. Por ejemplo, tomando la vista que fue definida en el capítulo anterior, la expresión XPtah  para localizar el elemento `<field name=”is_done> es `//field[@name]='is_done'`. Esta expresión encuentra un elemento con un atributo “name” igual a “is_done”. Puede encontrar mayor información sobre XPath en: [https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support](https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support).
+La forma natural de localizar los elementos XML es usando expresiones XPath. Por ejemplo, tomando la vista que fue definida en el capítulo anterior, la expresión XPtah  para localizar el elemento `<field name="is_done">`es `//field[@name]='is_done'`. Esta expresión encuentra un elemento con un atributo “name” igual a “is_done”. Puede encontrar mayor información sobre XPath en: [https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support](https://docs.python.org/2/library/xml.etree.elementtree.html#xpath-support).
 
 Tener atributos “name” en los elementos es importante porque los hace mucho más fácil de seleccionar como puntos de extensión. Una vez que el punto de extensión es localizado, puede ser modificado o puede tener elementos XML agregados cerca de él.
 
