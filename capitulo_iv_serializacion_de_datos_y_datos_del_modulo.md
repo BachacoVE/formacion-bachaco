@@ -9,13 +9,15 @@ Antes de entrar en casosprácticos, primero exploraremos el conceptop de identif
 
 ![150_1](/images/Odoo Development Essentials - Daniel Reis-150_1.jpg)
 
-Understanding	external	identifiers
+**Understanding	external	identifiers**
 
-All	records	in	the	Odoo	database	have	a	unique	identifier,	the	id	field. 
+Todos los registros en la base de datos de Odoo tienen un identificador único, el campo ```id```
 
-It	is	a	sequential	number	automatically	assigned	by	the	database.	However,	this	automatic identifier	can	be	a	challenge	when	loading	interrelated	data:	how	can	we	reference	a related	record if	we	can’t	know	beforehand	what	database	ID 	will	be	assigned	to	it? 
+Es un número sequencial asignado automáticamente por la base de datos. De cualquier forma, este identificador automático puede ser un desafío al momento de cargar datos interrelacionados: ¿cómo podemos hacer referencia a un registro relacionado si no podemos saber de antemano cual ID de base de datos le será asignado?
 
-Odoo’s	answer	to	this	is	the	external	identifier.	External	identifiers	solve	this	problem	by assigning	named	identifiers	to	the	data	records	to	be	loaded.	A	named	identifier	can	be used	by	any	other	piece	of	record	data	to	reference	it	later	on.	Odoo	will	take	care	of translating	these	identifier	names	into	the	actual	database	IDs assigned	to	them. 
+La respuesta de Odoo a esto es el identificador externo. Los identificadores externos solucionan este problema asignando indentificadores con nombre a los registros de datos a ser cargados. Un identificador con nombre puede ser usado por cualquier otra pieza de dato registrada para referenciarla luego. Odoo se encargará de traducir estos nombres de identificación a los IDs reales asignados a ellos.
+
+
 
 The	mechanism	behind	this	is	quite	simple:	Odoo	keeps	a	table	with	the	mapping	between the	named	External	IDs	and	their	corresponding	numeric	database	IDs.	That	is	the `ir.model.data`	model. 
 
