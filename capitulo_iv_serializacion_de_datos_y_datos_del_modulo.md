@@ -17,9 +17,7 @@ Es un número sequencial asignado automáticamente por la base de datos. De cual
 
 La respuesta de Odoo a esto es el identificador externo. Los identificadores externos solucionan este problema asignando indentificadores con nombre a los registros de datos a ser cargados. Un identificador con nombre puede ser usado por cualquier otra pieza de dato registrada para referenciarla luego. Odoo se encargará de traducir estos nombres de identificación a los IDs reales asignados a ellos.
 
-
-
-The	mechanism	behind	this	is	quite	simple:	Odoo	keeps	a	table	with	the	mapping	between the	named	External	IDs	and	their	corresponding	numeric	database	IDs.	That	is	the `ir.model.data`	model. 
+El mecanismo detrás de esto es muy simple: Odoo mantiene una tabla con el mapeo entre los IDs externos con nombre y sus correspondiente IDs numéricos en la base de datos. Ese es el modelo `ir.model.data`.
 
 To	inspect	the	existing	mappings,	go	to	the	Technical 	section	of	the	Settings 	menu,	and select	the	Sequences	&	Identifiers 	|	External	Identifiers 	menu	item. 
 
