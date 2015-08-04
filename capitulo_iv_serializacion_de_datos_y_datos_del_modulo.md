@@ -1,4 +1,4 @@
-Capítulo	4.	Serialización de Datos y Datos de Módulos
+Capítulo 4.	Serialización de Datos y Datos de Módulos
 ====
 
 La mayoría de las configuraciones de Odoo, desde interfaces de usuario hasta reglas de seguridad, son en realidad registros de datos almacenados en tablas internas de Odoo. Los archivos XML y CSV que se encuentran en los módulos no son usados para ejecutar aplicaciones Odoo. Ellos solo son un medio para cargar esas configuraciones a las tablas de la base de datos.
