@@ -12,5 +12,5 @@
 * [Capítulo IV: Serialización de Datos y Datos del Módulo](capitulo_iv_serializacion_de_datos_y_datos_del_modulo.md)
 * [Capítulo V: Modelos](capitulo_v_modelos.md)
 * [Capítulo VI: Vistas](capitulo_vi_vistas.md)
-* Capítulo VII: Lógica de la Aplicación
+* [Capítulo VII: Lógica de la Aplicación](capitulo_vii_logica_de_la_aplicacion.md)
 
