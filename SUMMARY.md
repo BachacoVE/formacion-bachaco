@@ -14,4 +14,5 @@
 * [Capítulo VI: Vistas](capitulo_vi_vistas.md)
 * [Capítulo VII: Lógica de la Aplicación](capitulo_vii_logica_de_la_aplicacion.md)
 * [Capítulo VIII: QWeb](capitulo_viii_qweb.md)
+* Capítulo IX: API Externa
 
