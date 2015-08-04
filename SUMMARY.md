@@ -15,4 +15,5 @@
 * [Capítulo VII: Lógica de la Aplicación](capitulo_vii_logica_de_la_aplicacion.md)
 * [Capítulo VIII: QWeb](capitulo_viii_qweb.md)
 * [Capítulo IX: API Externa](capitulo_ix_api_externa.md)
+* Capítulo X: Lista de Verificación para Despliegue
 
