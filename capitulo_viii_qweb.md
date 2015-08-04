@@ -9,7 +9,7 @@ Chapter 8. Qweb To Do, Doing, Done,s learn how to use them.
 
 In	form	views,	we	use	mostly	specific	XML	elements, such	as	<field>	and	<group>,	and few	HTML	elements,	such as	<h1>	or	<div>.	With	kanban	views,	its	possible to	identify	two main	kanban	view	styles:	vignette	and card	kanbans. 
 
-Examples	of	vignette 	style	kanban	views	can	be found	for	Customers ,	Products ,	and	also Apps	&amp; Modules .	They	usually	have	no	border	and	are	decorated with	an	image	on	the left-hand	side,	as	shown in the	following	image: 
+Examples	of	vignette 	style	kanban	views	can	be found	for	Customers ,	Products ,	and	also Apps	& Modules .	They	usually	have	no	border	and	are	decorated with	an	image	on	the left-hand	side,	as	shown in the	following	image: 
 
 The	card 	style	kanban	is	usually	used	to display cards	organized	in	columns	for	the process stages. Examples	are	CRM	Opportunities 	and	Project	Tasks .	The main	content is	displayed	in	the	card	top	area	and additional	information	can	be	displayed	in	the bottom-right	and	bottom-left	areas,	as	shown	in the	following	image: 
 
