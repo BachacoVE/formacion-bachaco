@@ -1,492 +1,495 @@
-Chapter	5.	Models	–	Structuring	the Application	Data
+﻿Capítulo 5.	Modelos – Estructura de los Datos de la Aplicación
 ===
 
-In	the	previous	chapters,	we	had	an	end-to-end	overview	of	creating	new	modules	for Odoo.	In Chapter	2, 	*Building	Your	First	Odoo	Application*,	a	completely	new	application was	built,	and	in Chapter	3, 	*Inheritance	–	Extending	Existing	Applications*,	we	explored  Odoo Development Essentials - Daniel Reiss.html#148 inheritance	and	how	to	use	it	to	create	an	extension	module	for	our	application.	In	Chapter 4,	*Data	Serialization	and	Module	Data*,	we	discussed	how	to	add	initial	and	demonstration  data	to	our	modules.
- 
-In	these	overviews,	we	touched	all	the	layers	involved	in	building	a	backend	application for	Odoo.	Now,	in	the	following	chapters,	it’s	time	to	explain	in	more	detail	these	several layers	making	up	an	application:	models,	views,	and	business	logic. 
-In	this	chapter,	you	will	learn	how	to	design	the	data	structures	supporting	an	application, and	how	to	represent	the	relations	between	them. 
- 
+En los capítulos anteriores, vimon un resumen de extremo a extremo sobre la creación de módulos nuevos para Odoo. En el Capítulo 2, se construyo una aplicación totalmente nueva, y en el Capítulo 3, exploramos la herencia y como usarla para crear un módulo de extensión para nuestra aplicación. En el Capítulo 4, discutimos como agregar datos iniciales y de demostración a nuestros módulos.
 
-**Organizing	application	features	into modules**
+En estos resúmenes, tocamos todas las capas que componen el desarrollo de aplicaciones “backend” para Odoo. Ahora, en los siguientes capítulos, es hora de explicar con más detalle todas estas capas que conforman una aplicación: modelos, vistas, y lógica de negocio.
 
-As	before,	we	will	use	an	example	to	help	explain	the	concepts.	One	of	the	great	things about	Odoo	is	being	able	to	pick	any	existing	application	or	module	and	add,	on	top	of	it, those	extra	features	you	need.	So	we	are	going	to	continue	improving	our	to-do	modules, and	in	no	time	they	will	form	a	fully	featured	application! 
+En este capítulo, aprenderá como diseñar las estructuras de datos que soportan una aplicación, y como representar las relaciones entre ellas.
 
-It	is	a	good	practice	to	split	Odoo	applications	into	several	smaller	modules,	each	of	them responsible	for	specific	features.	This	reduces	overall	complexity	and	makes	them	easier to	maintain	and	upgrade	to	later	Odoo	versions.	The	problem	of	having	to	install	all	these individual	modules	can	be	solved	by	providing	an	app	module	packaging	all	those features,	through	its	dependencies.	To	illustrate	this	approach	we	will	be	implementing	the additional	features	using	new	to-do	modules. 
- 
 
-**Introducing	the	todo_ui	module**
+**Organizar las características de las aplicaciones en módulos**
 
-In	the	previous	chapter,	we	first	created	an	app	for	personal	to-dos,	and	then	extended	it	so that	the	to-dos	could	be	shared	with	other	people. 
+Como hicimos anteriormente, usaremos un ejemplo para ayudar a explicar los conceptos. Una de las mejores cosas de Odoo es tener la capacidad de tomar una aplicación o módulo existente y agregar, sobre este, las características que necesite. Así que continuaremos mejorando nuestros módulos to-do, y pronto formaran una aplicación completa!
 
-Now	we	want	to	take	our	app	to	a	new	level	by	adding	to	it	a	kanban	board	and	a	few other	nice	user	interface	improvements.	The	kanban	board	will	let	us	organize	our	tasks	in columns,	according	to	their	stages,	such	as	Waiting,	Ready,	Started	or	Done. 
+Es una buena práctica dividir las aplicaciones Odoo en varios módulos pequeños, cada uno responsable de una característica específica. Esto reduce la complejidad general y hace el mantenimiento y la actualización más fácil.
 
-We	will	start	by	adding	the	data	structures	to	enable	that	vision.	We	need	to	add	stages	and it	will	be	nice	if	we	add	support	for	tags	as	well,	allowing	the	tasks	to	be	categorized	by subject. 
+El problema de tener que instalar todos esos módulos individuales puede ser resuelto proporcionando un módulo de la aplicación que empaquete todas esas características, a través de sus dependencias. Para ilustrar este enfoque implementaremos las características adicionales usando módulos to-do nuevos.
 
-The	first	thing	to	figure	out	is	how	our	data	will	be	structured	so	that	we	can	design	the supporting	Models.	We	already	have	the	central	entity:	the	to-do	task.	Each	task	will	be	in a	stage,	and	tasks	can	also	have	one	or	more	tags	on	them.	This	means	we	will	need	to	add these	two	additional	models,	and	they	will	have	these	relations: 
 
-- Each	task	has	a	stage,	and	there	can	be	many	tasks	in	each	stage. 
-- Each	task	can	have	many	tags,	and	each	tag	can	be	in	many	tasks. 
+**Introducción al modulo todo_ui**
 
-This	means	that	tasks	have	many	to	one	relation	with	stages,	and	many	to	many	relations with	tags.	On	the	other	hand,	the	inverse	relations	are:	stages	have	a	one	to	many relationship	with	tasks	and	tags	have	a	many	to	many	relation	with	tasks. 
-We	will	start	by	creating	the	new	todo_ui	module	and	add	the	to-do	stages	and	to-do	tags models	to	it.
- 
-We’ve	been	using	the	`~/odoo-dev/custom-addons/`	directory	to	host	our	modules.	To create	the	new	module	alongside	the	existing	ones,	we	can	use	these	shell	commands: 
+En el capítulo anterior, primero creamos una aplicación para tareas por hacer personales, y luego la ampliamos para que las tareas por hacer pudieran ser compartidas con otras personas.
+
+Ahora queremos llevar a nuestra aplicación a otro nivel agregandole una pizarra kanban y otras mejoras en la interfaz. La pizarra kanban nos permitirá organizar las tareas en columnas, de acuerdo a sus estados, como En Espera, Lista, Iniciada o Culminada.
+
+Comenzaremos agregando la estructura de datos para permitir esa visión. Necesitamos agregar los estados y sería bueno si añadimos soporte para las etiquetas, permitiendo que las tareas estén organizadas por categoría.
+
+La primera cosa que tenemos que comprender es como nuestra data estará estructurada para que podamos diseñar los Modelos que la soportan. Ya tenemos la entidad central: las tareas por hacer. Cada tarea estará en un estado, y las tareas pueden tener una o más etiquetas. Esto significa que necesitaremos agregar dos modelos adicionales, y tendrán estas relaciones:
+
+- Cada tarea tiene un estado, y puede haber muchas tareas en un estado.
+- Cada tarea puede tener muchas etiquetas, y cada etiqueta puede estar en muchas tareas.
+
+Esto significa que las tareas tiene una relación muchos a uno con los estados, y una relación muchos a muchos con las etiquetas. Por otra parte, las relaciones inversas son: los estados tiene una relación uno a muchos con las tareas y las etiquetas tienen una relación muchos a muchos con las tareas.
+
+Comenzaremos creando el módulo nuevo todo_ui y agregaremos los estados y los modelos de etiquetas.
+
+Hemos estado usado el directorio `~/odoo-dev/custom-addons/` para alojar nuestros módulos. Para crear el módulo nuevo junto a los existentes, podemos usar estos comandos en la terminal:
 ```
 $ cd ~/odoo-dev/custom-addons 
-$ mkdir	todo_ui 
-$ cd	todo_ui 
-$ touch	todo_model.py 
-$ echo	"from . import	todo_model" > __init__.py
+$ mkdir todo_ui 
+$ cd todo_ui 
+$ touch todo_model.py 
+$ echo "from . Import todo_model" > __init__.py
 ```  
-Next,	we	should	add	the	`__openerp__.py`	manifest	file	with	this	content: 
+Luego, debemos editar el archivo manifiesto `__openerp__.py` con este contenido:
 ```
-{ 'name': 'User	interface improvements	to	the	To-Do	app',
-  'description': 'User	friendly features.',
-  'author':	'Daniel	Reis',
-  'depends':	['todo_app']	
+{ 
+   'name': 'User interface improvements to the To-Do app',
+   'description': 'User friendly features.',
+   'author': 'Daniel Reis',
+   'depends': ['todo_app']	
 }
 ``` 
-Note	that	we	are	depending	on	todo_app	and	not	on	todo_user.	In	general,	it	is	a	good idea	to	keep	modules	as	independent	as	possible.	When	an	upstream	module	is	changed,	it can	impact	all	other	modules	that	directly	or	indirectly	depend	on	it.	It’s	best	if	we	can keep	the	number	of	dependencies	low,	and	also	avoid	long	dependency	stacks,	such	as 
-todo_ui	→	todo_user	→	todo_app	in	this	case. 
+Note que dependemos de todo_app y no de todo_user. En general, es buena idea mantener los módulos tan independientes como sea posible. Cuando un módulo aguas arriba es modificado, puede impactar todos los demás módulos que directa o indirectamente dependen de el. Es mejor si podemos mantener al mínimo el número de dependencias, e igualmente evitar concentrar un gran número de dependencias, como: `todo_ui → todo_user → todo_app` en este caso.
 
-Now	we	can	install	the	module	in	our	Odoo	work	database	and	get	started	with	the models. 
- 
+Ahora podemos instalar el módulo en nuestra base de datos de trabajo y comenzar con los modelos.
 
-**Creating	models**
 
-For	the	to-do	tasks	to	have	a	kanban	board,	we	need	stages.	Stages	are	the	board	columns, and	each	task	will	fit	into	one	of	these	columns. 
+**Crear modelos**
 
-Let’s	add	the	following	code	to	the	todo_ui/todo_model.py	file: 
+Para que las tareas por hacer tengan una pizarra kanban, necesitamos estados. Los estados son columnas de la pizarra, y cada tarea se ajustará a una de esas columnas.
+
+Agreguemos el siguiente código al archivo `todo_ui/todo_model.py`:
 ```
-#-*- coding:	utf-8	-*- 
-from openerp import	models,	fields,	api 
+#-*- coding: utf-8 -*- 
+from openerp import models, fields, api 
+
 class	Tag(models.Model):
-    _name	=	'todo.task.tag'
-    name	=	fields.Char('Name',	40,	translate=True) 
+    _name = 'todo.task.tag'
+    name = fields.Char('Name', 40, translate=True) 
 
 class	Stage(models.Model):
-    _name	=	'todo.task.stage'
-    _order	=	'sequence,name'
-    _rec_name	=	'name'		# the	default
-    _table	=	'todo_task_stage' #the	default
-    name	=	fields.Char('Name',	40,	translate=True)
-    sequence	=	fields.Integer('Sequence') 
+    _name = 'todo.task.stage'
+    _order = 'sequence,name'
+    _rec_name = 'name' 	# the	default
+    _table = 'todo_task_stage' #the	default
+    name = fields.Char('Name', 40, translate=True)
+    sequence = fields.Integer('Sequence') 
 ```
-Here,	we	created	the	two	new	Models	we	will	be	referencing	in	the	to-do	tasks. 
+Aquí, creamos los dos Modelos nuevos a los cuales haremos referencia en las tareas por hacer.
 
-Focusing	on	the	task	stages,	we	have	a	Python	class,	Stage,	based	on	the	class `models.Model`,	defining	a	new	Odoo	model,	todo.task.stage.	We	also	defined	two fields,	name	and	sequence.	We	can	see	some	model	attributes,	(prefixed	with	an underscore)	that	are	new	to	us.	Let’s	have	a	closer	look	at	them. 
+Enfocándonos en los estados de las tareas, tenemos una clase Python, Stage, basada en la clase `models.Model`, que define un modelo nuevo, `todo.task.stage`. También definimos dos campos, “name” y “sequence”. Podemos ver algunos atributos del modelo, (con la barra baja, `_`, como prefijo) esto es nuevo para nosotros. Demos le una mirada más profunda.
+
+**Atributos del Modelo**
+
+Las clases del modelo pueden tener atributos adicionales usados para controlar alguno de sus comportamientos:
+
+- `_name`: Este es el identificador interno para el modelo que estamos creando. 
+- `_order`: Este fija el orden que será usado cuando se navega por los registros del modelo. Es una cadena de texto que es usada como una clausula SQL “order by”, así que puede ser cualquier cosa permitida.
+- `_rec_name`: Este indica el campo a usar como descripción del registro cuando se hace referencia a él desde campos relacionados, como una relación muchos a uno. De forma predeterminada usa el campo de nombre, el cual esta frecuentemente presente en los modelos. Pero este atributo nos permite usar cualquier otro campo para este propósito.
+- `_table`: Este es el nombre de la tabla de la base de datos que soporta el modelo. Usualmente, se deja para que sea calculado automáticamente, y es el nombre del modelo con el carácter de piso bajo (`_`) que reemplaza a los puntos. Pero puede ser configurado para indicar un nombre de tabla específico.
+
+Para completar, también podemos tener atributos `inherit` y `_inherits`, como explicamos en el Capítulo 3.
  
 
-**Model	attributes**
+**Modelos y Clases Python**
 
-Model	classes	can	have	additional	attributes	used	to	control	some	of	their	behaviors: 
+Los modelos de Odoo son representados por las clases Python. En el código precedente, tenemos una clase Python llamada Stage, basada en la clase `models.Model`, usada para definir el modelo nuevo `todo.task.stage`.
 
-- `_name`:	This	is	the	internal	identifier	for	the	Odoo	model	we	are	creating. 
-- `_order`:	This	sets	the	order	to	use	when	the	model’s	records	are	browsed.	It	is	a	text string	to	be	used	as	the	SQL	order	by	clause,	so	it	can	be	anything	you	could	use there. 
-- `_rec_name`:	This	indicates	the	field	to	use	as	the	record	description	when	referenced from	related	fields,	such	as	a	many	to	one	relation.	By	default,	it	uses	the	name	field, which	is	a	commonly	found	field	in	models.	But	this	attribute	allows	us	to	use	any other	field	for	that	purpose. 
-- `_table`:	This	is	the	name	of	the	database	table	supporting	the	model.	Usually,	it	is	left to	be	calculated	automatically,	and	is	the	model	name	with	the	dots	replaced	by underscores.	But	it	can	be	set	to	indicate	a	specific	table	name.
- 
-For	completeness,	we	can	also	have	the	_inherit	and	_inherits	attributes,	as	explained in Chapter	3, 	*Inheritance	-	Extending	Existing	Applications*. 
- 
+Los modelos de Odoo son mantenidos en un registro central, también denominado como piscina en las versiones anteriores. Es un diccionario que mantiene las referencias de todas las clases de modelos disponibles en la instancia, a las cuales se les puede hacer referencia por el nombre del modelo. Específicamente, el código en un método del modelo puede usar `self.env['x]` o `self.env.get('x')` para obtener la referencia a la clase que representa el modelo x.
 
-**Models	and	Python	classes**
+Puede observar que los nombres del modelo son importantes ya que son la llave para acceder al registro. La convención para los nombres de modelo es usar una lista de palabras en minúscula unidas con puntos, como `todo.task.stage`. Otros ejemplos pueden verse en los módulos raíz de Odoo `project.project`, `project.task` o `project.task.type`. 
 
-Odoo	models	are	represented	by	Python	classes.	In	the	preceding	code,	we	have	a	Python class	Stage,	based	on	the	models.Model	class,	used	to	define	a	new	Odoo	model `todo.task.stage`.
- 
-Odoo	models	are	kept	in	a	central	registry,	also	referred	to	as	pool	in	the	previous versions.	It	is	a	dictionary	keeping	references	of	all	the	model	classes	available	in	the instance,	and	can	be	referenced	by	model	name.	Specifically,	the	code	in	a	model	method can	use	`self.envl['x']`	or	`self.env.get('x')`	to	get	a	reference	to	a	class	representing model	x.
- 
-You	can	see	that	model	names	are	important	since	they	are	the	key	used	to	access	the registry.	The	convention	for	model	names	is	to	use	a	list	of	lowercase	words	joined	with dots,	like	`todo.task.stage`.	Other	examples	from	the	core	modules	are	`project.project`, `project.task`	or	`project.task.type`.	We	should	use	the	singular	form:	`todo.task` instead	of	`todo.tasks`.	For	historical	reasons	it’s	possible	to	find	some	core	models	not following	this,	such	as	`res.users`,	but	that	is	not	the	rule. 
+Debemos usar la forma singular: `todo.task` en vez de `todo.tasks`. Por cuestiones históricas se pueden encontrar módulos raíz, que no sigan dicha convención, como `res.users`, pero no es la norma.
 
-Model	names	must	be	globally	unique.	Because	of	this,	the	first	word	should	correspond to	the	main	application	the	module	relates	to.	In	our	example,	it	is	todo.	Other	examples from	the	core	modules	are	project,	crm,	or	sale. 
+Los nombres de modelo deben ser únicos. Debido a esto, la primera palabra deberá corresponder a la aplicación principal con la cual esta relacionada el módulo. En nuestro ejemplo, es “todo”. De los módulos raíz tenemos, por ejemplo, project, crm, o sale.
 
-Python	classes,	on	the	other	hand,	are	local	to	the	Python	file	where	they	are	declared.	The identifier	used	for	them	is	only	significant	for	the	code	in	that	file. 
+Por otra parte, las clases Python, son locales para el archivo Python en la cual son declaradas. El identificador usado en ellas es solo significante para el código en ese archivo.
 
-Because	of	this,	class	identifiers	are	not	required	to	be	prefixed	by	the	main	application they	relate	to.	For	example,	there	is	no	problem	to	call	just	Stage	to	our	class	for	the 
-todo.task.stage	model.	There	is	no	risk	of	collision	with	possible	classes	with	the	same name	on	other	modules. 
+Debido a esto, no se requiere que los identificadores de clase tengan como prefijo a la aplicación principal a la cual están relacionados. Por ejemplo, no hay problema en llamar simplemente Stage a nuestra clase para el modelo `todo.task.stage`. No hay riesgo de colisión con otras posibles clases con el mismo nombre en otros módulos.
 
-Two	different	conventions	for	class	identifiers	can	be	used:	snake_case	or	CamelCase. Historically,	Odoo	code	used	snake	case,	and	it	is	still	very	frequent	to	find	classes	using that	convention.	But	the	recent	trend	is	to	use	camel	case,	since	it	is	the	Python	standard defined	by	the	PEP8	coding	conventions.	You	may	have	noticed	that	we	are	using	the latter	form. 
- 
+Se pueden usar dos convenciones diferentes para los identificadores de clase: “snake_case” o “CamelCase”. Históricamente, el código Odoo ha usado el “snake_case”, y es aún muy frecuente encontrar clases que usan esa convención. Pero la tendencia actual en usar “CamelCase”, debido a que es el estándar definido para Python por la convenciones de codificación PEP8. Puede haber notado que estamos usando esta última forma. 
 
-**Transient	and	Abstract	models**
 
-In	the	preceding	code,	and	in	the	vast	majority	of	Odoo	models,	classes	are	based	on	the `models.Model`	class.	This	type	of	models	have	database	persistence:	database	tables	are created	for	them	and	their	records	are	stored	until	explicitly	deleted. 
+**Modelos Transitorios y Abstractos**
 
-But	Odoo	also	provides	two	other	model	types	to	be	used:	Transient	and	Abstract	models. 
+En el código precedente, y en la vasta mayoría de los modelos Odoo, las clases están basadas en el clase `models.Model`. Este tipo de modelos tienen bases de datos persistentes: las tablas de las bases de datos son creadas para ellos y sus registros son almacenados hasta que son borrados explícitamente.
 
-Transient	models 	are	based	on	the	models.TransientModel	class	and	are	used	for wizard-style	user	interaction.	Their	data	is	still	stored	in	the	database,	but	it	is	expected	to be	temporary.	A	vacuum	job	periodically	clears	old	data	from	these	tables. 
-Abstract	models 	are	based	on	the	models.AbstractModel	class	and	have	no	data	storage attached	to	them.	They	act	as	reusable	feature	sets	to	be	mixed	in	with	other	models.	This is	done	using	the	Odoo	inheritance	capabilities. 
+Pero Odoo proporciono otros dos tipos de modelo: modelos Transitorios y Abstractos.
+
+Los modelos transitorios están basados en la clase `models.TransientModel` y son usados para interacción con el usuario y la usuaria tipo asistente. Sus datos es aún almacenada en la base de datos, pero se espera que sea temporal. Un trabajo de aspiradora limpia periódicamente los datos viejos de esas tablas.
+
+Los modelos abstractos están basados en la clase `models.AbstractModel` y no tienen  almacén vinculado a ellos. Actúan como una característica de re uso configurada para ser mezclada con otros modelos. Esto es hecho usando las capacidades de herencia de Odoo.
  
 
 ![185_1](/images/Odoo Development Essentials - Daniel Reis-185_1.jpg)
 
 
-**Inspecting	existing	models**
+**Inspeccionar modelos existentes**
 
-The	information	about	models	and	fields	created	with	Python	classes	is	available	through the	user	interface.	In	the	Settings 	top	menu,	select	the	Technical	|	Database	Structure	| Models 	menu	item.	Here,	you	will	find	the	list	of	all	models	available	in	the	database. Clicking	on	a	model	in	the	list	will	open	a	form	with	its	details. 
+La información sobre los modelos y los campos creados con clases Python esta disponible a través de la interfaz. En el menú principal de Configuraciones, seleccione la opción de menú Técnico | Estructura de Base de Datos | Modelos. Allí, encontrará la lista de todos los modelos disponibles en la base de datos. Al hacer clic en un modelo de la lista se abrirá un formulario con sus detalles.
 
-This	is	a	good	tool	to	inspect	the	structure	of	a	Model,	since	you	have	in	one	place	the result	of	all	additions	that	may	come	from	several	different	modules.	In	this	case,	as	you can	see	at	the	In	Modules 	field,	on	the	top	right,	the	todo.task	definitions	are	coming from	the	todo_app	and	todo_user	modules. 
+Esta es una buena herramienta para inspeccionar la estructura de un Modelo, ya que se tiene en un solo lugar el resultado de todas las adiciones que pueden venir de diferentes módulos. En este caso, como puede observar en el campos En Módulos, en la parte superior derecha, las definiciones de `todo.task` vienen de los módulos `todo_app` y `todo_user`.
+En el área inferior, tenemos disponibles algunas etiquetas informativas: una referencia rápida de los Campos del modelo, los Derechos de Acceso concedidos, y también lista las Vistas disponibles para este modelo.
 
-In	the	lower	area,	we	have	some	information	tabs	available:	a	quick	reference	for	the model	Fields ,	the	Access	Rights 	granted,	and	also	list	the	Views 	available	for	this	model. 
-We	can	find	the	model’s	External	Identifier ,	by	activating	the	Developer	Menu 	and accessing	its	View	Metadata 	option.	These	are	automatically	generated	but	fairly predictable:	for	the	todo.task	model,	the	External	Identifier 	is	model_todo_task. 
+Podemos encontrar el Identificador Externo del modelo, activando el Menú de Desarrollador y accediendo a la opción Vista de Metadatos. Estos son generados automáticamente pero bastante predecibles: para el modelo `todo.task`, el Identificador Externo es `model_todo_task`.
 
 *Tip*
-*The	Models 	form	is	editable!	It’s	possible	to	create	and	modify	models,	fields,	and	views from	here.	You	can	use	this	to	build	prototypes	before	carving	them	into	proper	modules.*
+* Los formularios del Modelo pueden ser editados! Es posible crear y modificar modelos, campos y vistas desde aquí. Puede usar esto para construir prototipos antes de colocarlos definitivamente dentro de los propios modelos. * 
  
 
-**Creating	fields**
+**Crear campos**
 
-After	creating	a	new	model,	the	next	step	is	to	add	fields	to	it.	Let’s	explore	the	several types	of	fields	available	in	Odoo. 
- 
+Después de crear un modelo nuevo, el siguiente paso es agregar los campos. Vamos a explorar diferentes tipos de campos disponibles en Odoo.
 
-**Basic	field	types**
 
-We	now	have	a	Stage	model	and	will	expand	it	to	add	some	additional	fields.	We	should edit	the	todo_ui/todo_model.py	file,	by	removing	some	unnecessary	attributes	included before	for	the	purpose	of	explanation,	making	it	look	like	this: 
+**Tipos básicos de campos**
+
+Ahora tenemos un modelo Stage y vamos a ampliarlo para agregar algunos campos adicionales. Debemos editar el archivo `todo_ui/todo_model.py`, removiendo algunos atributos innecesarios incluidos antes con propósitos descriptivos:
 ```
 class	Stage(models.Model):
-    _name	=	'todo.task.stage'
-    _order	=	'sequence,name'	
+    _name  = 'todo.task.stage'
+    _order = 'sequence,name'	
+
     # String fields:
-    name	=	fields.Char('Name',	40)
-    desc	=	fields.Text('Description')
-    state	=	fields.Selection([('draft','New'),('open','Started'),('done','Closed')],'State')
-    docs	=	fields.Html('Documentation')
-    #	Numeric	fields:
-    sequence	=	fields.Integer('Sequence')
-    perc_complete =	fields.Float('%	Complete', (3,	2))
+    name  = fields.Char('Name',40)
+    desc  =	fields.Text('Description')
+    state =	fields.Selection([('draft','New'),('open','Started' ('done','Closed')],'State')
+    docs  = fields.Html('Documentation')
+
+    #	Numeric fields:
+    sequence      = fields.Integer('Sequence')
+    perc_complete = fields.Float('%	Complete',(3,2))
+    
     # Date fields:
-    date_effective	= fields.Date('Effective Date')
-    date_changed	= fields.Datetime('Last	Changed')
+    date_effective = fields.Date('Effective Date')
+    date_changed   = fields.Datetime('Last Changed')
+
     # Other	fields:
-    fold	=	fields.Boolean('Folded?')
-    image	=	fields.Binary('Image')
+    fold  = fields.Boolean('Folded?')
+    image =	fields.Binary('Image')
 ``` 
-Here,	we	have	a	sample	of	the	non-relational	field	types	available	in	Odoo,	with	the	basic arguments	expected	by	each	function.	For	most,	the	first	argument	is	the	field	title, corresponding	to	the	string	keyword	attribute.	It’s	an	optional	argument,	but	it	is recommended	to	be	provided.	If	not,	a	title	will	be	automatically	generated	from	the	field name. 
+Aquí tenemos un ejemplo de tipos de campos no relacionales disponibles en Odoo, con los argumentos básicos esperados por cada función. Para la mayoría, el primer argumento es el título del campo, que corresponde al atributo palabra clave de cadena. Es un argumento opcional, pero se recomienda colocarlo. De lo contrario, sera generado automáticamente un título por el nombre del campo.
 
-There	is	a	convention	for	date	fields	to	use	date	as	a	prefix	in	their	name.	For	example,	we should	use	date_effective	instead	of	effective_date.	This	can	also	apply	to	other fields,	such	as	`amount_`,	`price_`	or	`qty_`. 
+Existe una convención para los campos de fecha que usa “date” como prefijo para el nombre. Por ejemplo, deberíamos usar “date_effective” en vez de “effective_date”. Esto también puede aplicarse a otros campos, como “amount_”, “price_” o “qty_”.
+Algunos otros argumentos están disponibles para la mayoría de los tipos de campo:
 
-A	few	more	arguments	are	available	for	most	field	types: 
-Char	accepts	a	second,	optional	argument,	size,	corresponding	to	the	maximum	text size.	It’s	recommended	to	use	it	only	if	you	have	a	good	reason	to. 
+- Char, acepta un segundo argumento opcional, “size”, que corresponde al tamaño máximo del texto. Es recomendable usarlo solo si se tiene una buena razón.
+- Text, se diferencia de Char en que puede albergar texto de varias líneas, pero espera los mismos argumentos.
+- Selecction, es una lista de selección desplegable. El primer argumento es la lista de opciones seleccionables y el segundo es la cadena de título. La lista de selección es una tupla `('value', 'Title')` para el valor almacenado en la base de datos y la cadena de descripción correspondiente. Cuando se amplía a través de la herencia, el argumento “selection_add” puede ser usado para agregar opciones a la lista de selección existente.
+- Html, es almacenado como un campo de texto, pero tiene un manejo específico para presentar el contenido HTML en la interfaz.
+- Integer, solo espera un argumento de cadena de texto para el campo de título.
+- Float, tiene un argumento opcional, una tupla `(x,y)` con los campos de precisión: x como el número total de dígitos; y representa los dígitos decimales.
+- Date y Datetime, estos datos son almacenados en tiempo UTC. Se realizan conversiones automáticas, basadas en las preferencias del usuario o la usuaria, disponibles a través del contexto de la sesión de usuario. Esto es discutido con mayor detalle en el Capítulo 6.
+- Boolean, solo espera sea fijado el campo de título, incluso si es opcional. Binary también espera este único argumento.
 
-Text	differs	from	Char	in	that	it	can	hold	multiline	text	content,	but	expects	the	same arguments. 
+Además de estos, también existen los campos relacionales, los cuales serán introducidos en este mismo capítulo. Pero por ahora, hay mucho que aprender sobre los tipos de campos y sus atributos.
 
-Selection	is	a	drop-down	selection	list.	The	first	argument	is	the	list	of	selectable options	and	the	second	is	the	title	string.	The	selection	list	items	are	`('value', 'Title')`	tuples	for	the	value	stored	in	the	database	and	the	corresponding description	string.	When	extending	through	inheritance,	the	selection_add	argument can	be	used	to	append	items	to	an	existing	selection	list.
- 
-Html	is	stored	as	a	text	field,	but	has	specific	handling	to	present	HTML	content	on the	user	interface. 
 
-Integer	just	expects	a	string	argument	for	the	field	title. 
-Float	has	a	second	optional	argument,	an	`(x,y)`	tuple	with	the	field’s	precision:	x	is the	total	number	of	digits;	of	those,	y	are	decimal	digits. 
+**Atributos de campo comunes**
 
-Date	and	Datetime	data	is	stored	in	UTC	time.	There	are	automatic	conversions made,	based	on	the	user	time	zone	preferences,	made	available	through	the	user session	context.	This	is	discussed	in	more	detail	in Chapter	6, 	*Views	–	Designing	the User	Interface*. 
+Los campos también tienen un conjunto de atributos los cuales podemos usar, y los explicaremos aquí con más detalle:
 
-Boolean	only	expects	the	field	title	to	be	set,	even	if	it	is	optional.  Binary	also	expects	only	a	title	argument. 
-O
-ther	than	these,	we	also	have	the	relational	fields,	which	will	be	introduced	later	in	this chapter.	But	now,	there	is	still	more	to	learn	about	these	field	types	and	their	attributes. 
- 
+- string, es el título del campo, usado como su etiqueta en la UI. La mayoría de las veces no es usado como palabra clave, ya que puede ser fijado como un argumento de posición.
+- default, fija un valor predefinido para el campo. Puede ser un valor estático o uno fijado anticipadamente, pudiendo ser una referencia a una función o una expresión lambda.
+- size, aplica solo para los campos Char, y pueden fijas el tamaño máximo permitido.
+- translate, aplica para los campos de texto, Char, Text y Html, y hacen que los campos puedan ser traducidos: puede tener varios valores para diferentes idiomas.
+- help, proporciona el texto de ayuda desplegable mostrado a los usuarios y usuarias.
+- `readonly = True`, hace que el campo no pueda ser editado en la interfaz.
+- `required = True`, hace que el campo sea obligatorio.
+- `index = True`, creara un índice en la base de datos para el campo.
+- `copy = False`, hace que el campo sea ignorado cuando se usa la función Copiar. Los campos no relacionados de forma predeterminada pueden ser copiados.
+- groups, permite limitar la visibilidad y el acceso a los campos solo a determinados grupos. Es una lista de cadenas de texto separadas por comas, que contiene los ID XML del grupo de seguridad.
+- states, espera un diccionario para los atributos de la UI dependiendo de los valores se estado del campo. Por ejemplo: `states={'done':[('readonly', True)]}`. Los atributos que pueden ser usados son, “readonly”, “required” y “invisible”.
 
-**Common	field	attributes**
+Para completar, a veces se usando dos atributos más cuando se actualiza entre versiones principales de Odoo:
 
-Fields	also	have	a	set	of	attributes	we	can	use,	and	we’ll	explain	these	in	more	detail: 
+- `deprecated = True`, registra un mensaje de alerta en cualquier momento que el campo sea usado.
+- `oldname = 'field'`, es usado cuando un campo es re nombrado en una versión nueva, permitiendo que la data en el campo viejo sea copiada automáticamente dentro del campo nuevo.
 
-- string	is	the	field	title,	used	as	its	label	in	the	UI.	Most	of	the	time	it	is	not	used	as	a keyword	argument,	since	it	can	be	set	as	a	positional	argument. 
-default	sets	a	default	value	for	the	field.	It	can	be	a	static	value	or	a	callable,	either	a function	reference	or	a	lambda	expression. 
 
-- size	applies	only	to	Char	fields,	and	can	set	a	maximum	size	allowed. 
-translate	applies	to	text	fields,	Char,	Text	and	Html,	and	makes	the	field translatable:	it	can	have	different	values	for	different	languages. 
+**Nombres de campo reservados**
 
-- help	provides	the	text	for	tooltips	displayed	to	the	users. 
+Unos cuantos nombres de campo estan reservados para ser usados por el ORM:
 
-- `readonly=True`	makes	the	field	not	editable	on	the	user	interface. 
+- id, es un número generado automáticamente que identifica de forma única a cada registro, y es usado como clave primaria en la base de datos. Es agregado automáticamente a cada modelo.
 
-- `required=True`	makes	the	field	mandatory. 
+Los siguientes campos son creados automáticamente en los modelos nuevos, a menos que el atributo `_log_access=False` sea fijado:
 
-- `index=True`	will	create	a	database	index	on	the	field. 
+- `create_uid`, para el usuario que crea el registro.
+- `created_date`, para la fecha y la hora en que el registro es creado.
+- `write_uid`, para el último usuario que modifica el registro.
+- `write_date`, para la última fecha y hora en que el registro fue modificado.
 
-- `copy=False`	has	the	field	ignored	when	using	the	copy	function.	The	non-relational fields	are	copyable	by	default. 
+Esta información esta disponible desde el cliente web, usando el menú Modo Desarrollador y seleccionando la opción Vista de Metadatos.
 
-- groups	allows	limiting	the	field’s	access	and	visibility	to	only	some	groups.	It	is	a comma-separated	list	of	strings	for	security	group	XML	IDs. 
+Hay algunos efectos integrados que esperan nombres de campo específicos. Debemos evitar usarlos para otros propósitos que aquellos para los que fueron creados. Algunos de ellos incluso están reservados y no pueden ser usados para ningún otro propósito:
 
-- states	expects	a	dictionary	mapping	values	for	UI	attributes	depending	on	values	of the	state	field.	For	example:	`states={'done':[('readonly',True)]}`.	Attributes that	can	be	used	are	readonly,	required,	and	invisible. 
+- name, es usado de forma predeterminada como el nombre del registro que será mostrado. Usualmente es un Char, pero se permiten otros tipos de campos. Puede ser sobre escrito configurando el atributo `_rec_name` del modelo.
+- active (tipo Boolean), permite desactivar registros. Registro con `active==False` serán excluidos automáticamente de las consultas. Para acceder a ellos debe ser agregada la condición `('active','=', False)` al dominio de búsqueda o agregar `'active_test':False` al contexto actual.
+- sequence (tipo Integer),, si esta presente en una vista de lista, permite definir manualmente el orden de los registros. Para funcionar correctamente debe estar también presente en el `_order` del modelo.
+- state (tipo Selection), representa los estados básicos del ciclo de vida del registro, y puede ser usado por el atributo “field” del estado para modificar de forma dinámica la vista: algunos campos de formulario pueden ser solo lectura, requeridos o invisibles en estados específicos del registro. 
+- `parent_id`, `parent_left`, y `parent_right`; tienen significado especial para las relaciones jerárquicas padre/hijo. En un momento las discutiremos con mayor detalle.
 
-For	completeness,	two	other	attributes	are	sometimes	used	when	upgrading	between	Odoo major	versions: 
+Hasta ahora hemos discutido los los valores escalares de los campos. Pero una buena parte de una estructura de datos de la aplicación es sobre la descripción de relaciones entre entidades. Veamos algo sobre esto ahora.
 
-- `deprecated=True`	logs	a	warning	whenever	the	field	is	being	used. 
-- `oldname='field'`	is	used	when	a	field	is	renamed	in	a	newer	version,	enabling	the data	in	the	old	field	to	be	automatically	copied	into	the	new	field. 
- 
 
-**Reserved	field	names**
+**Relaciones entre modelos**
 
-A	few	field	names	are	reserved	to	be	used	by	the	ORM: 
-id	is	an	automatic	number	uniquely	identifying	each	record,	and	used	as	the	database primary	key.	It’s	automatically	added	to	every	model. 
+Viendo nuestro diseño del módulo, tenemos estas relaciones:
 
-The	following	fields	are	automatically	created	on	new	models,	unless	the 
-_log_access=False	model	attribute	is	set: 
+- Cada tarea tiene un estado – esta es una relación muchos a uno, también conocida como una clave foránea. La relación inversa es de uno a muchos, que ssignifica que cada estado puede tener muchas tareas. 
 
-- `create_uid` 	for	the	user	that	created	the	record 
-- `create_date`	for	the	date	and	time	when	the	record	is	created 
-- `write_uid`	for	the	last	user	to	modify	the	record 
-- `write_date`	for	the	last	date	and	time	when	the	record	was	modified 
+- Cada tarea puede tener muchas etiquetas – esta es una relación muchos a muchos. La relación inversa , obviamente, es también una relación muchos a muchos, debido a que cada etiqueta puede también tener muchas tareas.
 
-This	information	is	available	from	the	web	client,	using	the	Developer	Mode 	menu	and selecting	the	View	Metadata 	option. 
-
-There	some	built-in	effects	that	expect	specific	field	names.	We	should	avoid	using	them for	purposes	other	than	the	intended	ones.	Some	of	them	are	even	reserved	and	can’t	be used	for	other	purposes	at	all: 
-
-- name	is	used	by	default	as	the	display	name	for	the	record.	Usually	it	is	a	Char,	but other	field	types	are	also	allowed.	It	can	be	overridden	by	setting	the	_rec_name model	attribute. 
-- active	(type	Boolean)	allows	inactivating	records.	Records	with	`active==False`	will automatically	be	excluded	from	queries.	To	access	them	an	('active','=',False) condition	must	be	added	to	the	search	domain,	or	`'active_test':	False`	should	be added	to	the	current	context. 
-- sequence	(type	Integer)	if	present	in	a	list	view,	allows	to	manually	define	the	order of	the	records.	To	work	properly	it	should	also	be	in	the	model’s	_order. 
-- state	(type	Selection)	represents	basic	states	of	the	record’s	life	cycle,	and	can	be used	by	the	state’s	field	attribute	to	dynamically	modify	the	view:	some	form	fields can	be	made	read	only,	required	or	invisible	in	specific	record	states. 
-- `parent_id`,	`parent_left`,	and	`parent_right`	have	special	meaning	for	parent/child hierarchical	relations.	We	will	shortly	discuss	them	in	detail. 
-
-So	far	we’ve	discussed	scalar	value	fields.	But	a	good	part	of	an	application	data	structure is	about	describing	the	relationships	between	entities.	Let’s	look	at	that	now. 
- 
-
-**Relations	between	models**
-
-Looking	again	at	our	module	design,	we	have	these	relations: 
-
-- Each	task	has	a	stage	–	that’s	a	many	to	one	relation,	also	known	as	a	foreign	key. The	inverse	relation	is	a	one	to	many,	meaning	that	each	stage	can	have	many	tasks. 
-- Each	task	can	have	many	tags	–	that’s	a	many	to	many	relation.	The	inverse	relation, of	course,	is	also	a	many	to	many,	since	each	tag	can	also	have	many	tasks. 
-
-Let’s	add	the	corresponding	relation	fields	to	the	to-do	tasks	in	our `todo_ui/todo_model.py`	file: 
+Agreguemos los campos de relación correspondientes al archivo `todo_ui/todo_model.py`: 
 ```
 class	TodoTask(models.Model):
-    _inherit	=	'todo.task'
-    stage_id	=	fields.Many2one('todo.task.stage',	'Stage')
-    tag_ids	=	fields.Many2many('todo.task.tag',	string='Tags')
+    _inherit = 'todo.task'
+    stage_id = fields.Many2one('todo.task.stage', 'Stage')
+    tag_ids = fields.Many2many('todo.task.tag', string='Tags')
 ```
-The	preceding	code	shows	the	basic	syntax	for	these	fields,	setting	the	related	model	and the	field’s	title	string.	The	convention	for	relational	field	names	is	to	append	_id	or	_ids to	the	field	names,	for	to	one	and	to	many	relations,	respectively. 
+El código anterior muestra la sintaxis básica para estos campos. Configurando el modelo relacionado y el campo de título. La convención para los nombres de campo relacionales es agregar a los nombres de campos `_id` o `_ids`, para las relaciones de uno y muchos, respectivamente.
 
-As	an	exercise,	you	may	try	to	also	add	on	the	related	models,	the	corresponding	inverse relations:  The	inverse	of	the	Many2one	relation	is	a	One2many	field	on	stages:	each	stage	can have	many	tasks.	We	should	add	this	field	to	the	Stage	class. The	inverse	of	the	Many2many	relation	is	also	a	Many2many	field	on	tags:	each	tag	can also	be	used	on	many	tasks. 
+Como ejercicio puede intentar agregar en los modelos relacionados, las relaciones inversas correspondientes: La relación inversa de Many2one es un campo One2many en los estados: cada estado puede tener muchas tareas. Deberíamos agregar este campo a la clase Stage. La relación inversa de Many2many es también un campo Many2many en las etiquetas: cada etiqueta puede ser usada en muchas tareas.
 
-Let’s	have	a	closer	look	at	relational	field	definitions. 
- 
-
-**Many	to	one	relations**
-
-Many2one	accepts	two	positional	arguments:	the	related	model	(corresponding	to	the  comodel	keyword	argument)	and	the	title	string.	It	creates	a	field	in	the	database	table with	a	foreign	key	to	the	related	table. 
-
-Some	additional	named	arguments	are	also	available	to	use	with	this	type	of	field: 
-
-- ondelete	defines	what	happens	when	the	related	record	is	deleted.	Its	default	is	set  null,	meaning	it	is	set	to	an	empty	value	if	the	related	record	is	deleted.	Other possible	values	are	restrict,	raising	an	error	preventing	the	deletion,	and	cascade also	deleting	this	record. 
-- context	and	domain	are	meaningful	for	the	web	client	views.	They	can	be	set	on	the model	to	be	used	by	default	on	any	view	where	the	field	is	used.	They	will	be	better explained	in the Chapter	6, 	*Views	-	Designing	the	User	Interface*. 
-- `auto_join=True`	allows	the	ORM	to	use	SQL	joins	when	doing	searches	using	this relation.	By	default	this	is	False	to	be	able	to	enforce	security	rules.	If	joins	are	used, the	security	rules	will	be	bypassed,	and	the	user	could	have	access	to	related	records the	security	rules	wouldn’t	allow,	but	the	SQL	queries	will	be	more	efficient	and	run faster. 
+Veamos con mayor detalle las definiciones de los campos relacionales.
 
 
-**Many	to	many	relations**
+**Relaciones Muchos a uno**
 
-The	Many2many	minimal	form	accepts	one	argument	for	the	related	model,	and	it	is recommended	to	also	provide	the	string	argument	with	the	field	title. 
+Many2many, acepta dos argumentos de posición: el modelo relacionado (que corresponde al argumento de palabra clave del comodelo) y la cadena de título. Este crea un campo en la table de la base de datos con una clave foránea a la tabla relacionada.
 
-At	the	database	level,	this	does	not	add	any	column	to	the	existing	tables.	Instead,	it automatically	creates	a	new	relation	table	with	only	two	ID	fields	with	the	foreign	keys	to the	related	tables.	The	relation	table	name	and	the	field	names	are	automatically	generated. The	relation	table	name	is	the	two	table	names	joined	with	an	underscore	with	`_rel` appended	to	it.
- 
-These	defaults	can	be	manually	overridden.	One	way	to	do	it	is	to	use	the	longer	form	for the	field	definition: 
+Algunos nombres adicionales de argumentos también están disponibles para ser usados con estos tipos de campo:
+
+- ondelete, define lo que pasa cuando el registro relacionado es eliminado. De forma predeterminada esta fijado como null, lo que significa que al ser eliminado el registro relacionado se fija a un valor vacío. Otros valores posibles son “restrict”, que arroja un error que previene la eliminación, y “cascade” que también elimina este registro.
+- context y domain, son significativos para las vistas del cliente. Pueden ser configurados en el modelo para ser usados de forma predeterminada en cualquier vista donde sea usado el campo. Estos serán explicados con más detalle en el Capítulo 6.
+- `auto_join = True`, permite que el ORM use uniones SQL haciendo búsquedas usando esta relación. De forma predeterminada esto esta fijado como False para reforzas las reglas de seguridad. Si son usadas uniones, las reglas de seguridad serán pasadas por alto, y el usuario podrá tener acceso a los registros relacionados que las reglas de seguridad no le permitirían, pero las consultas SQL serán más eficientes y se ejecutarán con mayor rapidez.
+
+
+**Relaciones muchos a muchos**
+La forma mas simple de la relación Many2many acepta un argumento para el modelo relacionado, y es recomendable también proporcionar el argumento de cadena con el título del campo.
+
+En el nivel de base de datos, esto no agrega ninguna columna a las tablas existentes. Por el contrario, automáticamente crea una tabla nueva de relación de solo dos campos con las claves foráneas de las tablas relacionadas. El nombre de la tabla de relación es el nombre de ambas tablas unidos por un símbolo de guión bajo (`_`) con `_rel` anexado.
+
+Estas configuración predeterminadas pueden del sobre escritas manualmente. Una forma de hacerlo es usar la forma larga para la definición del campo:
 ```
-# TodoTask class: Task	<-> Tag	relation (long	form): 
-tag_ids	= fields.Many2many( 'todo.task.tag',	# related model
+# TodoTask class: Task <-> Tag relation (long form): 
+tag_ids = fields.Many2many( 'todo.task.tag', # related model
                             'todo_task_tag_rel', # relation table name
                             'task_id', # field for "this" record
-                            'tag_id', #field	for "other" record
+                            'tag_id', #field for "other" record
                              string='Tasks')
 ``` 
-Note	that	the	additional	arguments	are	optional.	We	could	just	set	the	name	for	the	relation table	and	let	the	field	names	use	the	automatic	defaults. 
+Note que los argumentos adicionales son opcionales. Podemos simplemente fijar el nombre para la tabla de relación y dejar que los nombres de los campos usen la configuración predeterminada.
 
-If	you	prefer,	you	may	use	the	long	form	using	keyword	arguments	instead: 
+Si prefiere, puede usar la forma larga usando los argumentos de palabra clave:
 ```
-# TodoTask class: Task	<-> Tag	relation (long	form): 
-tag_ids	= fields.Many2many(comodel_name='todo.task.tag', #related model
-                           relation='todo_task_tag_rel', #relation able	name
+# TodoTask class: Task	<-> Tag relation (long form): 
+tag_ids = fields.Many2many(comodel_name='todo.task.tag', #related model
+                           relation='todo_task_tag_rel', #relation able name
                            column1='task_id', # field for "this" record
                            column2='tag_id', # field for "other" record
                            string='Tasks') 
 ```
-Like	many	to	one	fields,	many	to	many	fields	also	support	the	domain	and	context keyword	attributes. 
+Como los campos muchos a uno, los campos muchos a muchos también soportan los atributos de palabra clave de dominio y contexto.
 
-On	some	rare	occasions	we	may	have	to	use	these	long	forms	to	override	the	automatic defaults,	in	particular,	when	the	related	models	have	long	names	or	when	we	need	a second	many	to	many	relation	between	the	same	models. 
+En algunas raras ocasiones tendremos que usar estas formas largas para sobre escribir las configuraciones automáticas predeterminadas, en particular, cuando los modelos relacionados tengan nombres largos o cuando necesitemos una segunda relación muchos a muchos entre los mismos modelos.
 
-*Tip*  
-*PostgreSQL	table	names	have	a	limit	of	63	characters,	and	this	can	be	a	problem	if	the automatically	generated	relation	table	name	exceeds	that	limit.	That	is	a	case	where	we should	manually	set	the	relational	table	name	using	the	relation	attribute. *
+* Tip *
+* Los nombres de las  tablas PostgreSQL tienen 63 caracteres como límite, y esto puede ser un problema su la tabla de relación generada automáticamente excede ese limite. Este es uno de los casos cuando tendremos que configurar manualmente el nombre de la tabla de relación usando el atributo “relation”.*
 
-The	inverse	of	the	Many2many	relation	is	also	a	Many2many	field.	If	we	also	add	a  Many2many	field	to	the	tags,	Odoo	infers	that	this	many	to	many	relation	is	the	inverse	of the	one	in	the	task	model. 
+Lo inverso a la relación Many2many es también un campo Many2many. Si también agregamos un campo Many2many a las etiquetas, Odoo infiere que esta relación de muchos a muchos es la inversa a la del modelo de tareas.
 
-The	inverse	relation	between	tasks	and	tags	can	be	implemented	like	this: 
+La relación inversa entre tareas y etiquetas puede ser implementada así:
 ``` 
-# class	Tag(models.Model): #
-    _name	= 'todo.task.tag' 
-    #Tag	class	relation to Tasks: 
-    task_ids	=	fields.Many2many( 'todo.task', # related model 
-                                           string='Tasks') 
+# class Tag(models.Model): #
+    _name = 'todo.task.tag' 
+
+    #Tag class relation to Tasks: 
+    task_ids = fields.Many2many( 'todo.task', # related model string='Tasks') 
 ```
 
 
-**One	to	many	inverse	relations**
-  
-The	inverse	of	a	Many2one	can	be	added	to	the	other	end	of	the	relation.	This	has	no impact	on	the	actual	database	structure,	but	allows	us	easily	browse	from	the	“one”	side the	“many”	side	records.	A	typical	use	case	is	the	relation	between	a	document	header	and its	lines. 
+**Relaciones inversas de uno a muchos**
 
-On	our	example,	with	a	One2many	inverse	relation	on	stages,	we	could	easily	list	all	the tasks	in	that	stage.	To	add	this	inverse	relation	to	stages,	add	the	code	shown	here: 
+La inversa de Many2many puede ser agregada al otro extremo de la relación. Esto no tiene un impacto real en la estructura de la base de datos, pero nos permite navegar fácilmente desde “un” lado a “muchos” lados de los registros. Un caso típico es la relación entre un encabezado de un documento y sis líneas.
+
+En nuestro ejemplo, con una relación inversa One2many en estados, fácilmente podemos listas todas las tareas que se encuentran en un estado. Para agregar esta relación inversa a los estados, agregue el código mostrado a continuación:
 ```
-# class	Stage(models.Model): #
-    _name	= 'todo.task.stage' 
-    #Stage	class	relation	with	Tasks:
-    tasks	=	fields.One2many('todo.task',#related	model
-                                        'stage_id',#field for	"this"	on	related	model 
-                                        'Tasks	in	this	stage') 
+# class Stage(models.Model): #
+    _name = 'todo.task.stage' 
+
+    #Stage class relation with Tasks:
+    tasks = fields.One2many('todo.task',# related model 'stage_id',#field for	
+                             "this" on related model 'Tasks in this stage') 
 ```
-The	One2many	accepts	three	positional	arguments:	the	related	model,	the	field	name	in	that model	referring	this	record,	and	the	title	string.	The	two	first	positional	arguments correspond	to	the	comodel_name	and	inverse_name	keyword	arguments. 
+One2many acepta tres argumentos de posición: el modelo relacionado, el nombre del campo en aquel modelo que referencia este registro, y la cadena de título. Los dos primeros corresponden a los argumentos `comodel_name` y `inverse_name`.
 
-The	additional	keyword	parameters	available	are	the	same	as	for	many	to	one:	context,  domain,	ondelete	(here	acting	on	the	“many”	side	of	the	relation),	and	auto_join. 
- 
+Los parámetros adicionales disponibles son los mismos que para el muchos a uno: contexto, dominio, ondelete (aquí actuá en el lado “muchos” de la relación), y `auto_join`.
 
-**Hierarchical	relations**
 
-Parent-child	relations	can	be	represented	using	a	Many2one	relation	to	the	same	model,	to let	each	record	reference	its	parent.	And	the	inverse	One2many	makes	it	easy	for	a	parent	to keep	track	of	its	children. 
+**Relaciones jerárquicas**
 
-Odoo	also	provides	improved	support	for	these	hierarchic	data	structures:	faster	browsing through	tree	siblings,	and	simpler	search	with	the	additional	child_of	operator	in	domain expressions. 
+Las relaciones padre-hijo pueden ser representadas usando una relación Many2one al mismo modelo, para dejar que cada registro haga referencia a su padre. Y la inversa One2many hace más fácil para un padre mantener el registro de sus hijos.
 
-To	enable	these	features	we	need	to	set	the	_parent_store	flag	attribute	and	add	the helper	fields:	parent_left	and	parent_right.	Mind	that	this	additional	operation	comes at	storage	and	execution	time	penalties,	so	it’s	best	used	when	you	expect	to	read	more frequently	than	write,	such	as	a	the	case	of	a	category	tree. 
+Odoo también provee soporte mejorado para estas estructuras de datos jerárquicas: navegación más rápida a través de árboles hermanos, y búsquedas más simples con el operador `child_of` en las expresiones de dominio.
 
-Revisiting	the	tags	model	defined	in	the	`todo_ui/todo_model.py`	file,	we	should	now	edit it	to	look	like	this: 
+Para habilitar esas características debemos configurar el atributo `_parent_store` y agregar los campos de ayuda: `parent_left` y `parent_right`. Tenga en cuenta que estas operaciones adicionales traen como consecuencia penalizaciones en materia de almacenamiento y ejecución, así que es mejor usarlo cuando se espere ejecutar más lecturas que escritura, como es el caso de un árbol de categorías.
+
+Revisando el modelo de etiquetas definido en el archivo `todo_ui/todo_model.py`, ahora editaremos para que luzca así:
 ```
 class	Tags(models.Model):
-    _name	=	'todo.task.tag'
-    _parent_store	=	True 	#
-    _parent_name	=	'parent_id'
-    name	=	fields.Char('Name')
-    parent_id	=	fields.Many2one('todo.task.tag','Parent	Tag', ondelete='restrict')
-    parent_left	=	fields.Integer('Parent	Left',	index=True)
-    parent_right	=	fields.Integer('Parent	Right',	index=True) 
+    _name         = 'todo.task.tag'
+    _parent_store = True #
+    _parent_name  = 'parent_id'
+    name = fields.Char('Name')
+    parent_id     = fields.Many2one('todo.task.tag','Parent Tag', ondelete='restrict')
+    parent_left   = fields.Integer('Parent Left', index=True)
+    parent_right  = fields.Integer('Parent	Right', index=True) 
 ```
-Here,	we	have	a	basic	model,	with	a	parent_id	field	to	reference	the	parent	record,	and the	additional	`_parent_store`	attribute	to	add	hierarchic	search	support.	When	doing	this, the	`parent_left`	and	`parent_right`	fields	also	have	to	be	added. 
+Aquí tenemos un modelo básico, con un campos `parent_id` que referencia al registro padre, y el atributo adicional `_parent_store` para agregar soporte a búsquedas jerárquicas.  
 
-The	field	referring	to	the	parent	is	expected	to	be	named	`parent_id`.	But	any	other	field name	can	be	used	by	declaring	it	with	the	`_parent_name`	attribute. 
+Se espera que el campo que hace referencia al padre sea nombrado `parent_id`. Pero puede usarse cualquier otro nombre declarándolo con el atributo `_parent_name`. 
 
-Also,	it	is	often	convenient	to	add	a	field	with	the	direct	children	of	the	record: 
+También, es conveniente agregar un campo con el hijo directo del registro:
 ```
-child_ids	=	fields.One2many( 'todo.task.tag', 'parent_id',	'Child	Tags') 
- 
-
-**Referencing	fields	using	dynamic	relations**
-
-So	far,	the	relation	fields	we’ve	seen	can	only	reference	one	model.	The	Reference	field type	does	not	have	this	limitation	and	supports	dynamic	relations:	the	same	field	is	able	to refer	to	more	than	one	model. 
-
-We	can	use	it	to	add	a	To-do	Task	field,	Refers	to ,	that	can	either	refer	to	a	User	or	a Partner: 
-```
-# class	TodoTask(models.Model):
-    refers_to	=	fields.Reference([('res.user',	'User'),('res.partner',	'Partner')], 'Refers	to') 
-```
-You	can	see	that	the	field	definition	is	similar	to	a	Selection	field,	but	here	the	selection list	holds	the	models	that	can	be	used.	On	the	user	interface,	the	user	will	first	pick	a model	from	the	list,	and	then	pick	a	record	from	that	model. 
-
-This	can	be	taken	to	another	level	of	flexibility:	a	Referencable	Models 	configuration table	exists	to	configure	the	models	that	can	be	used	in	Reference	fields.	It	is	available	in the	Settings	|	Technical	|	Database	Structure 	menu.	When	creating	such	a	field	we	can set	it	to	use	any	model	registered	there,	with	the	help	of	the	referencable_models() function	in	the	openerp.addons.res.res_request	module.	In	Odoo	version	8,	it	is	still using	the	old-style	API,	so	we	need	to	wrap	it	to	use	with	the	new	API: 
-```
-from	openerp.addons.base.res	import	res_request def	referencable_models(self):
-    return	res_request.referencable_model (self,	self.env.cr,	self.env.uid,	context=self.env.context) 
-```
-Using	the	preceding	code,	the	revisited	version	of	the	Refers	to	field	would	look	like this: 
-```
-# class	TodoTask(models.Model):
-     refers_to	=	fields.Reference( referencable_models,	'Refers	to') 
+child_ids = fields.One2many('todo.task.tag', 'parent_id', 'Child Tags') 
 ```
 
+**Hacer referencia a campos usando relaciones dinámicas**
 
-**Computed	fields**
+Hasta ahora, los campos de relación que hemos visto puede solamente hacer referencia a un modelo. El tipo de campo Reference no tiene esta limitación y admite relaciones dinámicas: el mismo campo es capaz de hacer referencia a más de un modelo.
 
-Fields	can	have	values	calculated	by	a	function,	instead	of	simply	reading	a	database stored	value.	A	computed	field	is	declared	just	like	a	regular	field,	but	has	an	additional argument	compute	with	the	name	of	the	function	used	to	calculate	it. 
-
-In	most	cases	computed	fields	involve	writing	some	business	logic,	so	we	will	develop this	topic	more	in Chapter	7, 	*ORM	Application	Logic	-	Supporting	Business	Processes*.	We can	still	explain	them	here,	but	keeping	the	business	logic	side	as	simple	as	possible. 
-Let’s	work	on	an	example:	stages	have	a	fold	field.	We	will	add	to	tasks	a	computed	field with	the	Folded? 	flag	for	the	corresponding	stage. 
-
-We	should	edit	the	TodoTask	model	in	the	todo_ui/todo_model.py	file	to	add	the following: 
+Podemos usarlos para agregar un campo, “Refers to”, a Tareas por Hacer que pueda hacer referencia a un User o un Partner:
 ```
-#	class	TodoTask(models.Model):
-    stage_fold	=	fields.Boolean('Stage	Folded?', compute='_compute_stage_fold')
-    @api.one	@api.depends('stage_id.fold') def _compute_stage_fold(self):
-        self.stage_fold	= self.stage_id.fold 
+# class TodoTask(models.Model):
+    refers_to = fields.Reference([('res.user', 'User'),('res.partner', 'Partner')], 'Refers to') 
 ```
-The	preceding	code	adds	a	new	stage_fold	field	and	the	`_compute_stage_fold`	method used	to	compute	it.	The	function	name	was	passed	as	a	string,	but	it’s	also	allowed	to	pass it	as	a	callable	reference	(the	function	identifier	with	no	quotes). 
-Since	we	are	using	the	`@api.one`	decorator,	self	will	represent	a	single	record.	If	we	used `@api.multi`	instead,	it	would	represent	a	recordset	and	our	code	would	need	to	handle	the iteration	over	each	record. 
+Puede observar que la definición del campo es similar al campo Selection, pero aquí la lista de selección contiene los modelos que pueden ser usados. En la interfaz, el usuario o la usuaria seleccionará un modelo de la lista, y luego elegirá un registro de ese modelo.
 
-The	`@api.depends`	is	necessary	if	the	computation	uses	other	fields:	it	tells	the	server when	to	recompute	stored	or	cached	values.	It	accepts	one	or	more	field	names	as arguments	and	dot-notation	can	be	used	to	follow	field	relations. 
-
-The	computation	function	is	expected	to	assign	a	value	to	the	field	or	fields	to	compute.	If it	doesn’t,	it	will	error.	Since	self	is	a	record	object,	our	computation	is	simply	to	get	the Folded? 	field	using	`self.stage_id.fold`.	The	result	is	achieved	by	assigning	that	value (writing	it)	to	the	computed	field,	`self.stage_fold`.
- 
-We	won’t	be	working	yet	on	the	views	for	this	module,	but	you	can	make	a	quick	edit	on the	task	form	to	confirm	if	the	computed	field	is	working	as	expected:	using	the Developer	Menu 	pick	the	Edit	View 	option	and	add	the	field	directly	in	the	form	XML. Don’t	worry:	it	will	be	replaced	by	the	clean	module	view	on	the	next	upgrade. 
- 
-
-
-**Search	and	write	on	computed	fields**
-  
-The	computed	field	we	just	created	can	be	read,	but	it	can’t	be	searched	or	written.	This can	be	enabled	by	providing	specialized	functions	for	that.	Along	with	the	compute function,	we	can	also	set	a	search	function,	implementing	the	search	logic,	and	the  inverse	function,	implementing	the	write	logic. 
-In	order	to	do	this,	our	computed	field	declaration	becomes	like	this: 
+Esto puede ser llevado a otro nivel de flexibilidad: existe una tabla de configuración de Modelos Referenciables para configurar los modelos que pueden ser usados en campos Reference. Esta disponible en el menú Configuraciones | Técnico | Estructura de Base de Datos. Cuando se crea un campo como este podemos ajustarlo para que use cualquier modelo registrado allí, con la ayuda de la función `referencable_models()` en el módulo `openerp.addons.res.res_request`. En la versión 8 de Odoo, todavía se usa la versión antigua de la API, así que necesitamos  empaquetar lo para usarlo con la API nueva:
 ```
-# class	TodoTask(models.Model):
-	stage_fold	=	fields.Boolean
-        string='Stage	Folded?', 								
-        compute='_compute_stage_fold', # store=False) # the	default 			 
-        search='_search_stage_fold', 								
-        inverse='_write_stage_fold') 
+from openerp.addons.base.res import res_request 
+
+def	referencable_models(self):
+    return res_request.referencable_model (self, self.env.cr, self.env.uid, context=self.env.context) 
 ```
-The	supporting	functions	are: 
+Usando el código anterior, la versión revisada del campo “Refers to” sera así:
 ```
-def _search_stage_fold(self, operator,	value):
-    return	[('stage_id.fold',	operator,	value)] 
-
-def	_write_stage_fold(self): 								
-    self.stage_id.fold	=	self.stage_fold 
+# class TodoTask(models.Model):
+    refers_to = fields.Reference( referencable_models, 'Refers to') 
 ```
-The	search	function	is	called	whenever	a	`(field,	operator,	value)`	condition	on	this field	is	found	in	a	search	domain	expression.	It	receives	the	operator	and	value	for	the search	and	is	expected	to	translate	the	original	search	element	into	an	alternative	domain search	expression. 
 
-The	inverse	function	performs	the	reverse	logic	of	the	calculation,	to	find	the	value	to write	on	the	source	fields.	In	our	example,	it’s	just	writing	on	`stage_id.fold`. 
- 
 
-**Storing	computed	fields**
+**Campos calculados**
 
-Computed	field’s	values	can	also	be	stored	on	the	database,	by	setting	store	to	True	on their	definition.	They	will	be	recomputed	when	any	of	their	dependencies	change.	Since the	values	are	now	stored,	they	can	be	searched	just	like	regular	fields,	so	a	search function	is	not	needed. 
- 
+Los campos pueden tener valores calculados por una función, en vez de simplemente leer un valor almacenado en una base de datos. Un campo calculado es declarado como un campo regular, pero tiene el argumento “compute” adicional con el nombre de la función que se usará para calcularlo.
 
-**Related	fields**
+En la mayoría de los casos los campos calculados involucran alguna lógica de negocio, por lo tanto este tema se desarrollara con más profundidad en el Capítulo 7. Igual podemos explicarlo aquí, pero maneteniendo la lógica de negocio lo más simple posible.
 
-The	computed	field	we	implemented	in	the	previous	section	is	a	special	case	that	can	be automatically	handled	by	Odoo.	The	same	effect	can	be	achieved	using	Related	fields. They	make	available, directly	on	a	model,	fields	that	belong	to	a	related	model,	accessible using	a	dot-notation	chain.	This	makes	them	usable	in	situations	where	dot-notation	can’t be	used,	such	as	UI	forms. 
+Trabajamos en un ejemplo: los estados tienen un campo “fold”. Agregaremos a las tareas un campo calculado con la marca “Folded?” para el estado correspondiente.
 
-To	create	a	related	field,	we	declare	a	field	of	the	needed	type,	just	like	with	regular computed	fields,	and	instead	of	compute,	use	the	related	attribute	indicating	the	dot- notation	field	chain	to	reach	the	desired	field. 
-
-To-do	tasks	are	organized	in	customizable	stages	and	these	is	turn	map	into	basic	states. We	will	make	them	available	on	tasks,	and	will	use	this	for	some	client-side	logic	in	the next	chapter. 
-Similarly	to	stage_fold,	we	will	add	a	computed	field	on	the	task	model,	but	now	using the	simpler	Related	field: 
+Debemos editar el modelo TodoTask en el archivo `todo_ui/todo_model.py` para agregar lo siguiente:
 ```
-# class	TodoTask(models.Model):
-    stage_state	=	fields.Selection( 								
-         related='stage_id.state', 								
-         string='Stage	State') 
+# class TodoTask(models.Model):
+    stage_fold = fields.Boolean('Stage Folded?', compute='_compute_stage_fold')
+    @api.one @api.depends('stage_id.fold') 
+
+def _compute_stage_fold(self):
+    self.stage_fold = self.stage_id.fold 
 ```
-Behind	the	scenes,	Related	fields	are	just	computed	fields	that	conveniently	implement  search	and	inverse.	This	means	that	we	can	search	and	write	on	them	out	of	the	box, without	having	to	write	any additional	code. 
- 
+El código anterior agrega un campo nuevo `stage_fold` y el método `_compute_stage_fold` que sera usado para calcular el campo. El nombre de la función es pasado como una cadena, pero también es posible pasarla como una referencia obligatoria (el identificador de la función son comillas).
 
-**Model	constraints** 
+Debido a que estamos usando el decorador `@api.one`, self tendrá un solo registro. Si en vez de esto usamos `@api.multi`, representara un conjunto de registros y nuestro código necesitará gestionar la iteración sobre cada registro.
 
-To	enforce	data	integrity,	models	also	support	two	types	of	constraints:	SQL	and	Python. 
+El `@api.depends` es necesario si el calculo usa otros campos: le dice al servidor cuando re calcular valores almacenados o en cache. Este acepta uno o mas nombres de campo como argumento y la notación de puntos puede ser usada para seguir las relaciones de campo.
 
-SQL	constraints	are	added	to	the	table	definition	in	the	database	and	implemented	by PostgreSQL.	They	are	defined	using	the	class	attribute	_sql_constraints.	It	is	a	list	of tuples	with	the	constraint	identifier	name,	the	SQL	for	the	constraint,	and	the	error message	to	use. 
+Se espera que la función de calculo asigne un valor al campo o campos a calcular. Si no lo hace, arrojara un error. Debido a que self es un objeto de registro, nuestro calculo es simplemente para obtener el campo “Folded?” usando `self.stage_id.fold`. El resultado es conseguido asignando ese valor (escribiéndolo) en el campo calculado, `self.stage_fold`.
 
-A	common	use	case	is	to	add	unique	constraints	to	models.	Suppose	we	didn’t	want	to allow	the	same	user	to	have	two	active	tasks	with	the	same	title: 
+No trabajaremos aún en las vistas para este módulo, pero puede hacer una edición rápida al formulario de tareas para confirmar si el campo calculado esta funcionando como es esperado: usando el Menú Desarrollador escoja la opción Edición de Vista y agregue el campo directamente en el XML del formulario. No se preocupe: será reemplazado por una vista limpia del módulo en la próxima actualización.
+
+
+**Buscar y escribir en campos calculados**
+
+El campo calculado que acabamos de crear puede ser leído, pero no se puede realizar una búsqueda ni escribir en el. Esto puede ser habilitado proporcionando funciones especiales para esto. A lo largo de la función de calculo también podemos colocar una función de búsqueda, que implemente la lógica de búsqueda, y la función inversa, que implemente la lógica de escritura.
+
+Para hacer esto, nuestra declaración de campo calculado se convertirá en esto:
 ```
-# class	TodoTask(models.Model):
-    	_sql_constraints	=	[ 								
-            ('todo_task_name_uniq',
-             'UNIQUE	(name,	user_id,	active)', 
-             'Task	title	must	be	unique!')] 
+# class TodoTask(models.Model):
+	stage_fold = fields.Boolean
+        string   = 'Stage Folded?', 								
+        compute  ='_compute_stage_fold', # store=False) # the default 			 
+        search   ='_search_stage_fold', 								
+        inverse  ='_write_stage_fold') 
 ```
-Since	we	are	using	the	user_id	field	added	by	the	todo_user	module,	this	dependency should	be	added	to	the	depends	key	of	the	`__openerp__.py`	manifest	file. 
+Las funciones soportadas son:
+```
+def _search_stage_fold(self, operator, value):
+    return [('stage_id.fold', operator, value)] 
 
-Python	constraints	can	use	a	piece	of	arbitrary	code	to	check	conditions.	The	checking function	needs	to	be	decorated	with	@api.constrains	indicating	the	list	of	fields	involved in	the	check.	The	validation	is	triggered	when	any	of	them	is	modified,	and	will	raise	an exception	if	the	condition	fails: 
+def	_write_stage_fold(self):
+    self.stage_id.fold = self.stage_fold 
 ```
-from	openerp.exceptions	import	ValidationError #
+La función de búsqueda es llamada en cuando en encontrada en este campo una condición `(field, operator, value)` dentro de una expresión de dominio de búsqueda.
+
+La función inversa realiza la lógica reversa del cálculo, para hallar el valor que sera escrito en el campo de origen. En nuestro ejemplo, es solo escribir en `stage_id.fold`.
+
+
+**Guardar campos calculados*
+
+Los valores de los campos calculados también pueden ser almacenados en la base de datos, configurando “store” a “True” en su definición. Estos serán calculados cuando cualquiera de sus dependencias cambie. Debido a que los valores ahora estarán almacenados, pueden ser buscados como un campo regular, entonces no es necesaria una función de búsqueda.
+
+
+**Campos relacionados**
+
+Los campos calculados que implementamos en la sección anterior son un caso especial que puede ser gestionado automáticamente por Odoo. El mismo efecto puede ser logrado usando campos Relacionados. Estos hace disponible, de forma directa en un módulo, los campos que pertenecen a un modelo relacionado, que son accesibles usando la notación de puntos. Esto posibilita su uso en los casos en que la notación de puntos no pueda usarse, como los formularos de UI.
+
+Para crear un campo relacionado, declaramos un campo del tipo necesario, como en los campos calculados regulares, y en vez de calcularlo, usamos el atributo “related” indicando la cadena de notación por puntos para alcanzar el campo deseado.
+
+Las tareas por hacer están organizadas en estados personalizables y a su vez esto forma un mapa en los estados básicos. Los pondremos disponibles en las tareas, y usaremos esto para la lógica del lado del cliente en la próximo capítulo.
+
+Agregaremos un campo calculado en el modelo tarea, similar a como hicimos a “stage_fold”, pero ahora usando un campo “Related”: 
+```
+# class TodoTask(models.Model):
+    stage_state = fields.Selection(related='stage_id.state', string='Stage State') 
+```
+Detrás del escenario, los campos “Related” son solo campos calculados que convenientemente implementan las funciones de búsqueda e inversa.  Esto significa que podemos realizar búsquedas y escribir en ellos sin tener que agregar código adicional.
+
+
+**Restricciones del Modelo**
+
+Para reforzar la integridad de los datos, los modelos también soportan dos tipos de restricciones: SQL y Python.
+
+Las restricciones SQL son agregadas a la definición de la tabla en la base de datos e implementadas por PostgreSQL. Son definidas usando el atributo de clase `_sql_constraints`. Este es una lista de tuplas con el nombre del identificador de la restricción, el SQL para la restricción, y el mensaje de error que se usara.
+
+Un caso común es agregar restricciones únicas a los modelos. Suponga que no queremos permitir que el mismos usuario tenga dos tareas activas con el mismo título:
+```
+# class TodoTask(models.Model):
+    _sql_constraints = [
+        ('todo_task_name_uniq',
+         'UNIQUE (name, user_id, active)',
+         'Task title must be unique!')] 
+```
+Debido a que estamos usando el campos `user_id` agregado por el modulo `todo_user`, esta dependencia debe ser agregada a la clave “depends” del archivo manifiesto `__openerp__.py`.
+
+Las restricciones Python pueden usar un pedazo arbitrario de código para verificar las condiciones. La función de verificación necesita ser decorada con `@api.constrains` indicando la lista de campos involucrados en la verificación. La validación es activada cuando cualquiera de ellos es modificado, y arrojara una excepción si la condición falla:
+```
+from openerp.exceptions import ValidationError #
+
 class	TodoTask(models.Model):
-	@api.one @api.constrains('name') 
-        def	_check_name_size(self): 								
-            if	len(self.name)	<	5:
-                   raise	ValidationError('Must	have	5	chars!') 
+     @api.one @api.constrains('name') 
+     def _check_name_size(self): 								
+        if len(self.name) < 5:
+             raise ValidationError('Must have 5 chars!') 
 ```
-The	preceding	example	prevents	saving	task	titles	with	less	than	5	characters. 
- 
+El ejemplo anterior previene que el título de las tareas sean almacenado con menos de 5 caracteres.
 
-** Summary**
 
-We	went	through	a	thorough	explanation	of	models	and	fields,	using	them	to	extend	the To-do	app	with	tags	and	stages	on	tasks.	You	learned	how	to	define	relations	between models,	including	hierarchical	parent/child	relations.	Finally,	we	saw	simple	examples	of computed	fields	and	constraints	using	Python	code. 
+**Resumen**
 
-In	the	next	chapter,	we	will	work	on	the	user	interface	for	these	back-end	model	features, making	them	available	in	the	views	used	to	interact	with	the	application. 
+
+Vimos una explicación minuciosa de los modelos y los campos, usándolos para ampliar la aplicación de Tareas por Hacer con etiquetas y estados de las tareas. Aprendió como definir relaciones entre modelos, incluyendo relaciones jerárquicas padre/hijo. Finalmente, vimos ejemplos sencillos de campos calculados y restricciones usando código Python.
+
+En el próximo capítulo, trabajaremos en la interfaz para las características “back-end” de ese modelo, haciéndolas disponibles para las vistas que se usan para interactuar con la aplicación.
