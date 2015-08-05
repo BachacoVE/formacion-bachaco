@@ -27,8 +27,7 @@ Puedes visializar los identificadores externo debes completar la etiqueta ID. Es
 
 Debido a que el ID Completo es obligatorio que sea único, el nombre del módulo sirve como namespace para los identificadores. Esto significa que el mismo identificador puede repetirse en diferentes módulos, y no tenemos que preocuparnos por identificadores en nuestro módulo que colicionen con identificadores en otros módulos.
 
-Since	only	the	Complete	ID 	is	required	to	be	unique,	the	module	name	ends	up	acting	as	a namespace	for	identifiers.	This	means	that	the	same	named	identifier	can	be	repeated	in different	modules,	and	we	don’t	need	to	worry	about	identifiers	in	our	module	colliding with	identifiers	in	other	modules. 
- 
+
 ![151_1](/images/Odoo Development Essentials - Daniel Reis-151_1.jpg)
 
 At	the	top	of	the	list,	you	can	see	the	`todo_app.action_todo_task`	ID.	This	is	the	menu action	we	created	for	the	module,	which	is	also	referenced	in	the	corresponding	menu item.	By	clicking	on	it,	you	can	open	a	form	with	its	details:	the	`action_todo_task`	in	the `todo_app`	module	maps	to	a	specific	record	ID	in	the	`ir.actions.act_window`	model.
