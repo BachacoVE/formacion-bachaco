@@ -5,7 +5,7 @@ La mayoría de las configuraciones de Odoo, desde interfaces de usuario hasta re
 
 Los módulos pueden también tener datos iniciales y de demostración (accesorios). La serialización de datos permite añadir eso a nuestros módulos. Adicionalmente, entendiendo los formatos de serialización de datos de Odoo es importante para exportar e importar datos en el contexto de la implementación de un proyecto.
 
-Antes de entrar en casosprácticos, primero exploraremos el conceptop de identificador externo, el cual es la clave a la serialización de datos de Odoo 
+Antes de entrar en casos prácticos, primero exploraremos el conceptop de identificador externo, el cual es la clave a la serialización de datos de Odoo 
 
 ![150_1](/images/Odoo Development Essentials - Daniel Reis-150_1.jpg)
 
@@ -19,11 +19,11 @@ La respuesta de Odoo a esto es el identificador externo. Los identificadores ext
 
 El mecanismo detrás de esto es muy simple: Odoo mantiene una tabla con el mapeo entre los IDs externos con nombre y sus correspondiente IDs numéricos en la base de datos. Ese es el modelo `ir.model.data`.
 
-To	inspect	the	existing	mappings,	go	to	the	Technical 	section	of	the	Settings 	menu,	and select	the	Sequences	&	Identifiers 	|	External	Identifiers 	menu	item. 
+Para Inpeccionar la existencia de mapeo,se dirige a la seccion tecnica en el menu ajuste, y selecciona secuencia & identificadores	| el item de menu  identificadores externo. 
 
-For	example,	if	we	visit	the	External	Identifiers 	list	and	filter	it	by	the	`todo_app`	module, we	will	see	the	external	identifiers	generated	by	the	module	created	previously. 
+Por ejemplo, si volvemos a visitar la lista de identificadores externos	y filtramos por el modulo	`todo_app`,veremos los identificadores externos creados previamente por el modulo.
 
-You	can	see	that	the	external	identifiers	have	a	Complete	ID 	label.	This	is	composed	of the	module	name	and	the	identifier	name	joined	by	a	dot,	for	example, `todo_app.action_todo_task`.
+Puedes visializar los identificadores externo debes completar la etiqueta ID. Esta compuesto por el nombre del modulo y el nombre de identificador unido por un punto, por ejemplo, `todo_app.action_todo_task`.
  
 Since	only	the	Complete	ID 	is	required	to	be	unique,	the	module	name	ends	up	acting	as	a namespace	for	identifiers.	This	means	that	the	same	named	identifier	can	be	repeated	in different	modules,	and	we	don’t	need	to	worry	about	identifiers	in	our	module	colliding with	identifiers	in	other	modules. 
  
