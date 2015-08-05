@@ -1,4 +1,4 @@
-﻿Capítulo 5.	Modelos – Estructura de los Datos de la Aplicación
+Capítulo 5.	Modelos – Estructura de los Datos de la Aplicación
 ===
 
 En los capítulos anteriores, vimon un resumen de extremo a extremo sobre la creación de módulos nuevos para Odoo. En el Capítulo 2, se construyo una aplicación totalmente nueva, y en el Capítulo 3, exploramos la herencia y como usarla para crear un módulo de extensión para nuestra aplicación. En el Capítulo 4, discutimos como agregar datos iniciales y de demostración a nuestros módulos.
