@@ -24,7 +24,9 @@ Para Inpeccionar la existencia de mapeo,se dirige a la seccion tecnica en el men
 Por ejemplo, si volvemos a visitar la lista de identificadores externos	y filtramos por el modulo	`todo_app`,veremos los identificadores externos creados previamente por el modulo.
 
 Puedes visializar los identificadores externo debes completar la etiqueta ID. Esta compuesto por el nombre del modulo y el nombre de identificador unido por un punto, por ejemplo, `todo_app.action_todo_task`.
- 
+
+Debido a que el ID Completo es obligatorio que sea único, el nombre del módulo sirve como namespace para los identificadores. Esto significa que el mismo identificador puede repetirse en diferentes módulos, y no tenemos que preocuparnos por identificadores en nuestro módulo que colicionen con identificadores en otros módulos.
+
 Since	only	the	Complete	ID 	is	required	to	be	unique,	the	module	name	ends	up	acting	as	a namespace	for	identifiers.	This	means	that	the	same	named	identifier	can	be	repeated	in different	modules,	and	we	don’t	need	to	worry	about	identifiers	in	our	module	colliding with	identifiers	in	other	modules. 
  
 ![151_1](/images/Odoo Development Essentials - Daniel Reis-151_1.jpg)
