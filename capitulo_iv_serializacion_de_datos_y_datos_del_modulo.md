@@ -9,7 +9,7 @@ Antes de entrar en casos prácticos, primero exploraremos el conceptop de identi
 
 ![150_1](/images/Odoo Development Essentials - Daniel Reis-150_1.jpg)
 
-**Understanding	external	identifiers**
+**Entendiendo los Identificadores Externos**
 
 Todos los registros en la base de datos de Odoo tienen un identificador único, el campo ```id```
 
