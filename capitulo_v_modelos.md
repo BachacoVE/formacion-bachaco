@@ -489,7 +489,6 @@ El ejemplo anterior previene que el título de las tareas sean almacenado con me
 
 **Resumen**
 
-
 Vimos una explicación minuciosa de los modelos y los campos, usándolos para ampliar la aplicación de Tareas por Hacer con etiquetas y estados de las tareas. Aprendió como definir relaciones entre modelos, incluyendo relaciones jerárquicas padre/hijo. Finalmente, vimos ejemplos sencillos de campos calculados y restricciones usando código Python.
 
 En el próximo capítulo, trabajaremos en la interfaz para las características “back-end” de ese modelo, haciéndolas disponibles para las vistas que se usan para interactuar con la aplicación.
