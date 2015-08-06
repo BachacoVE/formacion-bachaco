@@ -1,153 +1,159 @@
-Chapter	6.	Views	–	Designing	the	User Interface
+Capítulo 6.	Vistas – Diseñar la Interfaz
 ====
 
-This	chapter	will	help	you	build	the	graphical	interface	for	your	applications.	There	are several	different	types	of	views	and	widgets	available.	The	concepts	of	context	and domain	also	play	an	important	role	for	an	improved	user	experience,	and	you	will	learn more	about	them. 
+Este capítulo le ayudara a construir la interfaz gráfica para sus aplicaciones. Hay varios tipos disponibles de vistas y widgets. Los conceptos de contexto y dominio también juegan un papel fundamental en la mejora de la experiencia del usuario y la usuaria, y aprenderá más sobre esto.
 
-The	todo_ui	module	has	the	model	layer	ready,	and	now	it	needs	the	view	layer	with	the user	interface.	We	will	add	new	elements	to	the	UI	as	well	as	modify	existing	views	that were	added	in	previous	chapters. 
+El módulo `todo_ui` tiene lista la capa de modelo, y ahora necesita la capa de vista con la interfaz. Agregaremos elementos nuevos a la IU y modificaremos las vistas existentes que fueron agregadas en capítulos anteriores.
 
-The	best	way	to	modify	existing	views	is	to	use	inheritance,	as	explained	in	 Chapter	3 , *Inheritance	–	Extending	Existing	Applications*.	However,	for	the	sake	of	clarity,	we	will overwrite	the	existing	views,	replacing	them	with	completely	new	views.	This	will	make the	topics	easier	to	explain	and	follow. 
+La mejor manera de modificar vistas existentes es usar la herencia, como se explico en el Capítulo 3. Sin embargo, para mejorar la claridad en la explicación, sobre escribiremos las vistas existentes, y las reemplazaremos por unas vistas completamente nuevas. Esto hará que los temas sean más fáciles de entender y seguir.
 
-A	new	XML	data	file	for	our	UI	needs	to	be	added	to	the	module,	so	we	can	start	by editing	the	`__openerp__.py`	manifest	file.	We	will	need	to	use	some	fields	from	the 
-todo_user	module,	so	it	must	be	set	as	a	dependency:
+Es necesario agregar un archivo XML nuevo al módulo, así que comenzaremos por editar el archivo manifiesto `__openerp__.py`. Necesitamos usar algunos campos del módulo `todo_user`, para que sea configurado como una dependencia:
 ``` 
-{ 'name':	'User	interface	improvements	to	the	To-Do	app',
-  'description':	'User	friendly	features.',
-  'author':	'Daniel	Reis',
-  'depends':	['todo_user'],
-  'data':	['todo_view.xml']
+{ 'name': 'User interface improvements to the To-Do app',
+  'description': 'User friendly features.',
+  'author': 'Daniel Reis',
+  'depends': ['todo_user'],
+  'data': ['todo_view.xml']
 } 
 ```
-Let’s	get	started	with	the	menu	items	and	window	actions. 
- 
+Comencemos con las opciones de menú y las acciones de ventana.
 
-**Window	actions** 
 
-Window	actions	give	instructions	to	the	client-side	user	interface.	When	a	user	clicks	on	a menu	item	or	a	button	to	open	a	form,	it’s	the	underlying	action	that	instructs	the	user interface	what	to	do. 
+**Acciones de ventana**
 
-We	will	start	by	creating	the	window	action	to	be	used	on	the	menu	items,	to	open	the	to- do	tasks	and	stages	views.	Create	the	todo_view.xml	data	file	with	the	following	code: 
+Las acciones de ventana dan instrucciones a la interfaz del lado del cliente. Cuando un usuario o una usuaria hace clic en una opción de menú o en un botón para abrir un formulario, es la acción subyacente la que da instrucciones a la interfaz sobre lo que debe hacer.
+
+Comenzaremos por crear la acción de ventana que será usada en las opciones de manú, para abrir las vistas de las tareas por hacer y de los estados. Cree el archivo de datos `todo_view.xml` con el siguiente código: 
 ```
 <?xml	version="1.0"?>
     <openerp>
         <data>
-            <act_window	id="action_todo_stage"	name="To-Do	Task	Stages" res_model="todo.task.stage"	view_mode="tree,form"	/> 
-	    <act_window	id="todo_app.action_todo_task"	name="	To-Do	Tasks"	 res_model="todo.task"	view_mode="tree,form,calendar,gantt,graph"	 target="current "context="{'default_user_id':	uid}" domain="[]" limit="80"	/> 
-            <act_window	id="action_todo_task_stage"	name="To-Do	Task	Stages" res_model="todo.task.stage"	src_model="todo.task" multi="False"/>	
+            <act_window	id="action_todo_stage" name="To-Do Task Stages" res_model="todo.task.stage" view_mode="tree,form"/>
+            <act_window	id="todo_app.action_todo_task" name="To-Do Tasks" res_model="todo.task" view_mode="tree,form,calendar,gantt,graph" target="current "context="{'default_user_id':	uid}" domain="[]" limit="80"/>
+            <act_window	id="action_todo_task_stage" name="To-Do Task Stages" res_model="todo.task.stage" src_model="todo.task" multi="False"/>	
         </data> 
      </openerp> 
 ```
-Window	actions	are	stored	in	the	`ir.actions.act_window`	model,	and	can	be	defined	in XML	files	using	the	`<act_window>`	shortcut	that	we	just	used. 
-The	first	action	opens	the	task	stages	model,	and	uses	only	the	basic	attributes	for	a window	action. 
+Las acciones de ventana se almacenan en el modelo `ir.actions.act_window`, y pueden ser definidas en archivos XML usando el acceso directo `<act_window>` que recién usamos.
 
-The	second	action	uses	an	ID	in	the	todo_app	namespace	to	overwrite	the	original	to-do task	action	of	the	todo_app	module.	It	uses	the	most	relevant	window	actions	attributes: 
+La primera acción abre el modelo de estados de la tarea, y solo usa los atributos básicos para una acción de ventana.
 
-- name:	This	is	the	title	displayed	on	the	views	opened	through	this	action. 
-- res_model:	This	is	the	identifier	of	the	target	model. 
-- view_mode:	These	are	the	view	types	to	make	available.	The	order	is	relevant	and	the first	in	the	list	is	the	view	type	opened	by	default. 
-- target:	If	this	is	set	to	new,	it	will	open	the	view	in	a	dialog	window.	By	default,	it	is 
-current,	and	opens	the	view	in	the	main	content	area. 
-- context:	This	sets	context	information	on	the	target	views,	which	can	be	used	to	set default	values	on	fields	or	activate	filters,	among	other	things.	We	will	cover	its details	later	in	this	chapter. 
-- domain:	This	is	a	domain	expression	setting	a	filter	for	the	records	that	will	be available	in	the	opened	views. 
-- limit:	This	is	the	number	of	records	for	each	list	view	page,	80	by	default. 
+La segunda acción usa un ID en el espacio de nombre de `todo_app` para sobre escribir la acción original de tareas por hacer del módulo `todo_app`. Esta usa los atributos de aciones de ventana más relevantes.
 
-The	window	action	already	includes	the	other	view	types	that	we	will	be	exploring	in	this chapter:	calendar,	Gantt,	and	graph.	Once	these	changes	are	installed,	the	corresponding buttons	will	be	seen	at	the	top-right	corner,	next	to	the	list	and	form	buttons.	Notice	that  these	won’t	work	until	we	create	the	corresponding	views. 
+- name: Este es el título mostrado en las vistas abiertas a través de esta acción.
+- `res_model`: Es el identificador del modelo de destino.
+- `view_mode`: Son los tipos de vista que estarán disponibles. El orden es relevenate y el primero de la lista será la vista que se abrirá de forma predeterminada.
+- target: Si es fijado como “new”, la vista se abrirá en una ventana de dialogo.De forma predeterminada esta fijado a “current”, por lo que abre la vista en el área principal de contenido.
+- context: Este fija información de contexto en las vistas de destino, la cual puede ser usada para establecer valores predeterminados en campos o filtros activos, entre otras cosas. Veremos más detalles sobre esto en este mismo capítulo.
+- domain: Es una expresión de dominio que establece un filtro para los registros que estarán disponibles en las vistas abiertas.
+- limit: Es el número de registros por cada página con vista de lista, 80 es el número predefinido.
 
-The	third	window	action	demonstrates	how	to	add	an	option	under	the	More 	button,	at	the top	of	the	view.	These	are	the	action	attributes	used	to	do	so. 
+La acción de ventana ya incluye los otros tipos de vista las cuales estaremos examinando en este capítulo: calendar, Gantt y gráfico. Una vez que estos cambios son instalados, los botones correspondientes serán mostrados en la esquina superior derecha, junto a los botones de lista y formulario. Note que esto no funcionará hasta crear las vistas correspondientes.
 
-- multi:	This	flag,	if	set	to	True,	makes	it	available	in	the	list	view.	Otherwise,	it	will be	available	in	the	form	view. 
- 
+La tercera acción de ventana demuestra como agregar una opción bajo el botón “Mas”, en la parte superior de la vista. Estos son los atributos usados para realizar esto:
 
-**Menu	items**
+- multi: Si esta fijado a “True”, estará disponible en la vista de lista. De lo contrario, estará disponible en la vista de formulario.
 
-Menu	items	are	stored	in	the	ir.ui.menu	model,	and	can	be	searched	for	in	the	Settings  menu	by	navigating	to	Technical	|	User	Interface	|	Menu	Items .	If	we	search	for Messaging ,	we	will	see	that	it	has	Organizer 	as	one	of	its	submenus.	With	the	help	of	the developer	tools	we	can	find	the	XML	ID	for	that	menu	item:	it	is	mail.mail_my_stuff. 
 
-We	will	replace	the	existing	To-do	Task 	menu	item	with	a	submenu	that	can	be	found	by navigating	to	Messaging	|	Organizer .	In	the	`todo_view.xml} ,	after	the	window	actions, add	this	code:
+**Opciones de menú**
+
+Las opciones de menú se almacenan en el modelo `ir.ui.menu`, y pueden ser encontradas en el menú Configuraciones navegando a través de Técnico | Interfaz de Usuario | Opciones de Menú. Si buscamos Mensajería, veremos que tiene como submenú Organizador. Con la ayuda de las herramientas de desarrollo podemos encontrar el ID del XML para esa opción de menú: la cual es `mail.mail_my_stuff`.
+
+Reemplazaremos la opción de menú existente en Tareas por Hacer con un submenú que puede encontrarse navegando a través de Mensajería | Organizador. En el `todo_view.xml`, despues de las acciones de ventana, agregue el siguiente código:
 ```
-<menuitem	id="menu_todo_task_main"	name="To-Do"	 parent="mail.mail_my_stuff"	/>	<menuitem	id="todo_app.menu_todo_task"	 name="To-Do	Tasks"	parent="menu_todo_task_main"	sequence="10"	 action="todo_app.action_todo_task"	/>
-<menuitem	id="menu_todo_task_stage"	 name="To-Do	Stages"	parent="menu_todo_task_main"	sequence="20"	 action="action_todo_stage"	/> 
+<menuitem id="menu_todo_task_main" name="To-Do" parent="mail.mail_my_stuff"/>
+<menuitem id="todo_app.menu_todo_task" name="To-Do Tasks" parent="menu_todo_task_main" sequence="10" action="todo_app.action_todo_task"/>
+<menuitem id="menu_todo_task_stage" name="To-Do Stages" parent="menu_todo_task_main" sequence="20" action="action_todo_stage"/> 
 ```
-The	menu	option	data	for	the	`ir.ui.menu`	model	can	also	be	loaded	using	the	`<menuitem>` shortcut	element,	as	used	in	the	preceding	code. 
+La opción de menú “data” para el modelo `ir.ui.menu` también puede cargarse usando el elemento de acceso directo `<menuitem>`, como se uso en el código anterior.
 
-The	first	menu	item,	To-Do, 	is	a	child	of	the	mail.mail_my_stuff	Organizer 	menu option.	It	has	no	action	assigned,	since	it	will	be	used	as	a	parent	for	the	next	two	options. 
+El primer elemento del menú, “To-Do”, es hijo de la opción de menú Organizador `mail.mail_my_stuff`. No tiene ninguna acción asignada, debido a que será usada como padre para las próximas dos opciones.
 
-The	second	menu	option	rewrites	the	option	defined	in	the	todo_app	module	so	that	it	is relocated	under	the	To-Do 	main	menu	item. 
-The	third	menu	item	adds	a	new	option	to	access	the	to-do	stages.	We	will	need	it	in	order to	add	some	data	to	be	able	to	use	stages	in	to-do	tasks. 
- 
+El segundo elemento del menú re escribe la opción definida en el módulo `todo_app` para ser re ubicada bajo el elemento “To-Do” del menú principal.
 
-**Context	and	domain**
+El tercer elemento del menú agrega una nueva opción para acceder a los estados. Necesitaremos un orden para agregar algunos datos que permitan usar los estados en las tareas por hacer.
 
-We	have	stumbled	on	context	and	domain	several	times.	We	have	also	seen	that	window actions	are	able	to	set	values	on	them,	and	that	relational	fields	can	also	use	them	in	their attributes.	Both	concepts	are	useful	to	provide	richer	user	interfaces.	Let’s	see	how. 
- 
 
-**Session	context**
+**Contexto y dominio**
 
-The	context	is	a	dictionary	carrying	session	data	to	be	used	by	client-side	views	and	by server	processes.	It	can	transport	information	from	one	view	to	another,	or	to	the	server- side	logic.	It	is	frequently	used	in	window	actions	and	relational	fields	to	send	information to	the	views	opened	through	them. 
-Odoo	sets	some	basic	information	about	the	current	session	on	the	context.	The	initial session	information	can	look	like	this: 
+Nos hemos referido varias veces al contexto y al dominio. También hemos visto que las acciones de ventana pueden fijar valores en estos, y que los campos relacionales pueden usarlos en sus atributos. Ambos conceptos son útiles para proveer interfaces mas sofisticadas. Veamos como.
+
+
+**Contexto de sesión**
+
+El contexto es un diccionario que contiene datos de sesión usados por las vistas en el lado del cliente y por los procesos del servidor. Puede transportar información desde una vista hasta otra, o hasta la lógica del lado del servidor. Es usado frecuentemente por las acciones de ventana y por los campos relacionales para enviar información a las vistas abiertas a través de ellos.
+
+
+Odoo estable en el contexto alguna información básica sobre la sesión actual. La información inicial de sesión puede verse así:
 ```
-{'lang':	'en_US',	'tz':	'Europe/Brussels',	'uid':	1} 
+{'lang': 'en_US',	'tz': 'Europe/Brussels', 'uid': 1} 
 ```
-We	have	information	on	the	current	user	ID	and	the	language	and	time	zone	preferences for	the	user	session. 
+Tenemos información del ID de usuario actual, y las preferencias de idioma y zona horaria para la sesión de usuario.
 
-When	using	an	action	on	the	client,	such	as	clicking	on	a	button,	information	about	the currently	selected	records	is	added	to	the	context: 
+Cuando se usa una acción en el cliente, como hacer clic en un botón, se agrega información al contexto sobre los registros seleccionados actualmente:
 
-the	active_id	key	is	the	ID	of	the	selected	record	on	a	form, the	active_model	key	is	the	model	of	the	current	record, the	active_ids	key	is	the	list	of	IDs	selected	in	the	tree/list	view. 
+- `active_id` es el ID del registro seleccionado en el formulario,
+- `active_model` es el modelo de los registros actuales,
+- `active_ids` es la lista de los ID seleccionados en la vista de árbol/lista.
 
-The	context	can	also	be	used	to	provide	default	values	on	fields	or	to	enable	filters	on	the target	view.	To	set	on	the	user_id	field	a	default	value	corresponding	to	the	session’s current	user	we	would	use: 
+El contexto también puede usarse para proveed valores predeterminados en los campos o habilitar filtros en la vista de destino.
+
+Para fijar el valor predeterminado en el campo `user_id`, que corresponda a la sesión actual de usuario, debemos usar:
 ```
-{'default_user_id':	uid} 
+{'default_user_id': uid} 
 ```
-And	if	the	target	view	has	a	filter	named	filter_my_tasks,	we	can	enable	it	using: 
+Y si la vista de destino tiene un filtro llamado `filter_my_task`, podemos habilitarlo usando:
 ```
 {'search_default_filter_my_tasks':	True} 
 ``` 
 
 
-**Domain	expressions**
+**Expresiones de dominio**
 
-Domains	are	used	to	filter	data	records.	Odoo	parses	them	to	produce	the	SQL	WHERE expressions	that	are	used	to	query	the	database. 
-When	used	on	a	window	action	to	open	a	view,	domain	sets	a	filter	on	the	records	that	will be	available	in	that	view.	For	example,	to	limit	to	only	the	current	user’s	Tasks: 
+Los dominios se usan para filtrar los datos de registro. Odoo los analiza detenidamente para formar la expresión WHERE SQL usada para consultar a la base de datos.
+
+Cuando se usa en una acción de ventana para abrir una vista, el dominio fija un filtro en los registros que estarán disponibles en esa vista. Por ejemplo, para limitar solo a las Tareas del usuario actual:
 ```
-domain=[('user_id',	'=',	uid)] 
+domain=[('user_id', '=', uid)] 
 ```
-The	uid	value	used	here	is	provided	by	the	session	context. 
-When	used	on	a	relation	field,	it	will	limit	the	selection	options	available	for	that	field. The	domain	filter	can	also	use	values	from	other	fields	on	the	view.	With	this	we	can	have different	selection	options	available	depending	on	what	was	selected	on	another	field.	For example,	a	contact	person	field	can	be	made	to	show	only	the	persons	for	the	company that	was	selected	on	a	previous	field. 
+El valor “uid” usado aquí es provisto por el contexto de sesión. Cuando se usa en un campo relacional, limitara las opciones disponibles de selección para ese campo. El filtro de dominio puede también usar valores de otros campos en la vista. Con esto podemos tener diferentes opciones disponibles dependiendo de lo seleccionado en otros campos. Por ejemplo, un campo de persona de contacto puede ser establecido para mostrar solo las personas de la compañía seleccionada previamente en otro campo.
 
-A	domain	is	a	list	of	conditions,	where	each	condition	is	a	`('field',	'operator', value)`	tuple. 
+Un dominio es una lista de condiciones, donde cada condición es una tupla `('field', 'operator', 'value')`.
 
-The	left-hand	field	is	where	the	filter	will	be	applied	to,	and	can	use	dot-notation	on relation	fields. 
+El campo a la izquierda es al cual se aplicara el filtro, y puede ser usada la notación de punto en los campos relaciones.
 
-The	operators	that	can	be	used	are: 
+Los operadores que pueden ser usados son:  
 
-The	usual	comparison	operators:	`<`,	`>`,	`<=`,	`>=`,	`=`,	and	`!=`	are	available. 
+- `=`, “like” para coincidencias con el valor del patrón donde el símbolo de guión bajo (`_`) coincida con cualquier carácter único, y `%` coincida con cualquier secuencia de caracteres. “like” para hacer coincidir con el patrón SQL `%value%` sensible a mayúsculas, e “ilike” para coincidencias sin sensibilidad de mayúsculas. Los operadores “not like” y “not ilike” hacen la operación inversa.
 
-`=`like	to	match	against	the	value	pattern	where	the	underscore	symbol	matches	any single	character,	and	`%`	matches	any	sequence	of	characters. 
-like	for	case-sensitive	match	against	the	`%value%`	SQL	pattern,	and	ilike	for	a case	insensitive	match.	The	not	like	and	not	ilike	operators	do	the	inverse operation. 
+- `child_of` encuentra los hijos directos e indirectos, si las relaciones padre/hijo están configuradas en el modelo de destino.
 
-child_of	finds	the	direct	and	indirect	children,	if	parent/child	relations	are configured	in	the	target	model. 
+- “in” y “not” verifican la inclusión en una lista. En este caso, el valor de la derecha debe ser una lista Python. Estos son los únicos operadores que pueden ser usados con valores de una lista. Un caso especial es cuando el lado izquierdo es un campo “a-muchos”: aquí el operador “in” ejecuta una operación “contains”.
 
-in	and	not	in	check	for	inclusion	in	a	list.	In	this	case,	the	right-hand	value	should be	a	Python	list.	These	are	the	only	operators	that	can	be	used	with	list	values.	A curious	special	case	is	when	the	left-hand	is	a	to-many	field:	here	the	in	operator performs	a	contains	operation. 
+Están disponibles los operadores de comparación usuales: `<, >, <=, >=, =, y !=`.
 
-The	right-hand	value	 can	be	a	constant	or	a	Python	expression	to	be	evaluated.	What	can be	used	in	these	expressions	depends	on	the	evaluation	context	available	(not	to	be confused	with	the	session	context,	discussed	in	the	previous	section).	There	are	two possible	evaluation	contexts	for	domains:	client	side	or	server	side. 
+El valor dela derecha puede puede ser una constante o una expresión Python a ser evaluada. Lo que puede ser usado en estas expresiones depende del contexto disponible (no debe ser confundido con el contexto de sesión, discutido en la sección anterior). Existen dos posibles contextos de evaluación para los dominios: del lado del cliente y del lado del servidor.
 
-For	field	domains	and	window	actions,	the	evaluation	is	made	client-side.	The	evaluation context	here	includes	the	fields	available	in	the	current	view,	and	dot-notation	is	not available.	The	session	context	values,	such	as	uid	and	active_id,	can	also	be	used.	The 
-datetime	and	time	Python	modules	are	available	to	use	in	date	and	time	operations,	and also	a	context_today()	function	returning	the	client	current	date. 
- 
-Domains	used	in	security	record	rules	and	in	server	Python	code	are	evaluated	on	the server	side.	The	evaluation	context	has	the	fields	of	the	current	record	available,	and	dot- notation	is	allowed.	Also	available	is	the	current	session’s	user	record.	Using	user.id here	is	the	equivalent	to	using	uid	in	the	client	side	evaluation	context. 
-The	domain	conditions	can	be	combined	using	the	logical	operators:	'&'	for	“AND”	(the default),	'|'	for	“OR”,	and	'!'	for	“negation.”
- 
-The	negation	is	used	before	the	condition	to	negate.	For	example,	to	find	all	tasks	not belonging	to	the	current	user:	`['!',	('user_id',	'=',	uid)]`
- 
-The	“AND”	and	“OR”	operate	on	the	next	two	conditions.	For	example:	to	filter	tasks	for the	current	user	or	without	a	responsible	user: 
+Para los dominios de campo y las acciones de ventana, la evaluación es realizada desde el lado del cliente. El contexto de evaluación incluye aquí los campos disponibles para la vista actual, y la notación de puntos no esta disponible. Puede ser usados los valores del contexto de sesión, como “uid” y “active_id”. Estan disponibles los módulo de Python “datetime” y “time” para ser usado en las operaciones de fecha y hora, y también esta disponible la función `context_today()` que devuelve la fecha actual del cliente.
+
+Los dominios usados en las reglas de registro de seguridad y en el código Pyhton del servidor son evaluados del lado el servidor. El contexto de evaluación tiene los campos los registros actuales disponibles, y se permite la notación de puntos. También están disponibles los registros de la sesión de usuario actual. Al usar `user.id` es equivalente a usar “uid” en el contexto de evaluación del lado del cliente.
+
+Las condiciones de dominio pueden ser combinadas usando los operadores lógicos: `&` para “AND” (el predeterminado), `|` para “OR” y `!` para la negación.
+
+La negación es usada antes de la condición que será negada. Por ejemplo, para encontrar todas las tareas que no pertenezca al usuario actual: `['!', ('user_id','=', uid)]`.
+
+El “AND” y “OR” operan en las dos condiciones siguientes. Por ejemplo: para filtrar las tareas del usuario actual o sin un responsable asignado:
 ```
-['|',	('user_id',	'=',	uid),	('user_id',	'=',	False)] 
+['|', ('user_id', '=', uid), ('user_id', '=', False)] 
 ```
-A	more	complex	example,	used	in	server-side	record	rules: 
+Un ejemplo más  complejo, usado en las reglas de registro del lado del servidor:
 ```
-['|',	('message_follower_ids',	'in',	[user.partner_id.id]), 						'|',	('user_id',	'=',	user.id), 											('user_id',	'=',	False)]
+['|', ('message_follower_ids', 'in', [user.partner_id.id]), '|', ('user_id', '=', user.id), ('user_id', '=', False)]
 ``` 
-This	domain	filters	all	records	where	the	followers	(a	many	to	many	relation	field)	contain the	current	user	plus	the	result	of	the	next	condition.	The	next	condition	is	again	the	union of	two	other	conditions:	the	records	where	the	user_id	is	the	current	session	user	or	it	is not	set. 
+El dominio filtra todos los registro donde los seguidores (un campo de muchos a muchos) contienen al usuario actual además del resultado de la siguiente condición. La siguiente condición es, nuevamente, la unión de otras dos condiciones: los registros donde el “user_id” es el usuario de la sesión actual o no esta fijado.
  
 
-**Form	views**
+**Vistas de Formulario**
 
 As	we	have	seen	in	previous	chapters,	form	views	can	follow	a	simple	layout	or	a	business document	layout,	similar	to	a	paper	document. 
 
