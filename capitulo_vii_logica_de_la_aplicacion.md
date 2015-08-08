@@ -1,4 +1,4 @@
-Chapter 7. ORM Application Logic – Supporting Business Processes
+Capítulo 7. Lógica de Aplicación ORM – Soportando Procesos de Negocio
 =====
 
 In	this	chapter,	you	will	learn	to	write	code	to	support business logic	in	your	models	and you	will	also	learn	how	it	can	be activated	on	events	and	user	actions.	Using	the	Odoo programming API,	we	can	write	complex	logic	and	wizards	allow	us	to provide a rich	user interaction	with	these	programs. 
