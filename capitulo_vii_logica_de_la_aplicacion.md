@@ -2,8 +2,6 @@ Capítulo 7. Lógica de Aplicación ORM – Soportando Procesos de Negocio
 =====
 
 En este cap+itulo, aprenderás a escribir código para soportar la lógica de negocio en tus modelos y además aprenderás como puede ser activada en eventos y en acciones de usuario. Usando la API de programación de Odoo, podemos escribir lógica compleja y los asistentes nos permiten proveer una interacción rica con el usuario con estos programas.
-
-In	this	chapter,	you	will	learn	to	write	code	to	support business logic	in	your	models	and you	will	also	learn	how	it	can	be activated	on	events	and	user	actions.	Using	the	Odoo programming API,	we	can	write	complex	logic	and	wizards	allow	us	to provide a rich	user interaction	with	these	programs. 
  
 To-do	wizard  With	the	wizards,	we	can	ask	users	to	input information	to	be	used	in	some	processes. Suppose	our	to-do	app users	regularly	need	to	set	deadlines	and	the	responsible	persons for a	large	number	of	tasks.	We	could	use	an	assistant	to help	them	with	this.	It	should allow	them	to	pick	the	tasks	to be updated	and	then	choose	the	deadline	date	and/or	the responsible	user	to	set	on	them. 
 
