@@ -40,14 +40,14 @@ Ademas de proporcionar una forma de hacer referencia a un registro de una manera
 
 **Finding	External	IDs**
 
-When	preparing	configuration	and	demonstration	data	files	for	modules,	we	frequently need	to	look	up	existing	External	IDs	that	are needed	for	references. 
+En la demostracion y configuracion del archivo de datos para el modulo, tenemos que frecuentemente mirar la existencia de Ids Externos	que se necesitan para la referencia. 
 
-We	can	use	the	External	Identifiers	menu	shown	earlier,	but	the	Developer	Menu 	can provide	a	more	convenient	method	for	that.	As	you	may	recall	from Chapter	1, 	*Getting Started	with	Odoo	Development*,	the	Developer	Menu 	is	activated	in	the	About	Odoo  option,	and	then,	it	is	available	at	the	top-left	corner	of	the	web	client	view.
+Podemos utilizar identificadores externos en el menu mostrado anteriormente, pero el menu desarrollado puede proporcionar un metodo para  que sea mas conveniente conveniente.	como se recordara en el capitulo 1, 	*Getting Started	with	Odoo	Development*,	el menu desarrollo es activado sobre la opcion acerca Odoo, y entonces,	que esta disponible en la esquina izquierda de la vista cliente web.
  
-To	find	the	External	ID	for	a	data	record,	on	the	corresponding	Form	view,	select	the	View Metadata 	option	from	the	Developer	Menu .	This	will	display	a	dialog	with	the	record’s database	ID	and	External	ID	(also	known	as	XML	ID). 
+Para buscar la ID externo para un registro de datos,	en el mismo formulario correspondiente,	seleccione la opcion metadatos desde el menu desarrollador.	Esto mostrara un cuadro de dialogo con el ID de la base de datos registrado y el ID externo (tambien conocido como ID HTML) 
 
-As	an	example,	to	look	up	the	Demo	user	ID,	we	can	navigate	to	its	Form	view 	(Settings 	| Users )	and	select	the	View	Metadata 	option,	after	which	we	will	be	shown	this: 
-To	find	the	External	ID	for	view	elements,	such	as	form,	tree,	search,	and	action,	the Developer	Menu 	is	also	a	good	help.	For	that,	use	its	Manage	Views 	option	or	open	the information	for	the	desired	view	using	the	Edit	<view	type> 	options,	and	then	select	their View	Metadata 	option. 
+Como un Ejemplo,buscamos el ID de usuario de demostracion,podemos navegar en la vista formulario	(configuracion	| usuarios )	y seleccione la opcion ver metadatos,	despues se mostrara lo siguiente: 
+Para buscar el ID externo para ver los elementos,	en forma de,	arbol,	buscador,	y accion,	el menu de desarrollo es tambien una ayuda.	Para eso,utiliza su opcion vista de administrador	o abrir la informacion	para la vista deseada a utilizar como opcion de editor	<view	type> ,	y selecciona la opcion ver metadato. 
  
 
 **Exporting	and	importing	data**  
