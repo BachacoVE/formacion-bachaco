@@ -31,9 +31,9 @@ Debido a que el ID Completo es obligatorio que sea único, el nombre del módulo
 
 Al principio de la lista, puedes ver el ID de `todo_app.action_todo_task`. Esta es la accción del menú que creamos para el módulo, el cual también es referenciado en el elemento de menú correspondiente. Haciendo click en él, puedes abrir un formulario con sus detalles: el `action_todo_task` en el módulo `todo_app` mapea hacia un ID de un registro específico en el modelo `ir.actions.act_window`.
 
-At	the	top	of	the	list,	you	can	see	the	`todo_app.action_todo_task`	ID.	This	is	the	menu action	we	created	for	the	module,	which	is	also	referenced	in	the	corresponding	menu item.	By	clicking	on	it,	you	can	open	a	form	with	its	details:	the	`action_todo_task`	in	the `todo_app`	module	maps	to	a	specific	record	ID	in	the	`ir.actions.act_window`	model.
+A la cabeza de la lista,Se pueden ver el ID `todo_app.action_todo_task`.	Esta es la accion de menu creada para el modulo,	que se hace referencia en el menu correspondiente.	Al hacer click sobre el,puedes abrir el formulario en detalles:	la	`action_todo_task`	en el `todo_app`	es asignado a un ID especifico para el modulo	`ir.actions.act_window`.
  
-Besides	providing	a	way	for	records	to	easily	reference	other	records,	External	IDs	also allow	avoiding	data	duplication	on	repeated	imports.	If	the	External	ID	is	already	present, the	existing	record	will	be	updated,	instead	of	creating	a	new	record.	This	is	why,	on subsequent	module	upgrades,	previously	loaded	records	are	updated	instead	of	being duplicated. 
+Ademas de proporcionar una forma de hacer referencia a un registro de una manera facil a otros registros,	ID externos	tambien permiten evitar la duplicidad de datos en las importaciones repetidas. Si el ID externo esta presente, el registro existente se actualiza,	en ves de crear un nuevo registro.	Esta razon es por,	la actualizacion de modulos subsiguientes,	los resgistros cargados previamente se actualiza en lugar de duplicarse. 
  
 ![152_1](/images/Odoo Development Essentials - Daniel Reis-152_1.jpg)
 
