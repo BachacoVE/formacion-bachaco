@@ -155,383 +155,483 @@ El dominio filtra todos los registro donde los seguidores (un campo de muchos a 
 
 **Vistas de Formulario**
 
-As	we	have	seen	in	previous	chapters,	form	views	can	follow	a	simple	layout	or	a	business document	layout,	similar	to	a	paper	document. 
+Como hemos visto en capítulos anteriores, las vistas de formulario cumplir con una diseño simple o un diseño de documento de negocio, similar a un documento en papel.
 
-We	will	now	see	how	to	design	business	views	and	to	use	the	elements	and	widgets available.	Usually	this	would	be	done	by	inheriting	the	base	view.	But	to	make	the	code simpler,	we	will	instead	create	a	completely	new	view	for	to-do	tasks	that	will	override	the previously	defined	one. 
+Ahora veremos como diseñar vistas de negocio y usar los elementos y widgets disponibles. Esto es hecho usualmente heredando la vista base. Pero para hacer el código más simple, crearemos una vista completamente nueva para las tareas por hacer que sobre escribirá la definida anteriormente.
 
-In	fact,	the	same	model	can	have	several	views	of	the	same	type.	When	an	action	asks	to open	a	view	type	for	a	model,	the	one	with	the	lowest	priority	is	picked.	Or	as	an alternative,	the	action	can	specify	the	exact	identifier	of	the	view	to	use.	The	action	we defined	at	the	beginning	of	this	chapter	does	just	that;	the	view_id	tells	the	action	to specifically	use	the	form	with	ID } `view_form_todo_task_ui`.	This	is	the	view	we	will create	next. 
+De hecho, el mismo modelo puede tener diferentes vistas del mismo tipo. Cuando se abre un tipo de vista para un modelo a través de una acción, se selecciona aquella con la prioridad más baja. O como alternativa, la acción puede especificar exactamente el identificador de la vista que se usará. La acción que definimos al principio de este capítulo solo hace eso; el `view_id` le dice a la acción que use específicamente el formulario con el ID `view_form_todo_task_ui`. Esta es la vista que crearemos a continuación.
+
+
+**Vistas de negocio**
  
+En una aplicación de negocios podemos diferenciar los datos auxiliares de los datos principales del negocio. Por ejemplo, en nuestra aplicación los datos principales son las tareas por hacer, y las etiquetas y los estados son tablas auxiliares.
 
-**Business	views**
+Estos modelos de negocio pueden usar diseños de vista de negocio mejorados para mejorar la experiencia del usuario y la usuaria. Si vuelve a ejecutar la vista del formulario de tarea agregada en el Capítulo 2, notará que ya sigue la estructura de vista de negocio.
 
-In	a	business	application	we	can	differentiate	auxiliary	data	from	main	business	data.	For example,	in	our	app	the	main	data	is	the	to-do	tasks,	and	the	tags	and	stages	are	auxiliary tables	used	by	it. 
-
-These	business	models	can	use	improved	business	view	layouts	for	a	better	user experience.	If	you	recall	the	to-do	task	form	view	added	in	 Odoo Development Essentials - Daniel Reiss.html#79 Chapter	2 ,	*Building	Your	First Odoo	Application*,	it	was	already	following	the	business	view	structure. 
-
-The	corresponding	form	view	should	be	added	after	the	actions	and	menu	items	we	added before,	and	its	generic	structure	is	this: 
+La vista de formulario correspondiente debe ser agregada después de las acciones y los elementos del menú, que agregamos anteriormente, y su estructura genérica es esta:
 ```
-<record	id="view_form_todo_task_ui"	model="ir.ui.view"> 		<field	name="name">view_form_todo_task_ui</field> 		<field	name="model">todo.task</field> 		<field	name="arch"	type="xml"> 				<form>	<header>	<!--	Buttons	and	status	widget	-->	</header> 						<sheet>		<!--	Form	content	-->	</sheet> 						<!--	History	and	communication:	--> 						<div	class="oe_chatter"> 								<field	name="message_follower_ids" 															widget="mail_followers"	/> 								<field	name="message_ids" 															widget="mail_thread"	/> 						</div>	</form> 
-		</field> </record> 
+<record id="view_form_todo_task_ui"	model="ir.ui.view">
+    <field name="name">view_form_todo_task_ui</field>
+    <field name="model">todo.task</field>
+    <field name="arch" type="xml">
+        <form>
+            <header><!-- Buttons and status widget --> </header>
+            <sheet><!--	Form	content --> </sheet>
+            <!-- History and communication: →
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers" />
+                <field name="message_ids" widget="mail_thread" />
+		</div>
+        </form>
+    </field>
+</record> 
 ```
-Business	views	are	composed	of	three	visual	areas: 
+Las vistas de negocio se componen de tres área visuales:
 
-- A	top	header 
-- A	sheet	for	the	content 
-- A	bottom	history	and	communication	section 
+- Un encabezado, “header”
+- Un “sheet” para el contenido
+- Una sección al final de historia y comunicación, “history and communication”.
 
-The	history	and	communication	section,	with	the	social	network	widgets	at	the	lower	end is	added	by	inheriting	our	model	from	mail.thread	(from	the	mail	module),	and	adding at	the	end	of	the	form	view	the	elements	in	the	XML	sample	as	previously	mentioned. We’ve	also	seen	this	in Chapter	3 ,	*Inheritance	-	Extending	Existing	Applications*. 
+La sección historia y comunicación, con los widgets de red social en la parte inferior, es agregada por la herencia de nuestro modelo de `mail.thread` (del módulo mail), y agrega los elementos del ejemplo XML mencionado anteriormente al final de la vista de formulario. También vimos esto en el Capítulo 3.
+
+
+**La barra de estado del encabezado**
+
+La barra de estado en la parte superior usualmente presenta el flujo de negocio y los botones de acción.
+
+Los botones de acción son botones regulares de formulario, y lo más común es que el siguiente paso sea resaltarlos, usando `class=”oe_highlight”`. En `todo_ui/todo_view.xml` podemos ampliar el encabezado vacío para agregar le una barra de estado:
+```
+<header>
+    <field name="stage_state" invisible="True" />
+    <button	name="do_toggle_done" type="object" attrs="{'invisible' [('stage_state','in',['done','cancel'])]}" string="Toggle Done" class="oe_highlight" />
+    <!-- Add stage statusbar:	… --> 
+</header> 
+```
+Los botones de acción disponible puede diferir dependiendo en que parte del proceso se encuentre el documento actual. Por ejemplo, un botón Marcar como Hecho no tiene sentido si ya estamos en el estado “Hecho”.
+
+Esto se realiza usando el atributo “states”, que lista los estados donde el botón debería estas visible, como esto: `states="draft,open"`.
+
+Para mayor flexibilidad podemos usar el atributo “attrs”, el cual forma condiciones donde el botón debería ser invisible: `attrs="{'invisible' [('stage_state','in', ['done','cancel'])]`.
  
+Estas características de visibilidad también están disponibles para otros elementos de la vista, y no solo para los botones. Veremos esto en detalle más adelante en este capítulo.
 
-**The	header	status	bar**
 
-The	status	bar	on	top	usually	features	the	business	flow	pipeline	and	action	buttons. 
+**El flujo de negocio**
 
-The	action	buttons	are	regular	form	buttons,	and	the	most	common	next	steps	should	be highlighted,	using	class="oe_highlight".	In	todo_ui/todo_view.xml	we	can	now expand	the	empty	header	to	add	a	status	bar	to	it: 
+El flujo de negocio es un widget de barra de estado que se encuentra en un campo el cual representa el punto en el flujo donde se encuentra el registro. Usualmente es un campo de selección “State”, o un campo “Stage” muchos a uno. En ambos casos puede encontrarse en muchos módulos de Odoo.
+
+El “Stage” es un campo muchos a uno que se usa en un modelo donde los pasos del proceso están definidos. Debido a esto pueden ser fácilmente configurados por el usuario u la usuaria final para adecuarlo a sus procesos específicos de negocio, y son perfectos para el uso de pizarras kanban.
+
+El “State” es una lista de selección que muestra los pasos estables y principales de un proceso, como Nuevo, En Progreso, o Hecho. No pueden ser configurados por el usuario o usuaria final, pero son fáciles de usar en la lógica de negocio. Los “States” también tienen soporte especial para las vistas: el atributo “state” permite que un elemento este habilitado para ser seleccionado por el usuario o usuaria dependiendo en el estado en que se encuentre el registro.
+
+*Tip* 
+* Es posible obtener un beneficio de ambos mundos, a través del uso de “stages” que son mapeados dentro de los “states”. Esto fue lo que hicimos en el capítulo anterior, haciendo disponible a “State” en los documentos de tareas por hacer a través de un campo calculado.*
+
+Para agregar un flujo de “stage” en nuestro encabezado de formulario:
 ```
-<header> 		<field	name="stage_state"	invisible="True"	/> 		<button	name="do_toggle_done"	type="object" 										attrs="{'invisible': 																	[('stage_state','in',['done','cancel'])]}" 										string="Toggle	Done"	class="oe_highlight"	/> 		<!--	Add	stage	statusbar:		...	--> </header> 
+<!--	Add	stage	statusbar:	...	--> 
+<field name="stage_id" widget="statusbar" clickable="True" options="{'fold_field': 'fold'}"	/> 
 ```
-Depending	on	where	in	the	process	the	current	document	is,	the	action	buttons	available could	differ.	For	example,	a	Set	as	Done 	button	doesn’t	make	sense	if	we	are	already	in the	“Done”	state. 
+El atributo “clickable” permite hacer clic en el widget, para cambiar la etapa o el estado del documento. Es posible que no queramos esto si el progreso del proceso debe realizarse a través de botones de acción.
 
-This	can	be	done	using	the	states	attribute,	listing	the	states	where	the	button	should	be visible,	like	this:	`states="draft,open"`.
+En el atributo “options” podemos usar algunas configuraciones específicas: 
+
+- `fold_fields`, cuando de usa “stages”, es el nombre del campo que usa el “stage” del modelo usa para indicar en cuales etapas debe ser mostrado “fold”. 
+- `statusbar_visible`, cuando se usa “states”, lista los estados que deben estar siempre visibles, para mantener ocultos los estados de excepción que se usan para casos menos comunes. Por ejemplo: `statusbar_visible=”draft,open.done”`.
+
+La hoja canvas es el área del formulario que contiene los elementos principales del formulario. Esta diseñada para parecer un documento de papel, y sus registros de datos, a veces, puede ser referidos como documentos.
+
+La estructura general del documento tiene estos componentes:
+
+- Información de título y subtítulo
+- Un área de botón inteligente, es la parte superior derecha de los campos del encabezado del documento.
+- Un cuaderno con páginas en etiquetas, con líneas de documento y otros detalles.
+
+
+**Título y subtítulo**
+
+Cuando se usa el diseño de hoja, los campos que están fuera del bloque `<group>` no se mostrarán las etiquetas automáticamente. Es responsabilidad de la persona que desarrolla controlar si se muestran las etiquetas y cuando.
+
+También se puede usar las etiquetas HTML para hacer que el título resplandezca. Para mejores resultados, el título del documento debe estar dentro de un “div” con la clase `oe_title`:
+
+```
+<div class="oe_title">
+    <label for="name" class="oe_edit_only"/>
+    <h1><field name="name"/></h1>
+    <h3>
+        <span class="oe_read_only">By</span>
+        <label for="user_id" class="oe_edit_only"/>
+        <field name="user_id" class="oe_inline"	/>
+    </h3>
+</div> 
+```
+Aquí podemos ver el uso de elementos comúnes de HTML como  div, span, h1 y h3.
+
+
+**Etiquetas y campos**
+
+Las etiquetas de los campos no son mostradas fuera de las secciones `<group>`, pero podemos mostrarlas usando el elemento  `<label>`:
+
+- El atributo “for” identifica el campo desde el cual tomaremos el texto de la etiqueta.
+- El atributo “string” sobre escribe el texto original de la etiqueta del campo.
+- Con el atributo “class” también podemos usar las clases CSS para controlar la presentación. Algunas clases útiles son:
+
+  - `oe_edit_only` para mostrar lo solo cuando el formulario este modo de edición.
+  - `oe_read_only`  para mostrar lo solo cuando el formulario este en modo de lectura.
+
+Un ejemplo interesante es reemplazar el texto con un ícono:
+```
+<label for="name" string=" " class="fafa-wrench"/> 
+```
+Odoo empaqueta los íconos “Font Awesome”, que se usan aquí. Los íconos disponibles puede encontrar se en  [http://fontawesome.org](http://fontawesome.org).
+  
+
+**Botones inteligentes**
+
+El área superior izquierda puede tener una caja invisibles para colocar botones inteligentes. Estos funcionan como los botones regulares pero pueden incluir información estadística. Como ejemplo agregaremos un botón para mostrar el número total de tareas realizadas por el dueño de la tarea por hacer actual.
+
+Primero necesitamos agregar el campo calculado correspondiente a `todo_ui/todo_model.py`. Agregue lo siguiente a la clase TodoTask:
+```
+@api.one def compute_user_todo_count(self): 
+    self.user_todo_count = self.search_count([('user_id', '=', self.user_id.id)])
+    user_todo_count      = fields.Integer('User	To-Do	Count', compute='compute_user_todo_count') 
+```
+Ahora agregaremos la caja del botón con un botón dentro de ella. Agregue lo siguiente justo después del bloque div `oe_title`:  
+```
+<div name="buttons" class="oe_right oe_button_box">
+    <button class="oe_stat_button" type="action" icon="fa-tasks" name="%(todo_app.action_todo_task)d" string="" context="{'search_default_user_id': user_id, 'default_user_id': user_id}" help="Other to-dos for this user" >
+        <field string="To-dos" name="user_todo_count" widget="statinfo"/>
+    </button>
+</div> 
+```
+El contenedor para los botones es un div con las clases `oe_button_box` y `oe_right`, para que este alineado con la parte derecha del formulario.
+
+En el ejemplo el botón muestra el número total de las tareas por hacer que posee el documento responsable. Al hacer clic en el, este las inspeccionara, y si se esta creando tareas nuevas el documento responsable original será usado como predeterminado. 
+
+Los atributos usados para el botón son:
+
+- `class="oe_stat_button"`, es para usar un estilo rectángulo en vez de un botón.
+- icon, es el ícono que será usaso, escogido desde el conjunto de íconos de Font Awesome.
+- type, será usualmente una acción para la acción de ventana, y name será el ID de la acción que será ejecutada. Puede usarse la formula `%(id-acción-externa)d`, para transformar el ID externo en un número de ID real. Se espera que esta acción abra una vista con los registros relacionados.
+- string, puede ser usado para agregar texto al botón. No se usa aquí porque el campo que lo contiene ya proporciona un texto.
+- context, fija las condiciones estándar en la vista destino, cuando se haga clic a través del botón, para los filtros de datos y los valores predeterminados para los registros creados.
+- help, es la herramienta de ayuda que será mostrada. 
+
+Por si solo el botón es un contenedor y puede tener sus campos dentro para mostrar estadísticas. Estos son campos regulares que usan el widget “statinfo”.
+
+El campo debe ser un campo calculado, definido en el módulo subyacente. También podemos usar texto estático en vez de o junto a los campos de “statinfo”, como : `<div>User's To-dos</div>`
+
  
-For	more	flexibility	we	can	use	the	attrs	attribute,	forming conditions	where	the	button should	be	made	invisible:	`attrs="{'invisible' [('stage_state','in', ['done','cancel'])]`.
- 
-These	visibility	features	are	also	available	for	other	view	elements,	and	not	only	for buttons.	We	will	be	exploring	that	in	more	detail	later	in	this	chapter. 
+**Organizar el contenido en un formulario**
 
+El contenido principal del formulario debe ser organizado usando etiquetas `<group>`. Un grupo es una cuadrícula con dos columnas. Un campo y su etiqueta ocupan dos columnas, por lo tanto al agregar campos dentro de un grupo, estos serán apilados verticalmente. 
 
-**The	business	flow	pipeline**
-
-The	business	flow	pipeline	is	a	status-bar	widget	on	a	field	that	represents	the	point	in	the flow	where	the	record	is.	This	is	usually	a	State 	selection	field,	or	a	Stage 	many	to	one field.	Both	cases	can	be	found	across	several	Odoo	modules. 
-
-The	Stage 	is	a	many	to	one	field	using	a	model	where	the	process	steps	are	defined. Because	of	this	they	can	be	easily	configured	by	end	users	to	fit	their	specific	business process,	and	are	perfect	to	support	kanban	boards. 
-
-The	State 	is	a	selection	list	featuring	rather	stable	major	steps	in	a	process,	such	as	New , In	Progress ,	or	Done .	They	are	not	configurable	by	end	users	but	on	the	other	hand	are easier	to	use	in	business	logic.	States	also	have	special	support	for	views:	the	state attribute	allows	for	an	element	to	be	selectively	available	to	the	user	depending	on	the state	of	the	record. 
+Si anidamos dos elementos `<group>` dentro de un grupo superior, tendremos dos columnas de campos con etiquetas, una al lado de la otra.
+```
+<group name="group_top">
+    <group name="group_left">
+        <field name="date_deadline"	/>
+        <separator string="Reference"/>
+        <field name="refers_to"/>
+    </group>
+    <group name="group_right">
+        <field name="tag_ids" widget="many2many_tags"/>
+    </group>
+</group> 
+```
+Los grupos pueden tener un atributo “string”, usado para el título de la sección. Dentro de una sección de grupo, los títulos también pueden agregarse usando un elemento “separator”.
 
 *Tip*  
-*It	is	possible	to	benefit	from	the	best	of	both	worlds,	by	using	stages	that	are	also	mapped into	states.	This	was	what	we	did	in	the	previous	chapter,	by	making	the	State 	available	in to-do	task	documents	through	a	computed	field.*
+*Intente usar la opción Alternar la Disposición del Esquema del Formulario del menú de Desarrollo: este dibuja líneas alrededor de cada sección del formulario, permitiendo un mejor entendimiento de como esta organizada la vista actual.*
+
+
+**Cuaderno con pestañas**
+
+Otra forma de organizar el contenido es el cuaderno, el cual contiene múltiples secciones a través de pestañas llamadas páginas. Esto puede usarse para mantener algunos datos fuera de la vista hasta que sean necesarios u organizar un largo número de campos por tema.
+
+No necesitaremos esto en nuestro formulario de tareas por hacer, pero el siguiente es un ejemplo que podríamos agregar en el formularios de etapas de la tarea:
+```
+<notebook>
+    <page string="Whiteboard" name="whiteboard">
+        <field name="docs"/>
+    </page>
+    <page name="second_page">
+        <!-- Second page content →
+    </page>
+</notebook> 
+```
+Se considera una buena practica tener nombres en las páginas, esto hace que la ampliación de estas por parte de otros módulo sea más fiable
+
+
+**Elementos de la vista**
+
+Hemos visto como organizar el contenido dentro de un formulario, usando elementos como encabezado, grupo y cuaderno. Ahora, podemos ahondar en los elementos de campo y botón y que podemos hacer con ellos.
  
-To	add	a	stage	pipeline	to	our	form	header: 
-```
-<!--	Add	stage	statusbar:	...	--> <field	name="stage_id"	widget="statusbar" 							clickable="True"	options="{'fold_field':	'fold'}"	/> 
-```
-The	clickable	attribute	enables	clicking	on	the	widget,	to	change	the	document’s	stage	or state.	We	may	not	want	this	if	the	progress	through	process	steps	should	be	done	only through	action	buttons. 
-In	the	options	attribute	we	can	use	some	specific	settings: 
-fold_field,	when	using	stages,	is	the	name	of	the	field	that	the	stage	model	uses	to indicate	which	stages	should	be	shown	folded. 
-statusbar_visible,	when	using	states,	lists	the	states	that	should	be	always	made visible,	to	keep	hidden	the	other	exception	states	used	for	less	common	cases. Example:	`statusbar_visible="draft,open,done"`.
- 
-The	sheet	canvas	is	the	area	of	the	form	containing	the	main	form	elements.	It	is	designed to	look	like	an	actual	paper	document,	and	its	data	records	are	sometimes	referred	to	as documents. 
 
-The	document	structure	in	general	has	these	components: 
-
-- Title	and	subtitle	information 
-- A	smart	button	area,	on	the	top	right Document	header	fields 
-- A	notebook	with	tab	pages,	with	document	lines	or	other	details 
-Title	and	subtitle  
-
-When	using	the	sheet	layout,	fields	outside	a	`<group>`	block	won’t	have	automatic	labels displayed.	It’s	up	to	the	developer	to	control	if	and	where	to	display	the	labels. 
-
-HTML	tags	can	also	be	used	to	make	the	title	shine.	For	best	results,	the	document	title should	be	in	a	div	with	the	oe_title	class: 
-```
-<div	class="oe_title"> 		<label	for="name"	class="oe_edit_only"/> 		<h1><field	name="name"/></h1> 		<h3> 				<span	class="oe_read_only">By</span> 				<label	for="user_id"	class="oe_edit_only"/> 				<field	name="user_id"	class="oe_inline"	/> 		</h3> </div> 
-```
-Here	we	can	see	the	use	of	regular	HTML	elements	such	as	div,	span,	h1	and	h3. 
-
-
-**Labels	for	fields**
-
-Outside	`<group>`	sections	the	field	labels	are	not	automatically	displayed,	but	we	can display	them	using	the	`<label>`	element: 
-The	for	attribute	identify	the	field	to	get	the	label	text	from 
- 
-The	string	attribute	to	override	the	field’s	original	label	text 
-With	the	class	attribute	to	we	can	also	use	CSS	classes	to	control	their	presentation.	Some useful	classes	are: 
-
-- oe_edit_only	to	display	only	when	the	form	is	in	edit	mode 
-- oe_read_only	to	display	only	when	the	form	is	in	read	mode 
-
-An	interesting	example	is	to	replace	the	text	with	an	icon: 
-```
-<label	for="name"	string="	"	class="fa	fa-wrench"	/> 
-```
-Odoo	bundles	the	Font	Awesome	icons,	being	used	here.	The	available	icons	can	be browsed	at	 [http://fontawesome.org](http://fontawesome.org).
+**Botones**
   
+Los botones soportar los siguientes atributos:
 
-**Smart	buttons**
-  
-The	top	right	area	can	have	an	invisible	box	to	place	smart	buttons.	These	work	like regular	buttons	but	can	include	statistical	information.	As	an	example	we	will	add	a	button displaying	the	total	number	of	to-dos	for	the	owner	of	the	current	to-do. 
-First	we	need	to	add	the	corresponding	computed	field	to	todo_ui/todo_model.py.	Add the	following	to	the	TodoTask	class: 
+- icon. A diferencia de los botones inteligentes, los íconos disponibles para los botones regulares son aquellos que se encuentran en `addons/web/static/src/img/icons`. 
+- string, es el texto de descripción del botón.
+- type, puede ser “workflow”, “object” o “action”, para activar una señal de flujo de trabajo, llamar a un método Python o ejecutar una acción de ventana.
+- name, es el desencadenante de un flujo de trabajo, un método del modelo, o la ejecución de una acción de ventana, dependiendo del “type” del botón.
+- args, se usa para pasar parámetros adicionales al método, si el “type” es “object”.
+- context, fija los valores en el contexto de la sesión, el cual puede tenet efecto luego de la ejecución de la acción de ventana, o al llamar a un método de Python. En el último caso, a veces puede ser usado como un alternativa a “args”.
+- confirm, agrega un mensaje con el mensaje de texto preguntando por una confirmación.
+- `special="cancel"`, se usa en los asistentes, para cancelar o cerrar el formulario. No debe ser usado con “type”.
+
+
+**Campos**
+
+Los campos tiene los siguientes atributos disponibles. La mayoría es tomado de los que fue definido en el modelo, pero pueden ser sobre escritos en la vista. Los atributos generales son:
+
+- name: identifica el nombre técnico del campo.
+- string: proporciona la descripción de texto de la etiqueta para sobre escribir aquella provista por el modelo.
+- help: texto de ayuda a ser usado y que reemplaza el proporcionado por el modelo. 
+- placeholder: proporciona un texto de sugerencia que será mostrado dentro del campo.
+- widget: sobre escribe el widget predeterminado usado por el tipo de campo. Exploraremos los widgets disponibles mas adelante en este mismo capítulo.
+- options: contiene opciones adicionales para ser usadas por el widget. 
+- class: proporciona las clases CSS usadas por el HTML del campo.
+- `invisible="1"`: invisibiliza el campo.
+- `nolabel="1"`: no muestra la etiqueta del campo, solo es significativo para los campos que se encuentran dentro de un elemento `<group>`.
+- `readonly="1"`: no permite que el campo sea editado.
+- `required="1"`: hace que el campo sea obligatorio.
+
+
+Atributos específicos para los tipos de campos:
+
+- sum, avg: para los campos numéricos, y en las vistas de lista/árbol, estos agregan un resumen al final con el total o el promedio de los valores.
+- `password="True"`: para los campos de texto, muestran el campo como una campo de contraseña.
+- filename: para campos binarios, es el campo para el nombre del archivo.
+- `mode="tree"`: para campos One2many, es el tipo de vista usado para mostrar los registros. De forma predeterminada es de árbol, pero también puede ser de formulario, kanban o gráfico.
+
+Para los atributos Boolean en general, podemos usar True o 1 para habilitarlo y False o 0 (cero) para deshabilitarlo. Por ejemplo, `readonly=”1”` y `realonly=”True”` son equivalentes.
+
+
+**Campos relacionales**
+
+En los campos relacionales, podemos tener controles adicionales referentes a los que el usuario o la usuaria puede hacer. De forma predeterminada el usuario y la usuaria pueden crear nuevos registros desde estos campos (también conocido como creación rápida) y abrir el formulario relacionado al registro. Esto puede ser deshabilitado usando el atributo del campo “options”:
 ```
-@api.one def	compute_user_todo_count(self): 				self.user_todo_count	=	self.search_count( 								[('user_id',	'=',	self.user_id.id)]) 
-user_todo_count	=	fields.Integer( 			'User	To-Do	Count', 				compute='compute_user_todo_count') 
+options={'no_open': True, 'no_create': True} 
 ```
-Now	we	will	add	the	button	box	with	one	button	inside	it.	Right	after	the	end	of	the 
-oe_title	div	block,	add	the	following: 
+El contexto y el dominio también son particulares en los campos relacionales. El contexto puede definir valores predeterminados para los registros relacionados, y el dominio puede limitar los registros que pueden ser seleccionados, por ejemplo, basado en otro campo del registro actual. Tanto el contexto como el dominio pueden ser definidos en el modelo, pero solo son usados en la vista.
+
+
+**Widgets de campo**
+
+Cada tipo de campo es mostrado en el formulario con el widget predeterminado apropiado. Pero otros widget adicionales están disponible y pueden ser usados:
+
+Widgets para los campos de texto:
+
+- email: convierte al texto del correo electrónico en un elemento “mail-to” ejecutable.
+- url: convierte al texto en un URL al que se puede hacer clic.
+- html: espera un contenido en HTML y lo representa; en modo de edición usa un editor WYSIWYG para dar formato al contenido sin saber HTML.
+
+Widgets para campos numéricos: 
+
+- handle: específicamente diseñado para campos de secuencia, este muestra una guía para dibujar líneas en una vista de lista y re ordenarlos manualmente.
+- float_time: da formato a un valor decimal como tiempo en horas y minutos.
+- monetary: muestra un campo decimal como un monto en monedas. La moneda a usar puede ser tomada desde un campo como `options="{'currency_field': 'currency_id'}"`. 
+- progressbar: presenta un decimal como una barra de progreso en porcentaje, usualmente se usa en un campo calculado que computa una tasa de culminación.
+
+Algunos widget para los campos relacionales y de selección:
+
+- `many2many_tags`: muestran un campo muchos a muchos como una lista de etiquetas.
+- selection: usa el widget del campo Selección para un campo mucho a uno.
+- radio: permite seleccionar un valor para una opción del campo de selección usando botones de selección (radio buttons).
+- `kanban_state_selection`: muestra una luz de semáforo para la lista de selección de esta kanban.
+- priority: representa una selección como una lista de estrellas a las que se puede hacer clic.
+
+
+**Eventos on-change**
+
+A veces necesitamos que el valor de un campo sea calculado automáticamente cuando cambia otro campo. El mecanismo para esto se llama `on-change`.
+
+Desde la versión o, los eventos `on-change` están definidos en la capa del modelo, sin necesidad de ningún marcado especial en las vistas. Es se hace creando los métodos para realizar el calculo y enlazándolos al campo(s) que desencadenara la acción, usando el decorador `@api.onchenge('field1','field2')`.
+
+En las versiones anteriores, ente enlace era hecho en la capa de vista, usando el atributo “onchange” para fijar el método de la clase que sería llamado cuando el campo cambiara. Esto todavía es soportado, pero es obsoleto. Tenga en cuenta que los métodos  `on-change` con el estilo viejo no pueden ser ampliados usando la API nueva. Si necesita hacer esto, deberá usar la API vieja.
+
+
+**Vistas dinámicas**
+
+Los elementos visibles como un formulario también pueden ser cambiados dinámicamente, dependiendo, por ejemplo de los permisos de usuario o la etapa del proceso en la cual esta el documento.
+
+Estos dos atributos nos permiten controlar la visibilidad de los elemento en la interfaz:
+
+- groups: hacen al elemento visible solo para los miembros de los grupos de seguridad específicos. Se espera una lista separada por coma de los ID XML del grupo.
+- states: hace al elemento visible solo cuando el documento esta en el estado especificado. Espera una lista separada por coma de los códigos de “State”, y el modelo del documento debe tener un campo “state”.
+
+Para mayor flexibilidad, podemos fijar la visibilidad de un elemento usando expresiones evaluadas del lado del cliente. Esto puede hacerse usando el atributoo “attrs” con un diccionario que mapea el atributo “invisible” al resultado de una expresión de dominio.
+
+Por ejemplo, para hacer que el campo `refers_to` sea visible en todos los estados menos “draft”: 
 ```
-<div	name="buttons"	class="oe_right	oe_button_box"> 		<button	class="oe_stat_button" 										type="action"	icon="fa-tasks" 										name="%(todo_app.action_todo_task)d" 										string="" 										context="{'search_default_user_id':	user_id, 																				'default_user_id':	user_id}" 										help="Other	to-dos	for	this	user"	> 
-						<field	string="To-dos"	name="user_todo_count" 													widget="statinfo"/> 		</button> </div> 
+<field name="refers_to" attrs="{'invisible': [('state','=','draft')]}"	/> 
 ```
-The	container	for	the	buttons	is	a	div	with	the	oe_button_box	class	and	also	oe_right,	to have	it	aligned	to	the	right	hand	side	of	the	form. 
+El atributo “invisible” esta disponible para cualquier elemento, no solo para los campos. Podemos usarlo en las páginas de un cuaderno o en grupos, por ejemplo.
 
-In	the	example	the	button	displays	the	total	number	of	to-do	tasks	the	document responsible	has.	Clicking	on	it	will	browse	them,	and	if	creating	new	tasks	the	original responsible	will	be	used	as	default. 
-
-The	button	attributes	used	are: 
-
-- class="oe_stat_button"	is	to	use	a	rectangle	style	instead	of	a	button. 
-- icon	is	the	icon	to	use,	chosen	from	the	Font	Awesome	icon	set. 
-- type	will	be	usually	action,	for	a	window	action,	and	name	will	be	the	ID	of	the action	to	execute.	It	can	be	inserted using	the	formula	`%(action-external-id)d`,	to translate	the	external	ID	into	the	actual	ID	number.	This	action	is	expected	to	open	a view	with	related	records. 
-- string	can	be	used	to	add	text	to	the	button.	It	is	not	used	here	because	the	contained field	already	provides	the	text	for	it. 
-- context	will	set	defaults	on	the	target	view,	when	clicking	through	the	button,	to filter	data	and	set	default	values	for	new	records	created. 
-- help	is	the	tooltip	to	display. 
-
-The	button	itself	is	a	container	and	can	have	inside	it’s	fields	to	display	statistics.	These are	regular	fields	using	the	widget	statinfo.	
-
-The	field	should	be	a	computed	field, defined	in	the	underlying	module.	We	can	also	use	static	text	instead	or	alongside	the 
-statinfo	fields,	such	as:	`<div>User's	To-dos</div>`
-
- 
-**Organizing	content	in	a	form**
-
-The	main	content	of	the	form	should	be	organized	using	<group>	tags.	A	group	is	a	grid with	two	columns.	A	field	and	its	label	take	two	columns,	so	adding	fields	inside	a	group will	have	them	stacked	vertically. 
-
-If	we	nest	two	`<group>`	elements	inside	a	top	group,	we	will	be	able	to	get	two	columns	of fields	with	labels,	side	by	side. 
-```
-<group	name="group_top"> 		<group	name="group_left"> 				<field	name="date_deadline"	/> 				<separator	string="Reference"	/> 				<field	name="refers_to"	/> 		</group> 		<group	name="group_right"> 				<field	name="tag_ids"	widget="many2many_tags"/> 		</group> </group> 
-```
-Groups	can	have	a	string	attribute,	used	as	a	title	for	the	section.	Inside	a	group	section, titles	can	also	be	added	using	a	separator	element. 
-
-*Tip*  
-*Try	the	Toggle	Form	Layout	Outline 	option	of	the	Developer 	menu:	it	draws	lines around	each	form	section,	allowing	for	a	better	understanding	of	how	the	current	view	is organized.*
-
-
-**Tabbed	notebooks**
-
-Another	way	to	organize	content	is	the	notebook,	containing	multiple	tabbed	sections called	pages.	These	can	be	used	to	keep	less	used	data	out	of	sight	until	needed	or	to organize	a	large	number	of	fields	by	topic. 
-
-We	won’t	need	this	on	our	to-do	task	form,	but	here	is	an	example	that	could	be	added	in the	task	stages	form: 
-```
-<notebook> 		<page	string="Whiteboard"	name="whiteboard"> 				<field	name="docs"	/> 		</page> 		<page	name="second_page"> 				<!--	Second	page	content	--> 		</page> </notebook> 
-```
-It	is	good	practice	to	have	names	on	pages,	to	make	it	more	reliable	for	other	modules	to extend	them. 
-   
-
-**View	elements**
-
-We	have	seen	how	to	organize	the	content	in	a	form,	using	elements	such	as	header,  group,	and	notebook.	Now,	we	can	take	a	closer	look	at	the	field	and	button	elements,	and what	we	can	do	with	them. 
- 
-
-**Buttons**
-  
-Buttons	support	these	attributes: 
-
-- icon	to	display.	Unlike	smart	buttons,	icons	available	for	regular	buttons	are	those found	in	`addons/web/static/src/img/icons`. 
-- string	is	the	button	text	description. 
-- type	can	be	workflow,	object	or	action,	to	either	trigger	a	workflow	signal,	call	a Python	method,	or	run	a	window	action. 
-- name	is	the	workflow	trigger,	model	method,	or	window	action	to	run,	depending	on the	button	type. 
-- args	can	be	used	to	pass	additional	parameters	to	the	method,	if	the	type	is	object. 
-- context	sets	values	on	the	session	context,	which	can	have	an	effect	after	the windows	action	is	run,	or	when	a	Python	method	is	called.	In	the	latter	case,	it	can sometimes	be	used	as	an	alternative	to	args. 
-- confirm	adds	a	dialog	with	this	message	text	asking	for	a	confirmation. 
-- `special="cancel"`	is	used	on	wizards,	to	cancel	and	close	the	form.	It	should	not	be used	with	type. 
- 
-
-**Fields**
-  
-Fields	have	these	attributes	available	for	them.	Most	are	taken	from	what	was	defined	in the	model,	but	can	be	overridden	in	the	view. 
-General	attributes: 
-
-- name:	identifies	the	field	technical	name. 
-- string:	provides	label	text	description	to	override	the	one	provided	by	the	model. 
-- help:	tooltip	text	to	use	replace	the	one	provided	by	the	model. 
-- placeholder:	provides	suggestion	text	to	display	inside	the	field. 
-- widget:	overrides	the	default	widget	used	for	the	field’s	type.	We	will	explore	the available	widgets	a	bit	later	in	the	chapter. 
-- options:	holds	additional	options	to	be	used	by	the	widget. 
-- class:	provides	CSS	classes	to	use	for	the	field’s	HTML. 
-- `invisible="1"`:	makes	the	field	invisible. 
-- `nolabel="1"`:	does	not	display	the	field’s	label,	it	is	only	meaningful	for	fields	inside a `<group>`	element. 
-- `readonly="1"`:	makes	the	field	non	editable. 
-- `required="1"`:	makes	the	field	mandatory. 
-
-Attributes	specific	for	some	field	types: 
-
-- sum,	avg:	for	numeric	fields,	and	in	list/tree	views,	add	a	summary	at	the	end	with	the total	or	the	average	of	the	values. 
-- `password="True"`:	for	text	fields,	displays	the	field	as	a password	field. 
-- filename:	for	binary	fields,	is	the	field	for	the	name	of	the	file. 
-- `mode="tree"`:	for	One2many	fields,	is	the	view	type	to	use	to	display	the	records.	By default	it	is	tree,	but	can	also	be	form,	kanban	or	graph. 
-
-For	the	Boolean	attributes	in	general,	we	can	use	True	or	1	to	enable	and	False	or	0	to disable	them.	For	example,	`readonly="1"`	and	`readonly="True"`	are	equivalent. 
-
-
-**Relational	fields**
-
-On	relational	fields,	we	can	have	some	additional	control	on	what	the	user	is	allowed	to do.	By	default,	the	user	can	create	new	records	from	these	fields	(also	known	as	quick create)	and	open	the	related	record	form.	This	can	be	disabled	using	the	options	field attribute: 
-```
-options={'no_open':	True,	'no_create':	True} 
-```
-The	context	and	domain	are	also	particularly	useful	on	relational	fields.	The	context	can define	default	values	for	the	related	records,	and	the	domain	can	limit	the	selectable records,	for	example,	based	on	another	field	of	the	current	record.	Both	context	and  domain	can	be	defined	in	the	model,	but	they	are	only	used	on	the	view. 
-
-
-**Field	widgets**
-
-Each	field	type	is	displayed	in	the	form	with	the	appropriate	default	widget.	But	other additional	widgets	are	available	and	can	be	used	as	well: 
-
-Widgets	for	text	fields: 
-
-- email:	makes	the	e-mail	text	an	actionable	mail-to	address. 
-- url:	formats	the	text	as	a	clickable	URL. 
-- html:	expects	HTML	content	and	renders	it;	in	edit	mode	it	uses	a	WYSIWYG	editor to	format	the	content	without	the	need	to	know	HTML. 
-
-Widgets	for	numeric	fields: 
-
-- handle:	specifically	designed	for	sequence	fields,	this	displays	a	handle	to	drag	lines in	a	list	view	and	manually	reorder	them. 
-- float_time:	formats	a	float	value	as	time	in	hours	and	minutes. 
-- monetary:	displays	a	float	field	as	a	currency	amount.	The	currency	to	use	can	be taken	from	a	field,	such	as `options="{'currency_field':	'currency_id'}"`. 
-- progressbar:	presents	a	float	as	a	progress	percentage,	usually	it	is	used	on	a computed	field	calculating	a	completion	rate. 
-
-Some	widgets	for	relational	and	selection	fields: 
-
-- many2many_tags:	displays	a	many	to	many	field	as	a	list	of	tags. 
-- selection:	uses	the	Selection	field	widget	for	a	many	to	one	field. 
-- radio:	allows	picking	a	value	for	a	selection	field	option	using	radio	buttons. 
-- `kanban_state_selection`:	shows	a	semaphore	light	for	the	kanban	state	selection list. 
-- priority:	represents	a	selection	as	a	list	of	clickable	stars. 
-
-
-**On-change	events**
-
-Sometimes	we	need	the	value	for	a	field	to	be	automatically	calculated	when	another	field is	changed.	The	mechanism	for	this	is	called	on-change. 
-
-Since	version	8,	the	on-change	events	are	defined	on	the	model	layer,	without	the	need	for any	specific	markup	on	the	views.	This	is	done	by	creating	the	methods	to	perform	the calculations	and	binding	them	to	the	triggering	field(s)	using	a	decorator `@api.onchange('field1',	'field2')`.
- 
-In	previous	versions,	this	binding	was	done	in	the	view	layer,	using	the	onchange	field attribute	to	set	the	class	method	called	when	that	field	was	changed.	This	is	still	supported, but	is	deprecated.	Be	aware	that	the	old-style	on-change	methods	can’t	be	extended	using the	new	API.	If	you	need	to	do	that,	you	should	use	the	old	API. 
+El “attrs” también puede fijar valores para otros dos atributos: readonly y required, pero esto solo tiene sentido para los campos de datos, convirtiéndolos en campos que no pueden ser editados u obligatorios. Con esto podemos agregar alguna lógica de negocio haciendo a un campo obligatorio, dependiendo del valor de otro campo, o desde un cierto estado mas adelante.
  
 
-**Dynamic	views**
+**Vistas de lista**
 
-The	elements	visible	as	a	form	can	also	be	changed	dynamically,	depending,	for	example, on	the	user’s	permissions	or	the	process	stage	the	document	is	in. 
+Comparadas con las vistas de formulario, las vistas de listas son mucho más simples. Una vista de lista puede contener campos y botones, y muchos de los atributos de los formularios también están disponibles.
 
-These	two	attributes	allow	us	to	control	the	visibility	of	user	interface	elements: 
-
-- groups:	makes	the	element	visible	only	for	members	of	the	specified	security	groups. It	expects	a	comma	separated	list	of	group’s	XML	IDs. 
-- states:	makes	the	element	visible	only	when	the	document	is	in	the	specified	state.	It expects	a	comma-separated	list	of	State	codes,	and	the	document	model	must	have	a 
-state	field. 
-
-For	more	flexibility,	we	can	instead	set	an	element’s	visibility	using	client-side	evaluated expressions.	This	is	done	using	the	attrs	attribute	with	a	dictionary	mapping	the  invisible	attribute	to	the	result	of	a	domain	expression. 
-
-For	example,	to	have	the	refers_to 	field	visible	in	all	states	except	draft: 
+Aquí se muestra un ejemplo de una vista de lista para nuestra Tareas por Hacer:
 ```
-<field	name="refers_to"	 							attrs="{'invisible':	[('state','=','draft')]}"	/> 
+<record id="todo_app.view_tree_todo_task"	model="ir.ui.view">
+    <field name="name">To-do Task Tree</field>
+    <field name="model">todo.task</field>
+    <field name="arch" type="xml">
+        <tree editable="bottom" colors="gray:is_done==True" fonts="italic: state!='open'" delete="false">
+            <field name="name"/>
+            <field name="user_id"/>
+        </tree>
+    </field>
+</record> 
 ```
-The	invisible	attribute	is	available	in	any	element,	not	only	fields.	We	can	use	it	on notebook	pages	or	groups,	for	example. 
-The	attrs	can	also	set	values	for	two	other	attributes:	readonly	and	required,	but	these only	make	sense	for	data	fields,	making	them	not	editable	or	mandatory.	With	this	we	can add	some	client	logic	such	as	making	a	field	mandatory,	depending	on	the	value	from another	field,	or	only	from	a	certain	state	onward. 
+Los atributos para el elemento “tree” de nivel superior son:
+
+- editable: permite que los registros sean editados directamente en la vista de lista. Los valores posibles son “top” y “bottom”, los lugares en donde serán agregados los registros nuevos.
+
+- colors: fija dinámicamente el color del texto para los registros, basándose en su contenido. Es una lista separada por punto y coma de valores `color:condition`. “color” es un color válido CSS (vea [http://www.w3.org/TR/css3-color/#html4](http://www.w3.org/TR/css3-color/#html4) ), y “condition” es una expresión Python que evalúa el contexto del registro actual.
+
+- fonts: modifica dinámicamente el tipo de letra para los registro basándose en su contexto. Es similar al atributo “colors”, pero este fija el estilo de la letra a “bold”, “italic” o “underline”.
+ 
+- create, delete, edit: si se fija a “false” (en minúscula), deshabilita la acción correspondiente en la vista de lista.
  
 
-**List	views**
+**Vistas de búsqueda**
 
-Compared	to	form	views,	list	views	are	much	simpler.	A	list	view	can	contain	fields	and buttons,	and	most	of	their	attributes	for	forms	are	also	valid	here. 
+Las opciones de búsqueda disponibles en las vistas son definidas a través de una vista de lista. Esta define los campos que serán buscados cuando se escriba en la caja de búsqueda. También provee filtros predefinidos que pueden ser activados con un clic, y opciones de agrupación de datos para los registros en las vistas de lista o kanban.
 
-Here	is	an	example	of	a	list	view	for	our	To-do	Tasks: 
+Aquí se muestra una vista de búsqueda para las tareas por hacer:
 ```
-<record	id="todo_app.view_tree_todo_task"	model="ir.ui.view"> 		<field	name="name">To-do	Task	Tree</field> 		<field	name="model">todo.task</field> 		<field	name="arch"	type="xml"> 				<tree	editable="bottom" 										colors="gray:is_done==True" 										fonts="italic:	state!='open'"	delete="false"> 						<field	name="name"/> 						<field	name="user_id"/> 				</tree> 			</field> </record> 
-```
-The	attributes	for	the	tree	top	element	are: 
-editable:	makes	the	records	editable	directly	on	the	list	view.	The	possible	values are	top	and	bottom,	the	location	where	new	records	will	be	added. 
-
-- colors:	dynamically	sets	the	text	color	for	the	records,	based	on	their	content.	It	is	a semicolon-separated	list	of	color:condition	values.	The	color	is	a	CSS	valid	color (see [http://www.w3.org/TR/css3-color/#html4](http://www.w3.org/TR/css3-color/#html4) ),	and	the	condition	is	a	Python expression	to	evaluate	on	the	context	of	the	current	record. 
-fonts:	dynamically	modifies	the	font	for	the	records	based	on	their	content.	Similar to	the	colors	attribute,	but	instead	sets	a	font	style	to	bold,	italic	or	underline.
- 
-create,	delete,	edit:	if	set	to	false	(in	lowercase),	these	disable	the	corresponding action	on	the	list	view. 
- 
-
-**Search	views**
-
-The	search	options	available	on	views	are	defined	with	a	search	view.	It	defines	the	fields to	be	searched	when	typing	in	the	search	box	It	also	provides	predefined	filters	that	can	be activated	with	a	click,	and	data	grouping	options	for	the	records	on	list	and	kanban	views. 
-
-Here	is	a	search	view	for	the	to-do	tasks: 
-```
-<record	id="todo_app.view_filter_todo_task" 								model="ir.ui.view"> 		<field	name="name">To-do	Task	Filter</field> 		<field	name="model">todo.task</field> 		<field	name="arch"	type="xml"> 				<search> 						<field	name="name"	domain_filter="['|', 										('name','ilike',self),('user_id','ilike',self)]"/> 						<field	name="user_id"/> 						<filter	name="filter_not_done"	string="Not	Done" 														domain="[('is_done','=',False)]"/> 						<filter	name="filter_done"	string="Done" 														domain="[('is_done','!=',False)]"/> 						<separator/> 						<filter	name="group_user"	string="By	User" 														context="{'group_by':	'user_id'}"/> 				</search> 		</field> </record>
+<record id="todo_app.view_filter_todo_task" model="ir.ui.view">
+    <field name="name">To-do Task Filter</field>
+    <field name="model">todo.task</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name" domain_filter="['|', ('name','ilike',self),('user_id','ilike',self)]"/>
+            <field name="user_id"/>
+        	<filter name="filter_not_done" string="Not Done" domain="[('is_done','=',False)]"/>
+            <filter name="filter_done" string="Done" domain="[('is_done','!=',False)]"/>
+            <separator/>
+            <filter name="group_user" string="By User" context="{'group_by':'user_id'}"/>
+        </search>
+    </field>
+</record>
 ``` 
-We	can	see	two	fields	to	be	searched	for:	name	and	user_id.	On	name	we	have	a	custom filter	rule	that	makes	the	“if	search”	both	on	the	description	and	on	the	responsible	user. Then	we	have	two	predefined	filters,	filtering	the	not	done	and	done	tasks.	These	filters can	be	activated	independently,	and	will	be	joined	with	an	“OR”	operator	if	both	are enabled.	Blocks	of	filters	separated	with	a	`<separator/>`	element	will	be	joined	with	an “AND”	operator. 
+Podemos ver dos campos que serán buscados: “name” y “user_id”. En “name” tenemos una regla de filtro que hace la “búsqueda si” tanto en la descripción como en el usuario responsable. Luego tenemos dos filtros predefinidos, filtrando las “tareas no culminadas” y “tareas culminadas”. Estos filtros pueden ser activados de forma independiente, y serán unidos por un operador “OR” si ambos son habilitados. Los bloques de “filters” separados por un elemento `<separator/>` serán unidos por un operador “AND”.
 
-The	third	filter	only	sets	a	group-by	context.	This	tells	the	view	to	group	the	records	by that	field,	user_id	in	this	case. 
-The	field	elements	can	use	these	attributes:
+El tercer filtro solo fija un contexto o ”group-by”. Esto le dice a la vista que agrupe los registros por ese campo, `user_id` en este caso.
+
+Los elementos “filed” pueden usar los siguientes atributos:
  
-- name:	identifies	the	field	to	use. 
-- string:	provides	a	label	text	to	use	instead	of	the	default. 
-- operator:	allows	us	to	use	a	different	operator	other	than	the	default	–	`=`	for numeric	fields	and	ilike	for	the	other	field	types. 
-- filter_domain:	can	be	used	to	set	a	specific	domain	expression	to	use	for	the	search, providing	much	more	flexibility	than	the	operator	attribute.	The	text	being	searched for	is	referenced	in	the	expression	using	self. 
-- groups:	makes	the	search	on	the	field	available	only	for	a	list	of	security	groups (identified	by	XML	IDs). 
+- name: identifica el campo.
+- string: proporciona el texto de la etiqueta que será usado, en vez del predeterminado.
+- operator: nos permite usar un operador diferente en vez del predeterminado - `=` para campos numéricos y “ilike” para otros tipos de campos.
+- filter_domain: puede usarse para definir una expresión de dominio específica para usar en la búsqueda, proporcionando mayor flexibilidad que el atributo “operator”. El texto que será buscado se referencia en la expresión usando “self”.
+- groups: permite hacer que la búsqueda en el campo solo este disponible para una lista de grupos de seguridad (identificado por los Ids XML)
 
-For	the	filter	elements	these	are	the	attributes	available: 
+Estos son los atributos disponibles para los elementos “filter”:
  
-- name:	is	an	identifier	to	use	for	inheritance	or	for	enabling	it	through  `search_default_`	keys	in	the	context	of	window	actions. 
+- name: en un identificador, usado para la herencia o para habilitar la a través de la clave `search_default_` en el contexto de acciones de ventana.
+- string: proporciona el texto de la etiqueta que se mostrara para el filtro (obligatorio) 
+- domain: proporciona la expresión de dominio del filtro para ser añadida al dominio activo.
+- context: es un diccionario de contexto para agregarlo al contexto actual. Usualmente este fija una clave `group_by` con el nombre del filtro que agrupara los registros.
+- groups: permite hacer que el filtro de búsqueda solo este disponible para una lista de grupos.
 
-- string:	provides	label	text	to	display	for	the	filter	(required). 
-- domain:	provides	the	filter	domain	expression	to	be	added	to	the	active	domain. 
-- context:	is	a	context	dictionary	to	add	to	the	current	context.	Usually	this	sets	a  group_by	key	with	the	name	of	the	field	to	group	the	records. 
-- groups:	makes	the	search	filter	available	only	for	a	list	of	groups. 
- 
 
-** Other	types	of	views**
+**Otros tipos de vista**
 
-The	most	frequent	view	types	used	are	the	form	and	list	views,	discussed	until	now.	Other than	these,	a	few	other	view	types	are	available,	and	we	will	give	a	brief	overview	on	each of	them.	Kanban	views	won’t	be	addressed	now,	since	we	will	cover	them	in Chapter	8,  *QWeb	–	Creating	Kanban	Views	and	Reports*. 
+Los tipos de vista que se usan con mayor frecuencia son los formularios y las listas, discutidos hasta ahora. A parte de estas, existen otros tipos de vista, y daremos un vistazo a cada una de ellas. Las vistas kanban no serán discutidas aquí, ya que las veremos en el Capítulo 8.
 
-Remember	that	the	view	types	available	are	defined	in	the	view_mode	attribute	of	the corresponding	window	action. 
- 
+Recuerde que los tipos de vista disponibles están definidos en el atributo `view_mode` de la acción de ventana correspondiente.
 
-**Calendar	views**
-  
-As	the	name	suggests,	this	view	presents	the	records	in	a	calendar.	A	calendar	view	for	the to-do	tasks	could	look	like	this: 
+
+**Vistas de calendario**
+
+Como su nombre lo indica, esta presenta los registros en un calendario. Una vista de calendario para las tareas por hacer puede ser de la siguiente manera:
 ```
-<record	id="view_calendar_todo_task"	model="ir.ui.view"> 		<field	name="name">view_calendar_todo_task</field> 		<field	name="model">todo.task</field> 		<field	name="arch"	type="xml"> 				<calendar	date_start="date_deadline"	color="user_id" 														display="[name],	Stage	[stage_id]"> 						<!--	Fields	used	for	the	text	of	display	attribute	--> 						<field	name="name"	/> 						<field	name="stage_id"	/> 				</calendar> 		</field> </record> 
+<record id="view_calendar_todo_task" model="ir.ui.view">
+    <field name="name">view_calendar_todo_task</field>
+    <field name="model">todo.task</field>
+    <field name="arch" type="xml">
+        <calendar date_start="date_deadline" color="user_id" display="[name], Stage[stage_id]">
+            <!-- Fields used for the text of display attribute →
+            <field name="name" />
+            <field name="stage_id"	/>
+        </calendar>
+    </field>
+</record> 
 ```
-The	calendar	attributes	are	these: 
+Los atributos de “calendar” son los siguientes:
 
-- date_start:	This	is	the	field	for	the	start	date	(mandatory). 
-- date_end:	This	is	the	field	for	the	end	date	(optional). 
-- date_delay:	This	is	the	field	with	the	duration	in	days.	This	is	to	be	used	instead	of  date_end. 
-- color:	This	is	the	field	used	to	color	the	calendar	entries.	Each	value	in	the	field	will be	assigned	a	color,	and	all	its	entries	will	have	the	same	color. 
-- display:	This	is	the	text	to	be	displayed	in	the	calendar	entries.	Fields	can	be	inserted using	[<field>].	These	fields	must	be	declared	inside	the	calendar	element. 
+- `date_start`: El campo para la fecha de inicio (obligatorio).
+- `date_end`: El campo para la fecha de culminación (opcional).
+- `date_delay`: El campo para la duración en días. Este puede ser usado en vez de `date_end`.
+- color: El campo para colorear las entradas del calendario. Se le asignará un color a cada valor en el calendario, y todas sus entradas tendrán el mismo color.
+- display: Este es el texto que se mostrará en las entradas del calendario. Los campos pueden ser insertados usando `[<field>]`. Estos campos deben ser declarados dentro del elemento “calendar”.
+
+
+**Vistas de Gantt**
+
+Esta vista presenta los datos en un gráfico de Gantt, que es útil para la planificación. Las tareas por hacer solo tiene un campo de fecha para la fecha de límite, pero podemos usarla para tener una vista funcional de un gráfico Gantt básico:
+```
+<record id="view_gantt_todo_task" model="ir.ui.view">
+    <field name="name">view_gantt_todo_task</field>
+    <field name="model">todo.task</field>
+    <field name="arch" type="xml">
+        <gantt date_start="date_deadline" default_group_by="user_id" />
+    </field>
+</record> 
+```
+Los atributos que puede ser usados para las vistas Gantt son los siguientes.
+
+- `date_start`: El campo para la fecha de incio (obligatorio).
+- `date_stop`: El campo para la fecha de culminación. Puede ser reemplazado por `date_delay`.
+- `date_delay`: El campo con la duración en días. Puede usarse en vez de `date_stop`.
+- progress: Este campo proporciona el progreso en porcentaje (entre 0 y 100).
+- `default_group_by`: Este campo se usa para agrupar las tareas Gantt.
  
 
-**Gantt	views**
+**Vistas de gráfico**
 
-This	view	presents	the	data	in	a	Gantt	chart,	which	is	useful	for	scheduling.	The	to-do tasks	only	have	a	date	field	for	the	deadline,	but	we	can	use	it	to	have	a	basic	Gantt	view working: 
-```
-<record	id="view_gantt_todo_task"	model="ir.ui.view"> 		<field	name="name">view_gantt_todo_task</field> 		<field	name="model">todo.task</field> 		<field	name="arch"	type="xml"> 				<gantt	date_start="date_deadline" 											default_group_by="user_id"	/> 		</field> </record> 
-```
-Attributes	that	can	be	used	for	Gantt	views	are	as	follows: 
+Los tipos de vista de gráfico proporcionan un análisis de los datos, en forma de gráfico o una tabla pivote interactiva.
 
-- date_start:	This	is	the	field	for	the	start	date	(mandatory). 
-- date_stop:	This	is	the	field	for	the	end	date.	It	can	be	replaced	by	the	date_delay. 
-- date_delay:	This	is	the	field	with	the	duration	in	days.	It	can	be	used	instead	of 
-date_stop. 
-- progress:	This	is	the	field	that	provides	completion	percentage	(between	0	and	100). 
-- default_group_by:	This	is	the	field	used	to	group	the	Gantt	tasks. 
- 
-
-**Graph	views**
-
-The	graph	view	type	provides	a	data	analysis	of	the	data,	in	the	form	of	a	chart	or	an interactive	pivot	table. 
-We	will	add	a	pivot	table	to	the	to-do	tasks.	First,	we	need	a	field	to	be	aggregated.	In	the 
-TodoTask	class,	in	the	`todo_ui/todo_model.py`	file,	add	this	line:
+Agregaremos una tabla pivote a las tareas por hacer. Primero, necesitamos agregar un campo. En la clase TodoTask, del archivo `todo_ui/todo_model.py`, agregue este línea:
 ``` 
-				effort_estimate	=	fields.Integer('Effort	Estimate') 
+effort_estimate = fields.Integer('Effort Estimate') 
 ```
-This	should	also	be	added	to	the	to-do	task	form	so	that	we	can	set	some	data	on	it.	Now, let’s	add	the	graph	view	with	a	pivot	table: 
+También debe ser agregado al formulario de tareas por hacer para que podamos fijar datos allí. Ahora, agreguemos la vista de gráfico con una tabla pivote:
 ```
-<record	id="view_graph_todo_task"	model="ir.ui.view"> 		<field	name="name">view_graph_todo_task</field> 		<field	name="model">todo.task</field> 		<field	name="arch"	type="xml"> 				<graph	type="pivot"> 						<field	name="stage"	type="col"	/> 						<field	name="user_id"	/> 						<field	name="date_deadline"	interval="week"	/> 						<field	name="effort_estimate"	type="measure"	/> 				</graph> 		</field> </record> 
+<record id="view_graph_todo_task" model="ir.ui.view">
+    <field name="name">view_graph_todo_task</field>
+    <field name="model">todo.task</field>
+    <field name="arch" type="xml">
+        <graph type="pivot">
+            <field name="stage" type="col" />
+            <field name="user_id"	/>
+            <field name="date_deadline"	interval="week" />
+            <field name="effort_estimate" type="measure" />
+        </graph>  
+    </field>
+</record> 
 ```
-The	graph	element	has	a	type	attribute	set	to	pivot.	It	can	also	be	bar	(default),	pie,	or line.	In	the	case	of	bar,	an	additional	stacked="True"	can	be	used	to	make	it	a	stacked bar	chart. 
+El elemento “graph” tiene el atributo “type” fijado a “pivot”. También puede ser “bar” (predeterminado), “pie” o “line”. En el caso que sea “bar”, gráfico de barras, adicionalmente se puede usar `stacked=”True”` para hacer un gráfico de barras apilado.
 
-The	graph	should	contain	fields	that	have	these	possible	attributes: 
+“graph” debería contener campos que pueden tener estos posibles atributos: 
 
-- name:	This	identifies	the	field	to	use	in	the	graph,	as	in	other	views. 
-- type:	This	describes	how	the	field	will	be	used,	as	a	row	group	(default),	as	a	col group	(column),	or	as	a	measure. 
-- interval:	only	meaningful	for	date	fields,	this	is	the	time	interval	used	to	group	time data	by	day,	week,	month,	quarter	or	year. 
+- name: Identifica el campo que será usado en el gráfico, así como en otras vistas.
+- type: Describe como será usado el campo, como un grupo de filas (predeterminado), “row”, como un grupo de columnas, “col”, o como una medida, “mesure”.
+- interval: Solo es significativo para los campos de fecha, es un intervalo de tiempo para agrupar datos de fecha por “day”, “week”, “month”, “quarter” o “year”.
  
 
-**Summary**
+**Resumen**
 
-You	learned	more	about	Odoo	views	used	to	build	the	user	interface.	We	started	by	adding menu	options	and	the	window	actions	used	by	them	to	open	views.	The	concepts	of context	and	domain	were	explained	in	more	detail	in	following	sections. 
+Aprendió más sobre las vistas e Odoo que son usadas para la construcción de la interfaz. Comenzamos agregando opciones de menú y acciones de ventana usadas para abrir las vistas. Fueron explicados en detalle los conceptos de contexto y dominio.
 
-You	also	learned	about	designing	list	views	and	configuring	search	options	using	search views.	Next,	we	had	an	overview	of	the	other	view	types	available:	calendar,	Gantt,	and graph.	Kanban	views	will	be	explored	later,	when	you	learn	how	to	use	QWeb. 
+También aprendió como diseñar vistas de lista y configurar opciones de búsqueda usando las vistas de búsqueda. Luego, se describieron de modo general los otros tipos de vista disponibles: calendario, Gantt y gráfico. Las vistas Kanban será estudiadas mas adelante, cuando aprenda como usar Qweb.
 
-We	have	already	seen	models	and	views.	In	the	next	chapter,	you	will	learn	how	to implement	server-side	business	logic. 
+Ya hemos vistos los modelos y las vistas. En el próximo capítulo, aprenderá como implementar la lógica de negocio del lado del servidor.
