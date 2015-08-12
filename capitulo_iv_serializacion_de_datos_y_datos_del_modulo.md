@@ -38,7 +38,7 @@ Ademas de proporcionar una forma de hacer referencia a un registro de una manera
 ![152_1](/images/Odoo Development Essentials - Daniel Reis-152_1.jpg)
 
 
-**Finding	External	IDs**
+**Encontrar identificadores externos**
 
 En la demostracion y configuracion del archivo de datos para el modulo, tenemos que frecuentemente mirar la existencia de Ids Externos	que se necesitan para la referencia. 
 
@@ -50,25 +50,25 @@ Como un Ejemplo,buscamos el ID de usuario de demostracion,podemos navegar en la 
 Para buscar el ID externo para ver los elementos,	en forma de,	arbol,	buscador,	y accion,	el menu de desarrollo es tambien una ayuda.	Para eso,utiliza su opcion vista de administrador	o abrir la informacion	para la vista deseada a utilizar como opcion de editor	<view	type> ,	y selecciona la opcion ver metadato. 
  
 
-**Exporting	and	importing	data**  
+**Exportar y Importar datos**  
 
-We	will	start	exploring	how	data	export	and	import	work	in	Odoo,	and	from	there,	we	will move	on	to	the	more	technical	details. 
+vamos a empezar a trabajar en la exportacion y importacion de datos en Odoo,	y desde alli,	vamos a pasar a los detalles tecnicos. 
  
 ![155_1](/images/Odoo Development Essentials - Daniel Reis-155_1.jpg)
 
 
-**Exporting	data**
+**Exportando datos**
 
-Data	export	is	a	standard	feature	available	in	any	List	view.	To	use	it,	we	must	first	select the	rows	to	export	by	selecting	the	corresponding	checkboxes	on	the	far	left,	and	then select	the	Export 	option	from	the	More 	button. 
+Exportar datos es una caracteristica estándar disponible en cualquier vista de lista.	para usarlo,	primero tenemos que seleccionar la fila de exportacion seleccionando las casillas de verificacion correspondiente en el extremo izquierdo,	y luego seleccionamos la opcion exportar en el boton "más". 
 
-Here	is	an	example,	using	the	recently	created	to-do	tasks: 
-The	Export 	option	takes	us	to	a	dialog	form,	where	we	can	choose	what	to	export.	The Import	Compatible	Export 	option	makes	sure	that	the	exported	file	can	be	imported back	to	Odoo.	We	will	need	to	use	this. 
+aqui esta un ejemplo,	utilizando las reciente tareas creadas a realizar: 
+La opcion exportar nos lleva a un dialogo,	donde podemos elegir lo que se va a exportar.	La opcion exportar compatible se asegura de que el archivo exportado se pueda importar denuevo a Odoo. 
 
-The	export	format	can	be	CSV	or	Excel.	We	will	prefer	CSV	file	to	get	a	better understanding	of	the	export	format.	Next,	we	should	pick	the	columns	we	want	to	export and	click	on	the	Export	To	File 	button.	This	will	start	the	download	of	a	file	with	the exported	data. 
+El formato de exportacion puede ser CSV	o	Excel.	Vamos a preferir archivos	CSV	para tener una mejor comprension del formato de exportacion.	comtinuamos,	eligiendo las columnas que queremos exportar y hacer click en el boton exportar archivo.	esto iniciara la descarga de un archivo con los datos exportados. 
  
 ![156_1](/images/Odoo Development Essentials - Daniel Reis-156_1.jpg)
 
-If	we	follow	these	instructions	and	select	the	fields	shown	in	the	preceding	screenshot,	we should	end	up	with	a	CSV	text	file	similar	to	this: 
+si seguimos estas instrucciones y seleccionamos los campos que se demuestran en la imagen anterior,	debemos terminar con un archivo de texto CSV similar a este: 
 ```
 "id","name","user_id/id","date_deadline","is_done" "__export__.todo_task_1","Install	Odoo","base.user_root","2015-01- 30","True" "__export__.todo_task_2","Create	dev	database","base.user_root","","False" 
 ```
@@ -77,23 +77,23 @@ Notice	that	Odoo	automatically	exported	an	additional	id	column.	This	is	an	Exte
 ![157_1](/images/Odoo Development Essentials - Daniel Reis-157_1.jpg)
 
 
-**Importing	data**
+**Importar datos**
 
-First	we	have	to	make	sure	the	import	feature	is	enabled.	This	is	done	in	the	Settings  menu,	Configuration 	|	General	Settings 	option.	Under	the	Import	/	Export 	topic,	make sure	the	Allow	users	to	import	data	from	CSV	files 	checkbox	is	enabled. 
+Primero tenemos que asegurar de que la funcion de importar este habilitada.	Esto se hace en el menu de configuracion,	Configuracion	|	opcion de configuracion general.	bajar importacion	/	tema exportacion,	asegúrese de que la opcion permitir a los usuarios importar datos de archivos CSV este la casilla habilidata. 
 
-With	this	option	enabled,	the	List	views	show	an	Import 	option	next	to	the	Create 	button at	the	top	of	the	list. 
-Let’s	perform	a	mass	edit	on	our	to-do	data:	open	in	a	spreadsheet	or	a	text	editor	the	CSV file	we	just	downloaded,	then	change	a	few	values	and	add	some	new	rows. 
+Con esta opcion habilitada,	los puntos de vista de la lista muestran una opcion de importacion junto al boton crear en la parte superior de la lista. 
+Vamos a realizar una edicion masiva en nuestros datos de tareas pendientes:	se abre en una hoja de calculo o en un editor de texto el archivo CSV que acabamos de descargar, a continuacion, cambiar algunos valores y añadir algunas nuevas filas. 
 
-As	mentioned	before,	the	first	id	column	provides	a	unique	identifier	for	each	row allowing	already	existing	records	to	be	updated	instead	of	duplicated	when	we	import	the data	back	to	Odoo.	For	new	rows	we	may	add	to	the	CSV	file,	the	id	should	be	left	blank, and	a	new	record	will	be	created	for	them. 
+Como se menciono antes,la primera columna de identificacion proporciona un identificador unico para cada fila permitiendo registros ya existentes que se actualizaran en ves de duplicarse cuando importamos los datos de nuevo a Odoo.	Para las nuevas filas podemos añadir el archivo CSV,	se deben dejar en blanco, y se crea un nuevo record para ellos.
 
-After	saving	the	changes	on	the	CSV	file,	click	on	the	Import 	option	(next	to	the	Create  button)	and	we	will	be	presented	with	the	import	assistant.	There	we	should	select	the CSV	file	location	on	disk	and	click	on	Validate 	to	check	its	format	for	correctness.	Since the	file	to	import	is	based	on	an	Odoo	export,	there	is	a	good	chance	it	will	be	valid. 
+Despues de guardar los cambios en el archivo CSV,	haga click en la opcion importar	(seguido del boton crear)	y se presentara el asistente de importacion.	hay que seleccionar la ubicacion del archivo CSV sobre el disco y hasle click en validar  para conprobar su formato para la correccion.	desde el archivo de importacion basandose como la exportacion de Odoo,	hay buena probabilidad que sea validado. 
 
-Now	we	can	click	on	Import 	and	there	you	go:	our	modifications	and	new	records	should have	been	loaded	into	Odoo. 
+Ahora podemos hacer click en importar y se va:	nuevas modificaciones y nuevos registros deberian haber cargado en Odoo. 
  
 
-**Related	records	in	CSV	data	files**
+**Registrado relacionados en los archivos de datos CSV**
 
-In	the	example	seen	above,	the	user	responsible	for	each	task	is	a	related	record	in	the users	model,	with	a	many	to	one 	(or	foreign	key)	relation.	The	column	name	used	for	it was	user_id/id	and	the	field	values	were	External	IDs	for	the	related	records,	such	as  `base.user_root`	for	the	administrator	user. 
+en el ejemplo visto anteriormente,	el usuario responsable de cada tarea es un registro relacionado en el modelo de los usuarios,	con la relacion many	to	one 	(o	foreign	key).	El nombre de la columna para ello fue de usuario _id/id y los valores de los campos eran identificadores externos para los registros relacionados,tales como  `base.user_root`	para el usuario administrador. 
 
 Relation	columns	should	have	`/id`	appended	to	their	name,	if	using	External	IDs,	or	`/.id`, if	using	database	(numeric)	IDs.	Alternatively,	a	colon	`(:)`	can	be	used	in	place	of	the	slash for	the	same	effect. 
 
