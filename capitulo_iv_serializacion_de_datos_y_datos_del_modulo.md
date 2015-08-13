@@ -259,63 +259,63 @@ Para escribir sobre una de muchas de campo se utiliza una lista de triples. Cada
 El símbolo de subrayado utilizado anteriormente representa valores irrelevantes, por lo general llenas de 0 o Falso. 
  
 
-**Shortcuts	for	frequently	used	Models**
+**Atajos para modelos de uso frecuente**
 
-If	we	go	back	to Chapter	2 ,	*Building	Your	First	Odoo	Application*,	we	can	find	in	the XML	files	elements	other	than	`<record>} ,	such	as	`<act_window>`	and	`<menuitem>`.
+Si nos remontamos al Capítulo 2,	*La construcción de su primera aplicación Odoo*,	que podemos encontrar en los elementos de los archivos XML que no sean	`<record>} ,	como	`<act_window>`	y	`<menuitem>`.
  
-These	are	convenient	shortcuts	for	frequently	used	Models	that	can	also	be	loaded	using regular	`<record>`	elements.	They	load	data	into	base	Models	supporting	the	user	interface and	will	be	explored	in	more	detail	later,	in Chapter	6 ,	*Views	-	Designing	the	User Interface*.
+Estos son los atajos convenientes para los modelos de uso frecuente, que también se pueden cargar utilizando regulares	`<record>`	elementos. Cargan datos en los modelos de base de apoyo a la interfaz de usuario y se estudiarán con más detalle más adelante, en el capítulo 6, * Vistas - Diseño de la interfaz de usuario *.
  
-For	reference,	so	that	we	can	better	understand	XML	files	we	may	encounter	in	existing modules,	the	following	shortcut	elements	are	available	with	the	corresponding	Models they	load	data	into: 
+Como referencia, de manera que podamos comprender mejor los archivos XML que podemos encontrar en los módulos existentes, los siguientes elementos de acceso directo están disponibles con los modelos correspondientes se cargan datos en:
 
-- `<act_window>`:	This	is	the	Window	Actions	model	`ir.actions.act_window` 
-- `<menuitem>`:	This	is	the	Menu	Items	model	`ir.ui.menu` 
-- `<report>`:	This	is	the	Report	Actions	model	`ir.actions.report.xml`
-- `<template>`:	This	is	View	QWeb	Templates	stored	in	model	`ir.ui.view` 
-- `<url>`:	This	is	the	URL	Actions	model	`ir.actions.act_url` 
+- `<act_window>`:	Este es el modelo de ventana acciones	`ir.actions.act_window` 
+- `<menuitem>`:	Este es el modelo de elementos de menú	`ir.ui.menu` 
+- `<report>`:	Este es el modelo de acciones Reportar	`ir.actions.report.xml`
+- `<template>`:	Esto se almacena Ver QWEB plantillas en el modelo`ir.ui.view` 
+- `<url>`:	Este es el modelo de URL acciones	`ir.actions.act_url` 
  
 
-**Other	actions	in	XML	data	files**
+**Otras acciones en archivos de datos XML**
   
-Until	now	we	have	seen	how	to	add	or	update	data	using	XML	files.	But	XML	files	also allow	performing	other	types	of	actions,	sometimes	needed	to	set	up	data.	In	particular, they	are	capable	in	deleting	the	data,	execute	arbitrary	model	methods,	and	trigger workflow	events. 
+Hasta ahora hemos visto cómo añadir o actualizar datos mediante archivos XML. Pero los archivos XML también permiten realizar otro tipo de acciones, a veces necesarios para configurar los datos. En particular, son capaces de eliminar los datos, ejecutar métodos modelo arbitrarias, y eventos de flujo de trabajo gatillo.
 
 
-**Deleting	records**
+**Eliminación de registros**
 
-To	delete	a	data	record	we	use	the	<delete>	element,	providing	it	with	either	an	id	or	a search	domain	to	find	the	target	record. 
+Para borrar un registro de datos se utiliza el elemento <Eliminar>, siempre que sea con un id o un dominio de búsqueda para encontrar el registro de destino.
 
-In Chapter	3, 	*Inheritance	–	Extending	Existing	Applications*,	we	had	the	need	to	remove	a record	rule	added	by	the	to-do	app.	In	the	`todo_user/security/todo_access_rules.xml` file	a	`<delete>`	element	was	used,	with	a	search	domain	to	find	the	record	to	delete: 
+En el capítulo 3, 	*Herencia - Ampliación de aplicaciones existentes*,	tuvimos la necesidad de eliminar una regla de registro añadida por la aplicación de tareas pendientes.	En el	`todo_user/security/todo_access_rules.xml` un archivo	`<delete>`	se utilizó elemento, con un dominio de búsqueda para encontrar el registro para eliminar: 
 ```
 <delete	model="ir.rule"	search="[('id','=',ref('todo_app.todo_task_user_rule'))]" /> 
 ```
-In	this	case	the	same	exact	effect	could	be	achieved	using	the	id	attribute	to	identify	the record	to	delete: 
+En este caso, el mismo efecto se puede lograr mediante el atributo id para identificar el registro para eliminar: 
 ```
 <delete	model="ir.rule"	id="todo_app.todo_task_user_rule"	/> 
 ```
 
-**Triggering	functions	and	workflows**
+**Activación de las funciones y flujos de trabajo**
 
-An	XML	file	can	also	execute	methods	during	its	load	process	through	the	`<function>` element.	This	can	be	used	to	set	up	demo	and	test	data.	For	example,	in	the	membership module	it	is	used	to	create	demonstration	membership	invoices: 
+Un archivo XML también se puede ejecutar métodos durante su proceso de carga a través de la	`<function>` elemento . Esto puede ser usado para establecer datos de demostración y de prueba. Por ejemplo, en el módulo de miembros que se utiliza para crear facturas de miembros demostración
 ```
 <function model="res.partner" name="create_membership_invoice"	eval="(ref('base.res_partner_2'), ref('membership_0'), {'amount':180})" /> 
 ```
-This	is	calling	the	`create_membership_invoice()`	method	of	the	`res.partner`	model. The	arguments	are	passed	as	a	tuple	in	the	eval	attribute.	In	this	case	we	have	a	tuple	with three	arguments:	the	Partner	ID,	the	Membership	ID	and	a	dictionary	containing	the invoice	amount. 
+Esto se llama la	`create_membership_invoice()`	método de la	`res.partner`	modelo. Los argumentos se pasan como una tupla en el atributo eval. En este caso tenemos una tupla con tres argumentos: el ID de socio, la identificación de membresía y un diccionario que contiene el importe de la factura.
 
-Another	way	XML	data	files	can	perform	actions	is	by	triggering	Odoo	workflows, through	the	`<workflow>`	element.
+Otra forma de archivos de datos XML pueden realizar acciones es mediante la activación de los flujos de trabajo Odoo, a través del elemento	`<workflow>`.
  
-Workflows	can,	for	example,	change	the	state	of	a	sales	order	or	convert	it	into	an	invoice. Here	is	an	example	taken	from	the	sale	module,	converting	a	draft	sales	order	to	the confirmed	state: 
+Los flujos de trabajo pueden, por ejemplo, cambiar el estado de un pedido de cliente o convertirlo en una factura. He aquí un ejemplo tomado del módulo de venta, la conversión de un proyecto de orden de ventas para el estado confirmado: 
 ```
 <workflow	model="sale.order" ref="sale_order_4" action="order_confirm"	/>
 ``` 
-The	model	is	self-explanatory	by	now,	and	ref	identifies	the	workflow	instance	we	are acting	upon.	The	action	is	the	workflow	signal	sent	to	that	workflow	instance. 
+El modelo se explica por sí a estas alturas, y ref identifica la instancia de flujo de trabajo que estamos actuando sobre. La acción es la señal de flujo de trabajo enviado a esa instancia de flujo de trabajo.
  
 
-**Summary**
+**Resumen**
 
-We	have	learned	all	the	essentials	about	data	serialization,	and	gained	a	better understanding	of	the	XML	aspects	we	saw	in	the	previous	chapters. 
+Hemos aprendido todo lo necesario sobre la serialización de datos, y ha ganado una mejor comprensión de los aspectos XML que vimos en los capítulos anteriores.
 
-We	also	spent	some	time	understanding	External	Identifiers,	a	central	concept	for	data handling	in	general,	and	for	module	configurations	in	particular. 
+También pasamos algún tiempo comprender identificadores externos, un concepto central para el manejo de datos en general, y para las configuraciones de módulo en particular.
 
-XML	data	files	were	explained	in	detail.	We	learned	about	the	several	options	available	to set	values	on	fields	and	also	to	perform	actions	such	as	deleting	records	and	calling	model methods. 
-CSV	files	and	the	data	import/export	features	were	also	explained.	These	are	valuable tools	for	Odoo	initial	setup	or	for	mass	editing	of	data. 
+Archivos de datos XML se explicaron en detalle. Aprendimos sobre las distintas opciones disponibles para establecer los valores de los campos y también para realizar acciones como eliminar registros y llamar a métodos de modelo.
+Archivos CSV y las características de importación / exportación de datos también fueron explicados. Estas son herramientas valiosas para la configuración inicial Odoo o para la edición masiva de datos.
 
-In	the	next	chapter	are	will	explore	in	detail	how	to	build	Odoo	models	and	later	learn more	about	building	their	user	interfaces. 
+En el siguiente capítulo se estudiará con detalle cómo construir modelos Odoo y posteriormente obtener más información sobre la construcción de sus interfaces de usuario.
