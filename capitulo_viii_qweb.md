@@ -19,9 +19,9 @@ La simplicidad y el impacto visual del tablero kanban los hace excelente para so
 Las vistas kanban una característica distintiva de Odoo, haciendo fácil implementar estos tableros. Aprendamos cómo usarlos.
 
 
-**Kanban	views**
+**Kanban views**
 
-En las vistas de formulario, usamos mayormente elementos XML específicos, tales como <field> y <group>, y algunos elementos HTML, tales como <h1> o <div>. Con las vistas kanban, es un poco lo opuesto; ellas son plantillas basadas en HTML y soportan solo dos elementos específicos de Odoo, <field> y <button>. 
+En las vistas de formulario, usamos mayormente elementos XML específicos, tales como `<field>` y `<group>`, y algunos elementos HTML, tales como `<h1>` o `<div>`. Con las vistas kanban, es un poco lo opuesto; ellas son plantillas basadas en HTML y soportan solo dos elementos específicos de Odoo, `<field>` y `<button>`. 
 
 El HTML puede ser generado dinámicamente usando el motor de plantilla Qweb. Éste procesa los atributos de etiqueta especiales en los elementos HTML para producir el HTML final para ser presentado por el cliente web. Esto proporciona mucho control sobre cómo renderizar el contenido, pero también permite hacer diseños de vistas más complejas.
 
