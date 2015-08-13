@@ -72,7 +72,7 @@ si seguimos estas instrucciones y seleccionamos los campos que se demuestran en 
 ```
 "id","name","user_id/id","date_deadline","is_done" "__export__.todo_task_1","Install	Odoo","base.user_root","2015-01- 30","True" "__export__.todo_task_2","Create	dev	database","base.user_root","","False" 
 ```
-Notice	that	Odoo	automatically	exported	an	additional	id	column.	This	is	an	External	ID that	is	automatically	generated	for	each	record.	These	generated	External	IDs	use `__export__` in	place	of	an	actual	module	name.	New	identifiers	are	only	assigned	to records	that	don’t	already	have	one,	and	from	there	on,	they	are	kept	bound	to	the	same record.	This	means	that	subsequent	exports	will	preserve	the	same	External	IDs. 
+Observe que Odoo exporta automaticamente una columna adicional identificada.	Este es un ID externo que se genera automaticamente para cada registro.	Estos identificadores externos generados utiliza `__export__` en lugar de un nombre real de módulo.	Nuevos identificadores solo se asignan a los que no poseen uno asignado,	y ya apartir de alli,	se mantienen unidos al mismos registro.	Esto significa que las exportaciones posteriores perserverán los mismos identificadores externos. 
  
 ![157_1](/images/Odoo Development Essentials - Daniel Reis-157_1.jpg)
 
@@ -95,33 +95,33 @@ Ahora podemos hacer click en importar y se va:	nuevas modificaciones y nuevos re
 
 en el ejemplo visto anteriormente,	el usuario responsable de cada tarea es un registro relacionado en el modelo de los usuarios,	con la relacion many	to	one 	(o	foreign	key).	El nombre de la columna para ello fue de usuario _id/id y los valores de los campos eran identificadores externos para los registros relacionados,tales como  `base.user_root`	para el usuario administrador. 
 
-Relation	columns	should	have	`/id`	appended	to	their	name,	if	using	External	IDs,	or	`/.id`, if	using	database	(numeric)	IDs.	Alternatively,	a	colon	`(:)`	can	be	used	in	place	of	the	slash for	the	same	effect. 
+Columnas de relacion deben tener	`/id`	anexo a su nombre,	si el uso IDs externos,	o	`/.id`, si el uso de base de datos	(númerico)	IDs.	Alternativamente,	dos puntos	`(:)`	se puede utilizar en lugar de la barra para el mismo efecto. 
 
-Similarly,	many	to	many 	relations	are	also	supported.	An	example	of	a	many	to	many relations	is	the	one	between	Users	and	Groups:	each	User	can	be	in	many	Groups,	and each	Group	can	have	many	Users.	The	column	name	for	this	type	of	field	should	have appended	a	`/id`.	The	field	values	accept	a	comma-separated	list	of	External	IDs, surrounded	by	double	quotes. 
+Del mismo modo,	la relacion many	to	many son soportable. Un ejemplo de relacion many	to	many	es la que existe entre usuarios y grupos:	cada usuario puede estar en muchos grupos, y cada grupo puede tener muchos usuarios.	La columna nombre	por este typo de campo deberia haber añadido un	`/id`.	Los valores de los campos acepta una lista separada por comas de Id externo, entre comillas dobles. 
 
-For	example,	the	to-do	task	follower	is	a	many-to-many	relation	between	To-do	Tasks	and Partners.	It’s	column	name	could	be	follower_ids/id	and	a	field	value	with	two followers	could	be: 
+Por ejemplo,	Seguir tareas a realizar con la relacion	many-to-many	entre hacer los Tasks	y Partners.	El nombre de la columna podia ser follower_ids/id	y un valor de campo con dos seguidores podria ser: 
 `"__export__.res_partner_1,__export__.res_partner_2"`
  
-Finally,	one	to	many 	relations	can	also	be	imported	through	a	CSV.	The	typical	example of	this	type	of	relations	is	a	document	“head”	with	several	“lines”. 
+Finalmente,	la relaciones one	to	many 	tambien se pueden importar a traves de CSV.	El ejemplo tipico de esta relacion es un documento “head”	con varias	“lines”. 
 
-We	can	see	an	example	for	such	a	relation	in	the	company	model	(form	view	available	in the	Settings 	menu):	a	company	can	have	several	bank	accounts,	each	with	its	own	details, and	each	bank	account	belongs	to	(has	a	many-to-one	relation	with)	only	one	company. 
+Podemos ver un ejemplo de tal relacion en el modelo de empresa	(la vista de formulario esta disponible en el menu configuracion):	una empresa puede tener varias cuentas bancarias,	cada una con sus propios detalles, y cada cuenta bancaria pertenece a (tiene una relacion con many-to-one)	solo una empresa. 
 
-It’s	possible	to	import	companies	along	with	their	bank	accounts	in	a	single	file.	For	this, some	columns	will	correspond	to	the	company,	and	other	columns	will	correspond	to	the bank	account	details.	The	bank	details	column	names	should	be	prefixed	with	the	one-to- many	fields	linking	the	company	to	the	banks;	bank_ids	in	this	case. 
+Es posible importar las empresa juntos con sus cuentas bancarias en un solo archivo.	Para esto,algunas columnas corresponderan a empresas,	 y otras columnas corresponderan a cuentas bancarias detalladas.	Los nombres de columnas de los detalles del banco 	debe ser precedido de la relacion	one-to-many	campos que vincula a la empresa con los bancos;	bank_ids	en este caso. 
 
-The	first	bank	account	details	goes	in	the	same	row	as	its	related	company	data.	The	next bank	account’s	details	go	in	the	next	rows,	but	only	the	bank	details	related	columns should	have	values;	the	company	data	columns	should	be	empty	in	those	lines. 
-Here	is	an	example	loading	a	company	with	three	banks: 
+Los primeros datos de la cuenta bancaria van en la misma fila de los datos vinculados de la empresa.	Los detalles de la proxima cuenta bancaria van en la siguiente fila,	pero solo los datos bancarios de la columna relacionada debe tener valores;	La columna de datos de la empresa debe tener esas lineas vacias. 
+Aqui esta un ejemplo cargando una empresa con datos de tres bancos: 
 ```
 id,name,bank_ids/id,bank_ids/acc_number,bank_ids/state base.main_company,YourCompany,__export__.res_partner_bank_4,123456789,bank ,,__export__.res_partner_bank_5,135792468,bank ,,__export__.res_partner_bank_6,1122334455,bank
 ```
 
-Notice	that	the	two	last	lines	begin	with	two	commas:	this	corresponds	to	empty	values	in the	first	two	columns,	id	and	name,	regarding	the	head	company	data.	But	the	remaining columns,	regarding	bank	accounts,	have	the	values	for	the	second	and	third	bank	records. 
+Observe que las dos ultimas lineas comienzan con comas:	Esto corresponde a valores en las dos p´rimeras columnas,	id	y nombre,	con respecto a los datos del encabezado de empresa.	pero las columnas restantes,con respecto a las cuentas bancarias,tienen valores para la segunda y tercera record del banco. 
 
-These	are	the	essentials	on	working	with	export	and	import	from	the	GUI.	It’s	useful	to	set up	data	in	new	Odoo	instances,	or	to	prepare	data	files	to	be	included	in	Odoo	modules. 
+estos son los elementos esenciales en el trabajo con la exportacion y importacion de la guia.	Es util para establecer los datos en nuevas instancias Odoo, o para prepara nuevos archivos de datos que se incluira en los módulos Odoo. 
  
-Next	we	will	learn	more	about	using	data	files	in	modules. 
+A continuacion vamos aprender mas sobre el uso de los archivos de datos en los módulos. 
  
   
-**Module	data**  
+**Modulos de datos**  
 
 Modules	use	data	files	to	load	their	configurations	into	the	database,	initial	data	and demonstration	data.	This	can	be	done	using	both	CSV	and	XML	files.	For	completeness, the	YAML	file	format	can	also	be	used,	but	this	is	rarely	used	for	data	loading,	so	we won’t	be	discussing	it. 
 
