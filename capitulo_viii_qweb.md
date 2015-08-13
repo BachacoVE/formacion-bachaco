@@ -19,34 +19,49 @@ La simplicidad y el impacto visual del tablero kanban los hace excelente para so
 Las vistas kanban una característica distintiva de Odoo, haciendo fácil implementar estos tableros. Aprendamos cómo usarlos.
 
 
+**Kanban	views**
+
+En las vistas de formulario, usamos mayormente elementos XML específicos, tales como <field> y <group>, y algunos elementos HTML, tales como <h1> o <div>. Con las vistas kanban, es un poco lo opuesto; ellas son plantillas basadas en HTML y soportan solo dos elementos específicos de Odoo, <field> y <button>. 
+
+El HTML puede ser generado dinámicamente usando el motor de plantilla Qweb. Éste procesa los atributos de etiqueta especiales en los elementos HTML para producir el HTML final para ser presentado por el cliente web. Esto proporciona mucho control sobre cómo renderizar el contenido, pero también permite hacer diseños de vistas más complejas.
+
+Las vistas kanban son tan flexibles que pueden haber muchas formas diferentes de diseñarlas, y puede ser difícil proveer una receta para seguir. Una buena regla general es encontrar un vista kanban existente similar a lo que queremos alcanzar, y crear nuestro nuevo trabajo de vista kanban basada en ella.
+
+Observando las vistas kanban usadas en los módulos estándar, es posible identificar dos estilos de vistas kanban principales: viñeta y tarjeta
+
+Ejemplos de las vistas kanban de estilo viñeta pueden ser encontrados en Clientes, Productos, y también, Aplicaciones y Módulos. Ellos usualmente no tienen borde y son decorados con imágenes en el lado de la izquierda, tal como se muestra en la siguiente imagen:
 
 ![281_1](/images/Odoo Development Essentials - Daniel Reis-281_1.jpg)
 
+El estilo kanban tarjeta es usualmente usada para mostrar tarjetas organizadas en columnas para las etapas de procesos. Ejemplos son Oportunidades CRM y Tareas de Proyectos. El contenido principal es mostrado en el área superior de la tarjeta y la información adicional puede ser mostrada en las áreas inferior derecha e inferior izquierda, tal como se muestra en la siguiente imagen:
+
 ![281_2](/images/Odoo Development Essentials - Daniel Reis-281_2.jpg)
 
-**Kanban	views**
+Veremos el esqueleto y elementos típicos usados en ambos estilos de vistas tal que puedas sentirte cómodo adaptándolos a tus casos de usos particular.
 
 
+**Diseña vistas kanban**
 
-In	form	views,	we	use	mostly	specific	XML	elements, such	as	<field>	and	<group>,	and few	HTML	elements,	such as	<h1>	or	<div>.	With	kanban	views,	its	possible to	identify	two main	kanban	view	styles:	vignette	and card	kanbans. 
-
-Examples	of	vignette 	style	kanban	views	can	be found	for	Customers ,	Products ,	and	also Apps	& Modules .	They	usually	have	no	border	and	are	decorated with	an	image	on	the left-hand	side,	as	shown in the	following	image: 
-
-The	card 	style	kanban	is	usually	used	to display cards	organized	in	columns	for	the process stages. Examples	are	CRM	Opportunities 	and	Project	Tasks .	The main	content is	displayed	in	the	card	top	area	and additional	information	can	be	displayed	in	the bottom-right	and	bottom-left	areas,	as	shown	in the	following	image: 
-
-We	will	see	the	skeleton	and	typical	elements	used	in  both	styles	of	views	so	that	you	can feel comfortable adapting	them	to	your	particular	use	cases. 
+La primera cosa es crear un nuevo módulo agregando nuestras vistas kanban a la lista de tareas por hacer. En un trabajo del mundo real, una situación de uso de un módulo para esto podría ser, probablemente, excesiva y ellas podrían ser perfectamente agregadas directamente en el módulo todo_ui. Pero para una explicación más clara, usaremos un nuevo módulo y evitaremos demasiados, y posiblemente confusos, cambios en archivos ya creados. Lo nombraremos todo_kanban y crearemos los archivos iniciales tal como sigue:
 
 
-**Design	kanban	views**
-
-First	thing	is	to	create	a	new	module adding our	kanban	views	to	to-do	tasks.	In	a	real- world	work,	situation	using	a	module	for	this would	probably	be	excessive	and	they	could perfectly well be	added	directly	in	the	todo_ui	module.	But	for a clearer	explanation,	we will	use	a	new	module and avoid	too	many,	and	possibly	confusing, changes	in already created	files.	We	will	name	it	todo_kanban and create	the	usual	initial	files	as	follows: 
 ```
-$	cd	~/odoo-dev/custom-addons $	mkdir	todo_kanban $	touch	todo_kanban/__init__.py  
+$	cd	~/odoo-dev/custom-addons
+$	mkdir	todo_kanban 
+$	touch	todo_kanban/__init__.py
 ```
-Now,	edit	the	descriptor	file	todo_kanban/__openerp__.py as follows:
-``` 
-{'name':	'To-Do	Kanban', 	'description':	'Kanban	board	for	to-do	tasks.', 	'author':	'Daniel	Reis', 	'depends':	['todo_ui'], 	'data':	['todo_view.xml']	} 
+
+Ahora, edita el archivo descriptor todo_kanban/__opernerp__.py tal como sigue:
+
 ```
+{'name':	'To-Do	Kanban',
+'description':	'Kanban	board	for	to-do	tasks.',
+'author':	'Daniel	Reis', 
+'depends':	['todo_ui'],
+'data':	['todo_view.xml']	}
+```
+
+
 Next,	create	the	XML	file	where	our	shiny	new kanban	views	will	go	and	set	kanban	as the default view	on	the	to-do	task	Extending	Existing Applications*, for	more	details. 
 
 Before	starting	with	the	kanban	views,	we	need	to add	a	couple	of	fields	to	the	to-do	tasks model. 
