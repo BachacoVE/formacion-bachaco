@@ -190,11 +190,11 @@ La vista completa de viñenta kanban para las tareas por hacer es como sigue:
 </kanban> 
 ```
 
-Podemos ver los elementos discutidos hasta ahora, y también algunos nuevos. En la etiqueta <img>, tenemos el atributo QWeb especial t-att-src. Esto puede calcular el contenido src de la imagen desde un campo almacenado en la base de datos. Explicaremos esto en otras directivas QWeb en un momento. También podemos ver el uso del atributo especial type en la etiqueta <a>. Echémosle un vistazo más de cerca.
+Podemos ver los elementos discutidos hasta ahora, y también algunos nuevos. En la etiqueta <img>, tenemos el atributo QWeb especial t-att-src. Esto puede calcular el contenido src de la imagen desde un campo almacenado en la base de datos. Explicaremos esto en otras directivas QWeb en un momento. También podemos ver el uso del atributo especial type en la etiqueta `<a>`. Echémosle un vistazo más de cerca.
 
 **Acciones en las vistas kanban**
 
-En las plantillas Qweb, la etiqueta <a> para enlaces puede tener un atributo type.  Este establece el tipo de acción que el enlace ejecutará para que los enlaces puedan actuar como los botones en los formularios regulares. En adición a los elementos <button>, las etiquetas <a> también pueden ser usadas para ejecutar acciones Odoo
+En las plantillas Qweb, la etiqueta <a> para enlaces puede tener un atributo type.  Este establece el tipo de acción que el enlace ejecutará para que los enlaces puedan actuar como los botones en los formularios regulares. En adición a los elementos `<button>`, las etiquetas `<a>` también pueden ser usadas para ejecutar acciones Odoo
 
 As in form views, the action type can be action or object, and it should be accompanied by a name attribute, identifying the specific action to execute. Additionally, the following action types are also available: 
 
