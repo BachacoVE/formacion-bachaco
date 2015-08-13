@@ -88,7 +88,7 @@ Antes de iniciar con las vistas kanban, necesitamos agregar un para de campos en
 
 **Prioridad y estado (state) kanban**
 
-Los dos campos que son frecuentemente usados en las vistas kanban son: priority y kanban state. Priority permite a los usuarios organizar sus elementos de trabajo, señalando lo que debería estar ubicado primero. Kanban state señala cuando una tarea está lista para pasar a la siguiente etapa o si es bloqueada por alguna razón. Ambos son soportados por campos selection y tienen widgets específicos para ser usados en las vistas de formulario y kanban.
+Los dos campos que son frecuentemente usados en las vistas kanban son: priority y kanban state. **Priority** permite a los usuarios organizar sus elementos de trabajo, señalando lo que debería estar ubicado primero. **Kanban state** señala cuando una tarea está lista para pasar a la siguiente etapa o si es bloqueada por alguna razón. Ambos son soportados por campos selection y tienen widgets específicos para ser usados en las vistas de formulario y kanban.
 
 Para agrega estos campos a nuestro modelo, agregaremos al archivo todo_kanban/todo_task.py, tal como se muestra a continuación:
 
@@ -193,18 +193,35 @@ Podemos ver los elementos discutidos hasta ahora, y también algunos nuevos. En 
 
 **Acciones en las vistas kanban**
 
-En las plantillas Qweb, la etiqueta <a> para enlaces puede tener un atributo type.  Este establece el tipo de acción que el enlace ejecutará para que los enlaces puedan actuar como los botones en los formularios regulares. En adición a los elementos `<button>`, las etiquetas `<a>` también pueden ser usadas para ejecutar acciones Odoo
+En las plantillas Qweb, la etiqueta <a> para enlaces puede tener un atributo type.  Este establece el tipo de acción que el enlace ejecutará para que los enlaces puedan actuar como los botones en los formularios regulares. En adición a los elementos `<button>`, las etiquetas `<a>` también pueden ser usadas para ejecutar acciones Odoo.
 
-As in form views, the action type can be action or object, and it should be accompanied by a name attribute, identifying the specific action to execute. Additionally, the following action types are also available: 
+Así como en las vistas de formulario, el tipo de acción puede ser acción u objeto, y debería ser acompañado por atributo nombre, que identifique la acción específica a ejecutar. Adicionalmente, los siguentes tipos de acción también están disponibles:
 
-- open: This opens the corresponding form view. 
-- edit: This opens the corresponding form view directly in edit mode. 
-- delete: This deletes the record and removes the item from the kanban view. 
+- open: Abre la vista formulario correspondiente
+- edit: Abre la vista formulario correspondiente directamente en el modo de edición
+- delete: Elimina el regitro y remueve el elemento de la vista kanban.
+
+**La vista kanban de tarjeta**
+El kanban de **tarjeta** puede ser un poco más complejo. Este tiene un área de contenido principal y dos sub-contenedores al pie, alineados a cada lado de la tarjeta. También podría contener un botń de apertura de una acción de menú en la esquina superior derecha de la tarjeta.
+
+El esqueleto para esta plantilla se vería así:
+
+<t	t-name="kanban-box">
+				<div	class="oe_kanban_card">
+								<div	class="oe_dropdown_kanban	oe_dropdown_toggle">
+													<!--	Top-right	drop	down	menu	-->
+											</div>
+								<div	class="oe_kanban_content">
+												<!--	Content	fields	go	here...	-->
+												<div	class="oe_kanban_bottom_right"></div>
+												<div	class="oe_kanban_footer_left"></div>
+								</div>
+				</div>
+</t>
 
 
-**The card kanban view**
 
-The card  kanban can be a little more complex. It has a main content area and two footer sub -containers, aligned to each of the card sides. A button opening an action menu may also be featured at the card
+
 ```
    <div class="oe_kanban_bottom_right"></div>             <div class="oe_kanban_footer_left"></div>         </div>     </div> </t> 
 A card  kanban is more appropriate for the to-do tasks, so instead of the view described in the previous section, we would be better using the following: 
