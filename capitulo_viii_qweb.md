@@ -1,11 +1,32 @@
-Chapter 8. Qweb To Do, Doing, Done,s learn how to use them. 
+Capítulo 8. QweB -  Creando vistas Kanban y Reportes
 =====
+
+**QWeb** es un motor (engine) de plantillas por odoo. Está basado en XML y es utilizado para generar fragmentos y páginas html. QWeb fue introducido por primera vez en la versión 7.0 para habilitar vistas kanban más ricas, y con las versión 8.0, también se usa para la generación de reportes y páginas web CMS (CMS: Sistemas Manejadores de Contenido).
+
+Aquí aprenderás acerca de la sintaxis QWeb y como usarla para crear tus propias vistas kanban reportes personalizados.
+
+Para entender los tableros kanban, **kanban** es una palabra de origen japonés que es usada para representar un método de gestión de colas (queue) de trabajo. Fue inspirado del Sistema de Producción y Fabricación Ligera (lean) de Toyota, y se ha vuelto popular en la la industria del software con su adopción en las metodologías Ágiles.
+
+El tablero kanban es una herramienta para visualizar la cola de trabajo. Los artículos (items) de trabajo están representados por tarjetas que son organizadas en columnas represantando los etapas (stages) del proceso de trabajo. Nuevos artículos de trabajo inician en la columna más a la izquierda y viaja a través del tablero hasta que alcanzan la columna más a la derecha, representando el trabajo completado.
+
+**Iniciándose con el tablero kanban**
+
+La simplicidad y el impacto visual del tablero kanban los hace excelente para soportar procesos de negocio simples. Un ejemplo básico de un tablero kanban puede tener tres columnas, como se muestra en la siguiente imagen: “ToDo”, “Doing” y “Done” (Por hacer, haciendo y hecho), pero, por supuesto puede ser extendido a cualquier paso de un proceso específico que necesitemos:
+
+
+![280_1](/images/Odoo Development Essentials - Daniel Reis-280_1.jpg)
+
+Las vistas kanban una característica distintiva de Odoo, haciendo fácil implementar estos tableros. Aprendamos cómo usarlos.
+
+
 
 ![281_1](/images/Odoo Development Essentials - Daniel Reis-281_1.jpg)
 
 ![281_2](/images/Odoo Development Essentials - Daniel Reis-281_2.jpg)
 
 **Kanban	views**
+
+
 
 In	form	views,	we	use	mostly	specific	XML	elements, such	as	<field>	and	<group>,	and few	HTML	elements,	such as	<h1>	or	<div>.	With	kanban	views,	its	possible to	identify	two main	kanban	view	styles:	vignette	and card	kanbans. 
 
