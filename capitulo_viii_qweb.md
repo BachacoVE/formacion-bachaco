@@ -7,7 +7,7 @@ Aquí aprenderás acerca de la sintaxis QWeb y como usarla para crear tus propia
 
 Para entender los tableros kanban, **kanban** es una palabra de origen japonés que es usada para representar un método de gestión de colas (queue) de trabajo. Fue inspirado del Sistema de Producción y Fabricación Ligera (lean) de Toyota, y se ha vuelto popular en la la industria del software con su adopción en las metodologías Ágiles.
 
-El tablero kanban es una herramienta para visualizar la cola de trabajo. Los artículos (items) de trabajo están representados por tarjetas que son organizadas en columnas represantando los etapas (stages) del proceso de trabajo. Nuevos artículos de trabajo inician en la columna más a la izquierda y viaja a través del tablero hasta que alcanzan la columna más a la derecha, representando el trabajo completado.
+El **tablero kanban** es una herramienta para visualizar la cola de trabajo. Los artículos (items) de trabajo están representados por tarjetas que son organizadas en columnas represantando las **etapas** (stages) del proceso de trabajo. Nuevos artículos de trabajo inician en la columna más a la izquierda y viaja a través del tablero hasta que alcanzan la columna más a la derecha, representando el trabajo completado.
 
 **Iniciándose con el tablero kanban**
 
@@ -29,16 +29,15 @@ Las vistas kanban son tan flexibles que pueden haber muchas formas diferentes de
 
 Observando las vistas kanban usadas en los módulos estándar, es posible identificar dos estilos de vistas kanban principales: viñeta y tarjeta
 
-Ejemplos de las vistas kanban de estilo viñeta pueden ser encontrados en Clientes, Productos, y también, Aplicaciones y Módulos. Ellos usualmente no tienen borde y son decorados con imágenes en el lado de la izquierda, tal como se muestra en la siguiente imagen:
+Ejemplos de las vistas kanban de estilo **viñeta** pueden ser encontrados en **Clientes, Productos**, y también, **Aplicaciones y Módulos**. Ellos usualmente no tienen borde y son decorados con imágenes en el lado de la izquierda, tal como se muestra en la siguiente imagen:
 
 ![281_1](/images/Odoo Development Essentials - Daniel Reis-281_1.jpg)
 
-El estilo kanban tarjeta es usualmente usada para mostrar tarjetas organizadas en columnas para las etapas de procesos. Ejemplos son Oportunidades CRM y Tareas de Proyectos. El contenido principal es mostrado en el área superior de la tarjeta y la información adicional puede ser mostrada en las áreas inferior derecha e inferior izquierda, tal como se muestra en la siguiente imagen:
+El estilo kanban **tarjeta** es usualmente usada para mostrar tarjetas organizadas en columnas para las etapas de procesos. Ejemplo de esto son las **Oportunidades CRM y las Tareas de Proyectos**. El contenido principal es mostrado en el área superior de la tarjeta y la información adicional puede ser mostrada en las áreas inferior derecha e inferior izquierda, tal como se muestra en la siguiente imagen:
 
 ![281_2](/images/Odoo Development Essentials - Daniel Reis-281_2.jpg)
 
 Veremos el esqueleto y elementos típicos usados en ambos estilos de vistas tal que puedas sentirte cómodo adaptándolos a tus casos de usos particular.
-
 
 **Diseña vistas kanban**
 
@@ -83,7 +82,7 @@ Lo que sigue es crear el archivo XML donde nuestras nuevas y brillantes vistas k
 </openerp>
 ```
 
-Ahora tenemos ubicado el esqueleto básico para nuestro módulo. Las plantillas usada en las vistas kanban y los reportes son extendidos usando las ténicas regulares usadas para otras vistas, por ejemplos usandos expresiones XPATH. Para más detalles, ve al Capítulo 3, Herencia – Extendiendo Aplicaciones Existentes.
+Ahora tenemos ubicado el esqueleto básico para nuestro módulo. Las plantillas usada en las vistas kanban y los reportes son extendidos usando las ténicas regulares usadas para otras vistas, por ejemplos usandos expresiones XPATH. Para más detalles, ve al [Capítulo 3](capitulo_iii_herencia.md), Herencia – Extendiendo Aplicaciones Existentes.
 
 Antes de iniciar con las vistas kanban, necesitamos agregar un para de campos en el modelo tareas por hacer. (to-do tasks model)
 
