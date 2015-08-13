@@ -123,41 +123,39 @@ A continuacion vamos aprender mas sobre el uso de los archivos de datos en los m
   
 **Modulos de datos**  
 
-Modules	use	data	files	to	load	their	configurations	into	the	database,	initial	data	and demonstration	data.	This	can	be	done	using	both	CSV	and	XML	files.	For	completeness, the	YAML	file	format	can	also	be	used,	but	this	is	rarely	used	for	data	loading,	so	we won’t	be	discussing	it. 
+Los módulos utilizan archivos de datos para cargar sus configuraciones en la base de datos, los datos iniciales y los datos de demostración. Esto se puede hacer utilizando tanto CSV y archivos XML. Para completar, el formato de archivo YAML también se puede utilizar, pero esto rara vez se utiliza para la carga de datos, asi no se discute en este.
 
-CSV	files	used	by	modules	are	exactly	the	same	as	those	we	have	seen	and	used	for	the import	feature.	When	using	them	in	modules,	the	only	additional	restriction	is	that	the	file name	must	match	the	name	of	the	model	to	which	the	data	will	be	loaded. 
+Archivos CSV utilizados por módulos son exactamente las mismas que las que hemos visto y utilizado para la función de importación. Cuando se usa en módulos, la única restricción adicional es que el nombre del archivo debe coincidir con el nombre del modelo a la que se cargan los datos.
 
-A	common	example	is	security	access,	to	load	into	the	ir.model.acess	model.	This	is usually	done	using	CSV	files,	and	they	should	be	named	ir.model.acess.csv. 
- 
+Un ejemplo común es el acceso de seguridad, para cargar en el modelo ir.model.acess. Esto se hace generalmente con archivos CSV, y que debe ser nombrado ir.model.acess.csv.
 
-**Demonstration	data**
+**Demostracion de datos**
 
-Odoo	modules	may	install	demo	data.	This	is	useful	to	provide	usage	examples	for	a module	and	data	sets	to	be	used	in	tests.	It’s	considered	good	practice	for	modules	to provide	demonstration	data.	Demonstration	data	for	a	module	is	declared	using	the	demo attribute	of	the	`__openerp__.py`	manifest	file.	Just	like	the	data	attribute,	it	is	a	list	of	file names	with	the	corresponding	relative	paths	inside	the	module. 
+Módulos Odoo pueden instalar datos de demostración. Esto es útil para proporcionar ejemplos de uso para un módulo y conjuntos de datos para ser utilizado en pruebas. Se considera una buena práctica para los módulos para proporcionar datos de demostración. Los datos de demostración para un módulo se declara con el atributo de demostración de la	`__openerp__.py`	archivo de manifiesto. Al igual que el atributo de datos, se trata de una lista de nombres de archivo con las rutas relativas correspondientes en el interior del módulo.
 
-We	will	be	adding	demonstration	data	to	our	todo_user	module.	We	can	start	by	exporting some	data	from	the	to-do	tasks,	as	explained	in	the	previous	section.	Next	we	should	save that	data	in	the	todo_user	directory	with	file	name	`todo.task.csv`.	Since	this	data will	be owned	by	our	module,	we	should	edit	the	id	values	to	replace	the	`__export__`	prefix	in the	identifiers	with	the	module	technical	name. 
+Estaremos agregando los datos de demostración en nuestro	todo_user	module.	Podemos comenzar con la exportación de algunos datos de las tareas a realizar, como se explica en la sección anterior. Siguiente debemos guardar los datos en el	todo_user	directorio con el nombre del archivo	`todo.task.csv`.	Dado que esta información será propiedad de nuestro módulo, debemos editar los valores de id para reemplazar el	`__export__`	prefijo en los identificadores con el nombre técnico del módulo.
 
-As	an	example	our	`todo.task.csv`	data	file	might	look	like	this:
+Como ejemplo nuestra	`todo.task.csv`	archivo de datos podría tener este aspecto:
 ``` 
 id,name,user_id/id,date_deadline todo_task_a,"Install	Odoo","base.user_root","2015-01-30" todo_task_b","Create	dev	database","base.user_root","" 
 ```
-We	must	not	forget	to	add	this	data	file	to	the	`__openerp__.py`	manifest	demo	attribute: 
+No hay que olvidar agregar este archivo de datos para el	`__openerp__.py`	atributo de demostración manifiesta: 
 ```				
 'demo':	['todo.task.csv'], 
 ```
-Next	time	we	update	the	module,	as	long	as	it	was	installed	with	demo	data	enabled,	the content	of	the	file	will	be	imported.	Note	that	this	data	will	be	rewritten	whenever	a module	upgrade	is	performed. 
+La próxima vez que actualizamos el módulo, siempre y cuando se instaló con datos de demostración habilitadas, se importará el contenido del archivo. Tenga en cuenta que estos datos se reescribe cada vez que se realiza una actualización del módulo.
 
-XML	files	can	also	be	used	for	demonstration	data.	Their	file	names	are	not	required	to match	the	model	to	load,	because	the	XML	format	is	much	richer	and	that	information	is provided	by	the	XML	elements	inside	the	file. 
+Archivos XML también pueden ser utilizados para los datos de demostración. Sus nombres de archivo no están obligados a coincidir con el modelo para cargar, porque el formato XML es mucho más rico y que la información es proporcionada por los elementos XML dentro del archivo.
 
-Let’s	learn	more	about	what	XML	data	files	allow	us	to	do	that	CSV	files	don’t. 
- 
+Vamos a aprender más sobre lo que los archivos de datos XML nos permiten hacer que los archivos CSV no.
 
-**XML	data	files**  
+**Archivos de datos XML**  
 
-While	CSV	files	provide	a	simple	and	compact	format	to	serialize	data,	XML	files	are more	powerful	and	give	more	control	over	the	loading	process. 
+Mientras que los archivos CSV proporcionan un formato simple y compacto para serializar los datos, archivos XML son más potentes y dan un mayor control sobre el proceso de carga.
 
-We	have	already	used	XML	data	files	in	the	previous	chapters.	The	user	interface components,	such	as	views	and	menu	items,	are	in	fact	records	stored	in	system	models. The	XML	files	in	the	modules	are	a	means	used	to	load	those	records	into	the	server. 
+Ya hemos utilizado los archivos de datos XML en los capítulos anteriores. Los componentes de la interfaz de usuario, tales como vistas y elementos de menú, se encuentran en los registros de datos almacenados en los modelos de sistemas. Los archivos XML en los módulos son un medio utilizado para cargar los registros en el servidor.
 
-To	showcase	this,	we	will	add	a	second	data	file	to	the	`todo_user`	module,	named `todo_data.xml`,	with	the	following	content: 
+Para mostrar esto, vamos a añadir un segundo archivo de datos para el	`todo_user`	módulo, llamado `todo_data.xml`,	con el siguiente contenido: 
 ```
 <?xml	version="1.0"?>
     <openerp>
@@ -171,92 +169,94 @@ To	showcase	this,	we	will	add	a	second	data	file	to	the	`todo_user`	module,	name
         </data>
     </openerp> 
 ```
-This	XML	is	equivalent	to	the	CSV	data	file	we	have	just	seen	in	the	previous	section. 
+Este XML es equivalente al archivo de datos CSV que acabamos de ver en la sección anterior. 
 
-XML	data	files	have	a	`<openerp>`	element	containing	`<data>`	elements,	inside	of	which we	can	have	have	several	`<record>`	elements,	corresponding	to	the	CSV	data	rows. 
+Archivos de datos XML tienen una `<openerp>`	elemento que contiene	`<data>`	elementos, dentro de los cuales podemos tener tienen varios`<record>`	elementos, correspondientes a las filas de datos CSV.
 
-A	`<record>`	element	has	two	mandatory	attributes,	model	and	id	(the	external	identifier for	the	record),	and	contains	a	`<field>`	tag	for	each	field	to	write	on. 
+Un	`<record>`	elemento tiene dos atributos obligatorios, de modelo y de Identificación (el identificador externo para el registro), y contiene una	`<field>`	etiqueta para cada campo para escribir. 
 
-Note	that	the	slash	notation	in	field	names	is	not	available	here:	we	can’t	use	`<field name="user_id/id">`.	Instead	the	ref	special	attribute	is	used	to	reference	External	IDs. We’ll	discuss	the	values	for	the	relational	“to	many”	fields	in	a	moment. 
+Tenga en cuenta que la notación con barras en los nombres de campo no está disponible aquí: no podemos usar	`<field name="user_id/id">`.	En cambio, el atributo especial ref se utiliza para hacer referencia a los identificadores externos. Hablaremos de los valores para el relacional "para muchos" campos en un momento.
  
 
-**The	data	noupdate	attribute**
+**El atributo noupdate datos**
 
-When	the	data	loading	is	repeated,	existing	records	from	the	previous	run	are	rewritten.
+Cuando se repite la carga de datos, los registros existentes de la ejecución anterior se reescriben.
  
-This	is	important	to	keep	in	mind:	it	means	that	upgrading	a	module	will	overwrite	any manual	changes	that	might	have	been	made	to	the	data.	Notably,	if	views	were	modified with	customizations,	those	changes	will	be	lost	with	the	next	module	upgrade.	The	correct procedure	is	to	instead	create	inherited	views	for	the	changes	we	need,	as	discussed	in	the  Chapter	3, 	*Inheritance	–	Extending	Existing	Applications*.
- 
-This	overwrite	behavior	is	the	default,	but	it	can	be	changed,	so	that	when	an	already created	record	is	loaded	again	no	change	is	made	to	it.	This	is	done	by	adding	to	the 
-`<data>`	element	a	`noupdate="1"`	attribute.	With	this,	its	records	will	be	created	the	first time	they	are	loaded,	and	in	subsequent	module	upgrades	nothing	will	be	done	to	them. 
+Esto es importante a tener en cuenta: significa que la actualización de un módulo se sobreponen a los cambios manuales que podrían haber sido realizados en los datos. Cabe destacar que, si visitas fueron modificados con personalizaciones, esos cambios se perderán con la próxima actualización del módulo. El procedimiento correcto es crear en vez vistas heredadas de los cambios que necesitamos, como se explica en el Capítulo 3, 	
 
-This	allows	for	manually	made	customizations	to	be	safe	from	module	upgrades.	It	is often	used	with	record	access	rules,	allowing	them	to	be	adapted	to	implementation specific	needs. 
 
-It	is	also	possible	to	have	more	than	one	`<data>`	section	in	the	same	XML	file.	We	can take	advantage	of	this	to	have	a	data	set	with	`noupdate="1"`	and	another	with `noupdate="0"`.
+*Herencia - Ampliación de aplicaciones existentes*.
  
-The	noupdate	flag	is	stored	in	the	External	Identifier	information	for	each	record.	It’s possible	to	edit	it	directly	using	the	External	Identifier	form	available	in	the	Technical menu,	with	the	Non	Updatable 	checkbox. 
+Este comportamiento de sobrescritura es el valor por defecto, pero se puede cambiar, por lo que cuando un registro ya creado se carga de nuevo se realiza ningún cambio a la misma. Esto se hace añadiendo a la `<data>`	un elemento atributo	`noupdate="1"`.Con esto, sus registros se crearán la primera vez que se cargan, y en mejoras de módulos subsiguientes no se hará nada para ellos.
+
+Esto permite personalizaciones realizadas manualmente para estar a salvo de las actualizaciones de módulos. Se utiliza a menudo con las reglas de acceso de grabación, lo que les permite adaptarse a las necesidades específicas de aplicación.
+
+También es posible tener más de un `<datos> sección` en el mismo archivo XML. Podemos tomar ventaja de esto para tener un conjunto de datos con	`noupdate="1"`	y otro con `noupdate="0"`.
+ 
+La bandera noupdate se almacena en la información Identificador externo para cada registro. Es posible editar directamente utilizando el formulario Identificador externo disponible en el menú de Técnico, con la casilla de verificación no se pueden actualizar.
 
 *Tip*  
-*The	noupdate	attribute	is	tricky	when	developing	modules,	because	changes	made	to	the data	later	will	be	ignored,	and	Odoo	won’t	pick	up	later	modifications.	A	solution	is	to keep	`noupdate="0”`	during	development	and	only	set	it	to	*1*	once	finished.* 
+*El atributo noupdate es difícil cuando se desarrolla el módulos, ya que los cambios hechos a los datos más tarde será ignorado y Odoo no recogerá más tarde modificaciones. Una solución es mantener `noupdate =" 0 "` durante el desarrollo y sólo ponerlo a * 1 * una vez terminado.* 
  
 
-**Defining	Records	in	XML**
+**Definición de registros en XML**
 
-Each	`<record>`	element	has	two	basic	attributes,	id	and	model,	and	contains	`<field>` elements	assigning	values	to	each	column.	As	mentioned	before,	the	id	attribute corresponds	to	the	record’s	External	ID	and	the	model	to	the	target	model	where	the	record will	be	written.	The	`<field>`	elements	have	available	a	few	different	ways	to	assign values.	Let’s	look	at	them	in	detail. 
+Cada	`<record>`	elemento tiene dos atributos básicos, id y el modelo, y contiene	`<field>` elementos de la asignación de valores a cada columna. Como se mencionó antes, el atributo id corresponde al del disco externo ID y el modelo para el modelo de destino donde se escribirá el registro. Los	`<field>`	elementos tienen disponibles algunas maneras diferentes para asignar valores. Veamos en detalle.
  
 
-**Setting	field	values**
+**Configuración de los valores de campo**
 
-The	`<record>`	element	defines	a	data	record,	and	contains	<field>	elements	to	set	values on	each	field. 
+El	`<record>`	elemento define un registro de datos, y contiene	<field>	elementos para establecer los valores de cada campo.
 
-The	name	attribute	of	the	field	element	identifies	the	field	to	be	written. 
+El atributo name del elemento de campo identifica el campo para ser escrito.
 
-The	value	to	write	is	the	element	content:	the	text	between	the	field’s	opening	and	closing tag.	In	general	this	is	also	suitable	to	set	non-text	values:	for	Booleans,	`"0"/	"1"`	or 
-`"False"/"True"`	values	will	be	correctly	converted;	for	dates	and	datetimes,	strings	with `"YYYY-MM-DD"`	and	`"YYYY-MM-DD	HH:MI:SS"`	will	be	converted	properly. 
+El valor de escribir es el contenido del elemento: el texto entre la apertura del campo y la etiqueta de cierre. En general, esto también es adecuado para establecer los valores no son de texto: para Booleans,	`"0"/	"1"`	o 
+`"False"/"True"`	valores serán convertidos correctamente; para fechas y datetimes, cuerdas con `"YYYY-MM-DD"`	y	`"YYYY-MM-DD	HH:MI:SS"`	se convertirán correctamente. 
  
 
-**Setting	values	using	expressions**
+**Ajuste de valores utilizando expresiones**
 
-A	more	advanced	alternative	to	define	a	field	value	is	using	the	eval	attribute	instead.	This evaluates	a	Python	expression	and	assigns	the	resulting	value	to	the	field. 
-The	expression	is	evaluated	in	a	context	that,	besides	Python	built-ins,	also	has	some additional	identifiers	available.	Let’s	have	a	look	at	them. 
+Una alternativa más avanzada para definir un valor de campo utiliza el atributo eval lugar. Este evalúa una expresión Python y asigna el valor resultante al campo.
+La expresión se evalúa en un contexto que, además de Python empotrados, también tiene algunos identificadores adicionales disponibles. Vamos a echar un vistazo a ellos.
 
-To	handle	dates,	the	following	modules	are	available:	time,	datetime,	timedelta	and  relativedelta.	They	allow	calculating	date	values,	something	that	is	frequently	used	in demonstration	(and	test)	data.	For	example,	to	set	a	value	to	yesterday	we	would	use: 
+Para manejar fechas, los siguientes módulos están disponibles: Tiempo, fecha y hora, y timedelta relativedelta. Ellos permiten el cálculo de los valores de fecha, algo que se utiliza con frecuencia en los datos de demostración (y prueba). Por ejemplo, para establecer un valor de ayer usaríamos:
 ```
 <field	name="expiration_date" eval="(datetime.now()+timedelta(-1)).strftime('%Y-%m-%d')"/>
 ``` 
-Also	available	in	the	evaluation	context	is	the	`ref()`	function,	used	to	translate	an	External ID	into	the	corresponding	database	ID.	This	can	be	used	to	set	values	for	relational	fields. As	an	example,	we	have	used	it	before	to	set	the	value	for	the	user_id: 
+También disponible en el contexto de evaluación es el `ref función ()`, que se utiliza para traducir un documento de identidad externa en el ID de la base de datos correspondiente. Esto puede ser usado para establecer los valores para los campos relacionales. A modo de ejemplo, hemos usado antes para ajustar el valor para el user_id:
 ```
 <field	name="user_id"	eval="ref('base.group_user')"	/> 
 ```
-The	evaluation	context	also	has	a	reference	available	to	the	current	Model	being	written through	obj.	It	can	be	used	together	with	`ref()`	to	access	values	from	other	records.	Here is	an	example	from	the	Sales	module:
+El contexto de evaluación también tiene una referencia disponible para el modelo actual que se está escrita a través de objeto. Se puede utilizar junto con	`ref()`	para acceder a los valores de otros registros. He aquí un ejemplo del módulo de venta:
 ``` 
 <value	model="sale.order" 		eval="obj(ref('test_order_1')).amount_total"	/> 
 ```
 
-**Setting	values	for	relation	fields**
+**Configuración de los valores de los campos de relación**
 
-We	have	just	seen	how	to	set	a	value	on	a	many-to-one	relation	field,	such	as	user_id, using	the	eval	attribute	with	a	`ref()`	function.	But	there	is	a	simpler	way. 
+Acabamos de ver cómo establecer un valor en un campo de relación muchos-a-uno, como user_id, usando el atributo eval con una función	`ref()`. Pero hay una manera más sencilla. 
 
-The	`<field>`	element	also	has	a	ref	attribute	to	set	the	value	for	a	many-to-one	field	using an	External	ID.	Using	it,	we	can	set	the	value	for	user_id	using	just: 
+El	`<field>`	elemento también tiene un atributo ref para establecer el valor de campo many-to-one utilizando una identificación externa. Usándolo, podemos establecer el valor de user_id usando sólo: 
 ```
 <field	name="user_id"	ref="base.group_user"	/> 
 ```
-For	one-to-many	and	many-to-many	fields,	a	list	of	related	IDs	is	expected,	so	a	different syntax	is	needed,	and	Odoo	provides	a	special	syntax	to	write	on	this	type	of	fields. 
+Para	one-to-many	y	many-to-many	fields,	Se espera que una lista de identificadores relacionados, por lo que es necesaria una sintaxis diferente, y Odoo proporciona una sintaxis especial para escribir sobre este tipo de campos.
 
-The	following	example,	taken	from	the	Fleet	app,	replaces	the	list	of	related	records	of	a tag_ids	field: 
+El siguiente ejemplo, tomado de la aplicación de la flota, sustituye a la lista de registros relacionados de un campo tag_ids:
 ```
 <field	name="tag_ids" eval="[(6,0,[ref('vehicle_tag_leasing'),ref('fleet.vehicle_tag_compact'),	ref('fleet.vehicle_tag_senior')] )]"	/> 
 ```
-To	write	on	a	to	many-field	we	use	a	list	of	triples.	Each	triple	is	a	write	command	that does	different	things	according	to	the	code	used: 
+Para escribir sobre una de muchas de campo se utiliza una lista de triples. Cada triple es un comando de escritura que hace cosas diferentes según el código utilizado:
 
-- `(0,_	,{'field':	value})`: This	creates	a	new	record	and	links	it	to	this	one 
-- `(1,id,{'field':	value})`: This	updates	values	on	an	already	linked	record 
-- `(2,id,_)`: This	unlinks	and	deletes	a	related	record 
-- `(3,id,_)`: This	unlinks	but	does	not	delete	a	related	record 
-- `(4,id,_)`:	This	links	an	already	existing	record 
-- `(5,_,_)`:	This	unlinks	but	does	not	delete	all	linked	records 
-- `(6,_,[ids])`:	This	replaces	the	list	of	linked	records	with	the	provided list 
+- `(0,_	,{'field':	value})`: Esto crea un nuevo registro y lo vincula a ésta 
+- `(1,id,{'field':	value})`: Esto actualiza los valores en un registro ya vinculados
+- `(2,id,_)`: Esto desvincula y elimina un registro relacionado 
+- `(3,id,_)`: Esto desvincula pero no elimina un registro relacionado
+- `(4,id,_)`:	Esto vincula un registro ya existente 
+- `(5,_,_)`:	Esto desvincula pero no elimina todos los registros vinculados 
+- `(6,_,[ids])`:	Esto reemplaza la lista de registros vinculados con la lista proporcionada 
 
-The	underscore	symbol	used	above	represents	irrelevant	values,	usually	filled	with	0	or False. 
+El símbolo de subrayado utilizado anteriormente representa valores irrelevantes, por lo general llenas de 0 o Falso. 
  
 
 **Shortcuts	for	frequently	used	Models**
