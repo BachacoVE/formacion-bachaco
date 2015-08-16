@@ -115,7 +115,7 @@ La arquitectura de la vista kanban tiene un elemento superior <kanban> y la sigu
     <field name="a_field" /> 
     <templates> 
         <t   t-name="kanban-box">
-               <!-- HTML Qweb template	... --> 
+               <!-- HTML Qweb template ... --> 
         </t> 
     </templates> 
 </kanban> 
@@ -172,7 +172,7 @@ La vista completa de viñenta kanban para las tareas por hacer es como sigue:
            <div class="oe_kanban_vignette"> 
               <img t-att-src="kanban_image('res.partner', 'image_medium', record.id.value)" class="oe_kanban_image"/> 
                 <div class="oe_kanban_details"> 
-                    <!--	Title	and	Data	content	--> 
+                    <!-- Title and Data content --> 
                     <h4><a type="open"> 
                         <field name="name"/> </a></h4> 
                         <field name="tags" /> 
@@ -206,45 +206,85 @@ El kanban de **tarjeta** puede ser un poco más complejo. Este tiene un área de
 
 El esqueleto para esta plantilla se vería así:
 
-<t	t-name="kanban-box">
-				<div	class="oe_kanban_card">
-								<div	class="oe_dropdown_kanban	oe_dropdown_toggle">
-													<!--	Top-right	drop	down	menu	-->
-											</div>
-								<div	class="oe_kanban_content">
-												<!--	Content	fields	go	here...	-->
-												<div	class="oe_kanban_bottom_right"></div>
-												<div	class="oe_kanban_footer_left"></div>
-								</div>
-				</div>
+```
+<t t-name="kanban-box">
+    <div class="oe_kanban_card">
+        <div class="oe_dropdown_kanban oe_dropdown_toggle">
+        <!-- Top-right drop down menu -->
+        </div>
+        <div class="oe_kanban_content">
+            <!-- Content fields go here... -->
+            <div class="oe_kanban_bottom_right"></div>
+            <div class="oe_kanban_footer_left"></div>
+        </div>
+    </div>
 </t>
+```
 
-
+Un kanban **tarjeta** es más apropiada para las tareas to-do, así que en lugar de la vista descrita en la sección anterior, mejor deberíamos usar la siguiente:
 
 
 ```
-   <div class="oe_kanban_bottom_right"></div>             <div class="oe_kanban_footer_left"></div>         </div>     </div> </t> 
-A card  kanban is more appropriate for the to-do tasks, so instead of the view described in the previous section, we would be better using the following: 
-<t t-name="kanban-box">     <div class="oe_kanban_card">         <div class="oe_kanban_content">             <!-- Option menu will go here! -->             <h4><a type="open">                 <field name="name" />             </a></h4>             <field name="tags" />             <ul>                 <li><field name="user_id" /></li>                 <li><field name="date_deadline" /></li>             </ul>             <div class="oe_kanban_bottom_right">                 <field name="kanban_state"                        widget="kanban_state_selection"/>             </div>             <div class="oe_kanban_footer_left">                 <field name="priority" widget="priority"/>             </div>         </div>     </div> </t> 
+<t t-name="kanban-box">
+    <div class="oe_kanban_card">
+        <div class="oe_kanban_content">
+            <!-- Option menu will go here! -->
+            <h4><a type="open">
+                <field name="name" />
+                </a></h4>
+                <field name="tags" />
+                <ul>
+                    <li><field name="user_id" /></li>                 <li><field name="date_deadline" /></li>
+                </ul>
+                <div class="oe_kanban_bottom_right">
+                    <field name="kanban_state"  widget="kanban_state_selection"/>
+                </div>
+                <div class="oe_kanban_footer_left">
+                    <field name="priority" widget="priority"/>
+                </div>
+        </div>
+    </div>
+</t> 
 ```
-So far we have seen static kanban views, using a combination of HTML and special tags (field,  button, a). But we can have much more interesting results using dynamically generated HTML content. Lets display (the DOM). 
 
-This is not meant to be technically exact. It is just a mind map that can be useful to understand how things work in kanban views. 
+Hasta ahora hemos visto vistas kanban estáticas, usando una combinación de HTML y etiquetas especiales (field, button, a). Pero podemos tener resultados mucho más interesantes usando contenido HTML generado dinámicamente. Veamos como podemos hacer eso usando Qweb.
 
-Next we will explore the several QWeb directives available, using examples that enhance our to-do task kanban card. 
+**Agrengano contenido dinámico Qweb**
 
+El analizador Qweb busca atributos especiales (directivas) en las plantillas y las reemplaza con HTML generado dinámicamente.
 
-**Conditional rendering with t-if**
+Para las vistas kanban, el análisis se realiza mediante Javascript del lado del cliente. Esto significa que las evaluaciones de expresiones hechos por Qweb deberían ser escritas usando la sintaxis Javascript, no Python.
 
-The t-if directive, used in the previous example, accepts a JavaScript expression to be evaluated. The tag and its content will be rendered if the condition evaluates to true. 
+Al momento de mostrar una vista kanban, los pasos internos son aproximadamente los siguientes:
 
-For example, in the card kanban, to display the Task effort estimate, only if it has a value, after the date_deadline field, add the following: 
+- Obtiene el XML de la plantilla a renderizar
+- Llama al método de servidor `read()` para obtener la data de los campos en las plantillas.
+- Ubica la plantilla `kanban-box` y la analisa usando Qweb para la salida de los fragmentos HTML finales.
+- Inyecta el HTML en la visualización del navegador (el DOM).
+
+Esto no significa que sea exacto técnicamente. Es solo un mapa mental que puede ser útil para entender como funcionan las cosas enlas vistas kanban.
+
+A continuación exploraremos las distintas directiva Qweb disponibles, usando ejemplos que mejorarán nuestra tarjeta kanban de la tarea to-do.
+
+**Renderizado Condicional con t-if**
+
+La directiv `t-if`, usada en el ejemplo anterior, acepta expresiones JavaScript para ser evaluadas. La etiqueta y su contenido serán renderizadas si la condición se evalúa verdadera.
+
+Por ejemplo, en la tajeta kanban, para mostrar el esfuerzo estimado de la Tarea, solo si este contiene un valor, después del campo `date_deadline`, agrega lo siguiente:
+
 ```
-<t t-if="record.effort_estimate.raw_value > 0"><li>Estimate <field  name="effort_estimate"/></li></t> 
+<t t-if="record.effort_estimate.raw_value > 0">
+    <li>Estimate <field  name="effort_estimate"/></li>
+</t> 
 ```
-The JavaScript evaluation context has a record object representing the record being rendered, with the fields requested from the server. The field values can be accessed using either the raw_value or the value attributes: 
 
-- raw_value: This is the value returned by the read() server method, so itt be able to go into that detail. For reference purposes, the following identifiers are available in QWeb expression evaluation: 
+El contexto de evaluación JavaScript tiene un objeto de registro que representa el registro que está siendo renderizado, con las campos solicitados del servidor. Los valores de campo pueden ser accedidos usando el atributo `raw_value` o el `value`:
+
+- `raw_value`: Este es el valor retornado por el método de servidor `read()`, así que se ajusta más para usarse en expresiones condicionales.
+- `value`: Este es formateado de acuerdo a las configuraciones de usuario, y está destiado a ser mostrado en la interfaz del usuario.
+
+El contexto de evaluación de Qweb también tiene referencias disponibles para la instancia JavaScript del cliente web. Para hacer uso de ellos, se necesita una buena comprensión de la arquitectura de cliente web, pero no podremos llegar a ese nivel de detalle. Para propósitos referenciales, los identificadores siguientes están disponibles en la evaluación de expresiones Qweb.
+
 - widget: This is a reference to the current KanbanRecord widget object, responsible for the rendering of the current record into a kanban card. It exposes some useful helper functions we can use. 
 - record: This is a shortcut for widget.records and provides access to the fields available, using dot notation. 
 - read_only_mode: This indicates if the current view is in read mode (and not in edit mode). It is a shortcut for widget.view.options.read_only_mode.
