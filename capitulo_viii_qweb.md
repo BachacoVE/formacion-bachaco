@@ -283,7 +283,11 @@ El contexto de evaluación JavaScript tiene un objeto de registro que representa
 - `raw_value`: Este es el valor retornado por el método de servidor `read()`, así que se ajusta más para usarse en expresiones condicionales.
 - `value`: Este es formateado de acuerdo a las configuraciones de usuario, y está destiado a ser mostrado en la interfaz del usuario.
 
-El contexto de evaluación de Qweb también tiene referencias disponibles para la instancia JavaScript del cliente web. Para hacer uso de ellos, se necesita una buena comprensión de la arquitectura de cliente web, pero no podremos llegar a ese nivel de detalle. Para propósitos referenciales, los identificadores siguientes están disponibles en la evaluación de expresiones Qweb.
+El contexto de evaluación de Qweb también tiene referencias disponibles para la instancia JavaScript del cliente web. Para hacer uso de ellos, se necesita una buena comprensión de la arquitectura de cliente web, pero no podremos llegar a ese nivel de detalle. Para propósitos referenciales, los identificadores siguientes están disponibles en la evaluación de expresiones Qweb:
+
+- `widget`: Esta es una referencia al objeto widget KanbanRecord, responsable por el renderizado del registro actual dentro de la tarjeta kanban. Expone algunas funciones de ayuda útiles que podemos usar.
+- `record`: Este es un atajo para `widget.records` y provee acceso a los campos disponibles, usando notación de puntos.
+- `read_only_mode`: 
 
 - widget: This is a reference to the current KanbanRecord widget object, responsible for the rendering of the current record into a kanban card. It exposes some useful helper functions we can use. 
 - record: This is a shortcut for widget.records and provides access to the fields available, using dot notation. 
