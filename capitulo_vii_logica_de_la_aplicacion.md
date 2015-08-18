@@ -263,7 +263,6 @@ Convenientemente un conjunto de registros vacío también se comporta como un si
 >>> self.company_id.country_id.name False  
 ```
 
-
 **Consultar los modelos**
 
 Con “self” solo podemos acceder a al conjunto de registros del método. Pero la referencia a `self.env` nos permite acceder a cualquier otro modelo.
@@ -358,7 +357,7 @@ Por razones históricas, los valores de fecha, y de fecha y hora se manejan como
 ```
 openerp.tools.misc.DEFAULT_SERVER_DATE_FORMAT 
 openerp.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT 
-``
+```
 Estas se esquematizan como `%Y-%m-%d` y `%Y-%m-%d %H:%M:%S` respectivamente.
 
 Para ayudar a manejar las fechas, `fields.Date` y `fields.Datetime` proveen algunas funciones. Por ejemplo:
@@ -551,75 +550,88 @@ Estas técnicas abren muchas posibilidades, pero recuerde que otras herramientas
 
 **Decoradores de métodos del Modelo**
 
-During	our	journey,	the	several	methods	we	encountered	used API	decorators	like  @api.one.	These	are	important	for	the	server to know	how	to	handle	the	method.	We	have already	given	some explanation	of	the	decorators	used;	now	let’s	recap	the	ones	available and	when	they	should	be	used: 
+Durante nuestra jornada, los métodos que hemos encontrado usan los decoradores de la API como `@api.one`. Estos son importantes para que el servidor sepa como manejar los métodos. Ya hemos dado alguna explicación de los decoradores usados; ahora recapitulemos sobre aquellos que están disponibles y de como deben usarse:
 
-- @api.one:	This	feeds	one	record	at	a	time	to	the	function. The	decorator	does	the recordset	iteration	for	us	and	self	is guaranteed	to	be	a	singleton.	It’s	the	one	to	use if	our logic	only	needs	to	work	with	each	record.	It	also	aggregates	the return	values of	the	function	on	each	record	in	a	list, which	can	have	unintended	side	effects. 
-- @api.multi:	This	handles	a	recordset.	We	should	use	it when	our	logic	can	depend on	the	whole	recordset	and	seeing isolated records	is	not	enough,	or	when	we	need	a return	value	that is	not	a	list	like	a	dictionary	with	a	window	action. In practice	it	is the	one	to	use	most	of	the	time	as @api.one has	some	overhead	and	list	wrapping effects	on	result values. 
-- @api.model:	This	is	a	class-level	static	method,	and	it does	not	use	any	recordset data.	For	consistency,	self	is	still a	recordset,	but	its	content	is	irrelevant. 
-- @api.returns(model):	This	indicates	that	the	method	return instances of	the	model in	the	argument,	such	as	res.partner	or	self	for the	current	model. 
+- `@api.one`: Este alimenta a la función con un registro a la vez. El decorador realiza la iteración del conjunto de registros por nosotros y se garantiza que self sea un singleton. Este es el que debemos usar si nuestra lógica solo requiere trabajar con cada registro. También agrega el valor retornado de la función en una lista en cada registro, la cual puede tener efectos secundarios no intencionados.
 
-The	decorators	that	have	more	specific	purposes	that	were	explained in detail	in Chapter 5 , *Models	–	Structuring	Application	Data*	are	shown here:
- 
-- @api.depends(fld1,...):	This	is	used	for	computed	field	functions to identify	on what	changes	the	(re)calculation	should	be triggered. 
-- @api.constrains(fld1,...):	This	is	used	for	validation	functions	to identify	on what	changes	the	validation	check	should	be triggered. 
-- @api.onchange(fld1,...):	This	is	used	for	on-change	functions	to identify	the fields	on	the	form	that	will	trigger	the	action. 
+- `@api.multi`: Este controla un conjunto de registros. Debemos usarlo cuando nuestra lógica pueda depender del conjunto completo de registros y la visualización de registros aislados no es suficiente o cuando necesitamos que el valor de retorno no sea una lista como un diccionario con una acción de ventana. Este es el que más se usa en la práctica ya que `@api.one` tiene algunos costos y efectos de empaquetado de listas en los valores del resultado.
 
-In	particular	the	on-change	methods	can	send	a	warning message to the	user	interface.	For example,	this	could	warn	the	user	that the product	quantity	just	entered	is	not	available	on stock, without preventing	the	user	from	continuing.	This	is	done	by	having	the method return	a	dictionary	describing	the	following	warning message:
+- `@api.model`: Este es un método estático de nivel de clase, y no usa ningún dato de conjunto de registros. Por consistencia, self aún es un conjunto, pero su contenido es irrelevante.
+
+- `@api.returns(model)`: Este indica que el método devuelve instancias del modelo en el argumento para el modelo actual, como `res.partner` o self.
+
+Los decoradores que tiene propósitos más específicos y que fueron explicados en el Capítulo 5, se muestran a continuación:
+
+- `@api.depends(fld1,...)`: Este es usado por funciones de campos calculados para identificar los cambios en los cuales se debe realizar el (re) calculo.
+- `@api.constraints(fld1,…)`: Este es usado por funciones de validación para identificar los cambios en los que se debe realizar la validación.
+
+- `@api.onchange(fld1,...)`: Este es usado por funciones on-change para identificar los campos del formulario que detonarán la acción.
+
+En particular, los métodos on-change pueden enviar mensajes de advertencia a la interfaz. Por ejemplo, lo siguiente podría advertir al usuario o usuaria que la cantidad ingresada del producto no esta disponible, sin impedir al usuario o usuaria continuar. Esto es realizado a través de un método “return” con un diccionario que describa el siguiente mensaje:
 ``` 
-								return	{ 												'warning':	{ 																'title':	'Warning!', 																'message':	'The	warning	text'} 								} 
+return {
+    'warning': {
+        'title': 'Warning!',
+        'message': 'The warning text'
+    }
+} 
  ```
 
-**Debugging**  
 
-We	all	know	that	a	good	part	of	a	developer’s	work	is	to debug	code.	To	do	this	we	often make	use	of	a	code	editor that can	set	breakpoints	and	run	our	program	step	by	step. Doing	so with	Odoo	is	possible,	but	it	has	it’s	challenges. 
+**Depuración**  
 
-If	you’re	using	Microsoft	Windows	as	your	development	workstation, setting	up	an environment	capable	of	running	Odoo	code	from source	is	a	nontrivial	task.	Also	the	fact that	Odoo	is	a server	that	waits	for	client	calls	and	only	then	acts	on	them makes	it	quite different	to	debug	compared	to	client-side	programs. 
+Sabemos que una buena parte del trabajo de desarrollo es la depuración del código. Para hacer esto frecuentemente hacemos uso del editor de código que puede fijar pontos de quiebre y ejecutar nuestro programa paso a paso. Hacer esto con Odoo es posible pero tiene sus dificultades.
 
-While	this	can	certainly	be	done	with	Odoo,	arguably	it	might	not be the	most	pragmatic approach	to	the	issue.	We	will introduce some	basic	debugging	strategies,	which	can	be	as effective	as	many sophisticated	IDEs	with	some	practice. 
+Si esta usando Microsoft Windows como su estación de trabajo, configurar un entorno capaz de ejecutar en código de Odoo desde la fuente no es una tarea trivial. Además el hecho que Odoo sea un servidor que espera llamadas de un cliente para actuar, lo hace diferente a la depuración de programas del lado del cliente.
 
-Python’s	integrated	debug	tool	pdb	can	do	a	decent	job	at debugging.	We	can	set	a breakpoint	by	inserting	the	following line	in	the	desired	place: 
+Mientras que esto puede ser realizado con Odoo, puede decirse que no es la forma más pragmática de resolver el asunto. Haremos una introducción sobre algunas estrategias básicas para la depuración, las cuales pueden ser tan efectivas como algunos IDEs sofisticados, con un poco de práctica.
+
+La herramienta integrada para la depuración de Python, pdb, puede hacer un trabajo decente de depuración. Podemos fijar un punto de quiebre insertando la siguiente línea en el lugar deseado:
 ```
-import	pdb;	pdb.set_trace() 
+import pdb;
+pdb.set_trace() 
 ```
-Now	restart	the	server	so	that	the	modified	code	is loaded. As	soon	as	the	program execution	reaches	that	line,	a	(pdb)	Python prompt	will	be	shown	in	the	terminal	window where	the	server is	running,	waiting	for	our	input. 
+Ahora reinicie el servidor para que se cargue la modificación del código. Tan pronto como la ejecución del código alcance la línea, una (pdb) linea de entrada de Python será mostrada en la ventana de la terminal en la cual el servidor se esta ejecutando, esperando por el ingreso de datos.
 
-This	prompt	works	as	a	Python	shell,	where	you	can	run any	expression	or	command	in the	current	execution	context. This	means	that	the	current	variables	can	be	inspected	and even modified.	These	are	the	most	important	shortcut	commands	available: 
+Esta línea de entrada funciona como una línea de comandos de Python, donde puede ejecutar cualquier comando o expresión en el actual contexto de ejecución. Esto significa que las variables actuales pueden ser inspeccionadas e incluso modificadas. Estos son los comandos disponibles más importantes:
 
-- h:	This	is	used	to	display	a	help	summary	of	the	pdb commands. 
-- p:	This	is	used	to	to	evaluate	and	print	an	expression. 
-- pp:	This	is	for	pretty	print,	which	is	useful	for	larger dictionaries	or	lists. 
-- l:	This	lists	the	code	around	the	instruction	to	be	executed next. 
-- n	(next):	This	steps	over	to	the	next	instruction. 
-- s	(step):	This	steps	into	the	current	instruction. 
-- c	(continue):	This	continues	execution	normally. 
-- u(up):	This	allows	to	move	up	the	execution	stack. 
-- d(down):	This	allows	to	move	down	the	execution	stack. 
+- h: Es usado para mostrar un resumen de la ayuda del comando pdb.
+- p: Es usado para evaluar e imprimir una expresión.
+- pp: Este es para una impresión mas legible, la cual es útil para los diccionarios y listas muy largos.
+- l: Lista el código alrededor de la instrucción que será ejecutada a continuación.
+- n (next): Salta hasta la próxima instrucción.
+- s (step): Salta hasta la instrucción actual.
+- c (continue): Continua la ejecución normalmente.
+- u (up): 
+- u(up): Permite moverse hacia arriba de la pila de ejecución.
+- d (down): Permite moverse hacia abajo de la pila de ejecución.
 
-The	Odoo	server	also	supports	the	--debug	option.	If	it’s used,	when	the	server	finds	an exception,	it	enters	into	a *post	mortem*	mode	at	the	line	where	the	error	was	raised.	This is a	pdb	console	and	it	allows	us	to	inspect	the program state	at	the	moment	where	the	error was	found. 
+El servidor Odoo también soporta la opción `--debug`. Si se usa, el servidor entrara en un modo *post mortem* cuando encuentre una excepción, en la línea donde se encuentre el error. Es una consola pdb y nos permite inspeccionar el estado del programa en el momento en que es encontrado el error.
 
-It’s	worth	noting	that	there	are	alternatives	to	the	Python built-in	debugger.	There	is	pudb that	supports	the	same	commands as pdb	and	works	in	text-only	terminals,	but	uses	a	more friendly graphical	display,	making	useful	information	readily	available such	as	the variables	in	the	current	context	and	their values. 
+Existen alternativas al depurador de Python. Pudb provee los mismos comandos que pdb y funciona en terminales de solo texto, pero usa una visualización gráfica más amigable, haciendo que la información útil sea más legible como las variables del contexto actual y sus valores.
  
 ![275_1](/images/Odoo Development Essentials - Daniel Reis-275_1.jpg)
 
-It	can	be	installed	either	through	the	system	package manager	or	through	pip,	as	shown here: 
+Puede ser instalado a través del sistema de paquetes o por pip, como se muestra a continuación:
 ```
-$	sudo	apt-get	install	python-pudb		#	using	OS	packages $ pip	install	pudb		#	using	pip,	possibly	in	a virtualenv  
+$ sudo apt-get install python-pudb  	# using OS packages 
+$ pip install pudb                       # using pip, possibly in a virtualenv  
 ```
-It	works	just	like	pdb;	you	just	need	to	use	pudb	instead	of pdb in	the	breakpoint	code. 
+Funciona como pdb; solo necesita usar pudb en vez de pdb en el código.
 
-Another	option	is	the	Iron	Python	debugger	ipdb,	which	can be installed	by	using	the following	code: 
+Otra opción es el depurador Iron Python, ipdb, el cual puede ser instalado:
 ```
-$	pip	install	ipdb  
+$ pip install ipdb  
 ```
-Sometimes	we	just	need	to	inspect	the	values	of	some variables	or	check	if	some	code blocks	are	being	executed.	A	Python print	statement	can	perfectly	do	the	job	without stopping	the execution	flow.	As	we	are	running	the	server	in	a terminal window,	the printed	text	will	be	shown	in	the	standard output.	But it won’t	be	stored	to	the	server	log	if it’s	being written to a file. 
+A veces solo necesitamos inspeccionar los valores de algunas variables o verificar si algunos bloques de código son ejecutados. Una sentencia “print” de Python puede perfectamente hacer el trabajo sin parar el flujo de ejecución. Como estamos ejecutando el servidor en una terminal, el texto impreso será mostrado en la salida estándar. Pero no será guardado en los registros del servidor si esta siendo escrito en un archivo.
 
-Another	option	to	keep	in	mind	is	to	set	debug	level	log messages	at	sensitive	points	of our	code	if	we	feel	that we	might	need	them	to	investigate	issues	in	a	deployed instance. It would	only	be	needed	to	elevate	that	server logging	level to	DEBUG	and	then	inspect	the log	files. 
- 
+Otra opción a tener en cuenta es fijar los mensajes de registros de los niveles de depuración en puntos sensibles de nuestro código si sentimos que podemos necesitar investigar algunos problemas en la instancia de despliegue. Solo se requiere elevar el nivel de registro del servidor a DEBUG y luego inspeccionar los archivos de registro.
 
-**Summary**  
 
-In	the	previous	chapters,	you	saw	how	to	build	models	and design	views.	Here	you	went	a little	further	learning	how to implement	business	logic	and	use	recordsets	to	manipulate model data. 
+**Resumen**  
 
-You	also	saw	how	the	business	logic	can	interact	with	the	user interface	and	learned	to create	wizards	that	dialogue	with	the user	and	serve	as	a	platform	to	launch	advanced processes. 
+En los capítulos anteriores, vio como construir modelos y diseñar vistas. Aquí fue un poco más allá para aprender como implementar la lógica de negocio y usar conjuntos de registros para manipular los datos del modelo.
 
-In	the	next	chapter,	our	focus	will	go	back	to	the	user interface,	and	you	will	learn	how	to create	powerful	kanban	views and	design	your	own	business	reports. 
+También vio como la lógica de negocio interactúa con la interfaz y aprendió a crear ayudantes que dialoguen con el usuario y la usuaria y sirvan como una plataforma para iniciar procesos avanzados.
+
+En el próximo capítulo, nos enfocaremos nuevamente en la interfaz,, y aprenderá como crear vistas kanban avanzadas y a diseñar sus propios reportes de negocio.
