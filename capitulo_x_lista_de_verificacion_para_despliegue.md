@@ -1,294 +1,366 @@
-Chapter	10. Deployment Checklist – Going Live
+Capítulo 10. Lista de Verificación para Despliegue – En Vivo!
 ===
 
-In	this	chapter,	you	will	learn	how	to	prepare	your	Odoo	server	for	use	in	the	production environment. 
+En este capítulo, aprenderá como preparar su servidor Odoo para usarlo en un entorno de producción.
 
-There	are	many	possible	strategies	and	tools	that	can	be	used	to	deploy	and	manage	an Odoo	production	server.	We	will	guide	you	through	one	way	of	doing	it. 
+Existen varias estrategias y herramientas posibles que pueden usarse para el despliegue y gestión de un servidor de producción Odoo. Le guiaremos a través de una de estas formas de hacerlo.
 
-This	is	the	server	setup	checklist	that	we	will	follow: 
+Esta es la lista de verificación para la configuración que seguiremos:
 
-- Install	Odoo	from	the	source 
-- Set	up	the	Odoo	configuration	file 
-- Set	up	multiprocessing	workers 
-- Set	up	the	Odoo	system	service 
-- Set	up	a	reverse	proxy	with	SSL	support 
+- Instalar Odoo desde la fuente.
+- Crear archivo de configuración de Odoo.
+- Configuración de multiproceso de trabajos
+- Configuración del servicio del sistema Odoo
+- Configuración de un proxy inverso (reverse proxy) con soporte SSL
 
-Let’s	get	started. 
+Comencemos. 
  
 
-**Installing	Odoo**
+**Instalar Odoo**
 
-Odoo	has	Debian/Ubuntu	packages	available	for	installation.	With	these,	you	get	a working	server	process	that	automatically	starts	on	system	boot.	This	installation	process is	straightforward,	and	you	can	find	all	you	need	at [http://nightly.odoo.com](http://nightly.odoo.com).  
+Odoo tiene paquetes disponibles para su instalación en sistemas Debian/Ubuntu. Así, se obtiene un servidor que se comienza a funcionar automáticamente cuando el sistema se inicia. Este proceso de instalación es bastante directo, y puede encontrar todo lo que necesita en [http://nightly.odoo.com](http://nightly.odoo.com).
 
-While	this	is	an	easy	and	convenient	way	to	install	Odoo,	here	we	prefer	running	from version-controlled	source	code	since	this	provides	better	control	over	what	is	deployed. 
+Aunque esta es una forma fácil y conveniente de instalar Odoo, aquí preferimos ejecutar una versión controlada desde el código fuente, debido a que proporciona mejor control sobre lo que se esta desplegando.
+
+
+**Instalación desde el código fuente**
+
+Tarde o temprano, su servidor necesitará actualizaciones y parches. Una versión controlada por repositorio puede ser de gran ayuda cuando estos momentos lleguen.
+
+Usamos git para obtener el código desde un repositorio, como hicimos para instalar nuestro entorno de desarrollo. Por ejemplo:
+```
+$ git clone https://github.com/odoo/odoo.git -b 8.0 --depth=1  
+```
+Este comando obtiene el código fuente de la rama 8.0 desde GitHub dentro del subdirectorio `odoo/`. En el momento de escribir esto, la 8.0 es la rama predeterminada, por la tanto la opción `-b 8.0` es opcional. La opción `--depth=1` se usa para obtener una copia superficial del repositorio, sin toda la historia de la versión. Esto reduce el espacio en disco usado y hace que el proceso de clonación sea más rápido.
+
+Puede valer la pena tener una configuración un poco más sofisticada, con un entorno de prueba junto al entorno de producción.
+
+Con esto, podríamos traernos la última versión de código fuente y probarlo en el entorno de prueba, sin perturbar el entorno de producción. Cuando la nueva versión este lista, podemos desplegarla desde el entorno de pruebas a producción.
+
+Consideremos que el repositorio en `~/odoo-dev/odoo` será nuestro entorno de pruebas. Fue clonado desde GitHub, por lo tanto un `git pull` dentro de este traerá y mezclara los últimos cambios. Pero el mismo es un repositorio, y podemos clonarlo desde nuestro entorno de producción, como se muestra en el siguiente ejemplo: 
+```
+$ mkdir ~/odoo-prd && cd ~/odoo-prd 
+$ git clone ~/odoo-dev/odoo ~/odoo-prd/odoo/  
+```
+Esto creará el repositorio de producción en `~/odoo-prd/odoo` clonado desde en entorno de prueba `~/odoo-dev/odoo`. Se configurara para que monitorear este repositorio, por lo que un `git pull` dentro de producción traerá y mezclara las últimas versiones desde pruebas. Git es lo suficientemente inteligente para saber que esto es una clonación local y usar enlaces duros al repositorio padre para ahorrar espacio en disco, por lo tanto la opción `--depth` no es necesaria.
+
+Cuando sea necesario resolver un problema en el entorno de producción, podemos verificar en el entorno de prueba la versión del código de producción, y depurar para diagnosticar y resolver el problema sin tocar el código de producción. Luego, el parche de la solución puede ser entregado al historial Git de prueba, y desplegado al repositorio de producción usando un comando `git pull`.
+
+*Nota*
+*Git sera una herramienta invaluables para gestionar las versiones de los despliegues de Odoo. Solo hemos visto la superficie de lo que puede hacerse para gestionar las versiones de código. Si aun no conoce Git, vale la pena aprender más sobre este. Un buen sitio para comenzar es [http://git-scm.com/doc](http://git-scm.com/doc).* 
  
 
-**Installing	from	the	source	code**
+**Crear el archivo de configuración**
 
-Sooner	or	later,	your	server	will	need	upgrades	and	patches.	A	version	controlled repository	can	be	of	great	help	when	the	time	comes. 
-
-We	use	git	to	get	our	code	from	a	repository,	just	like	we	did	to	install	the	development environment.	For	example: 
+Al agregar la opción `--save` cuando se inicia un servidor Odoo almacena la configuración usada en el archivo `~/.openerp_serverrc`. Podemos usar este archivo como punto de partida para nuestra configuración del servidor, la cual será almacenada en `/etc/odoo`, como se muestra a continuación:
 ```
-$	git	clone	https://github.com/odoo/odoo.git	-b	8.0	--depth=1  
+$ sudo mkdir /etc/odoo
+$ sudo chown $(whoami) /etc/odoo 
+$ cp ~/.openerp_serverrc /etc/odoo/openerp-server.conf  
 ```
-This	command	gets	from	GitHub	the	branch	8.0	source	code	into	an	odoo/	subdirectory. At	the	time	of	writing,	8.0	is	the	default	branch,	so	the	-b	8.0	option	is	optional.	The	-- 
-depth=1	option	was	used	to	get	a	shallow	copy	of	the	repository,	without	all	version history.	This	reduces	the	disk	space	used	and	makes	the	clone	operation	much	faster. 
+Este tendrá los parámetros de configuración para ser usados en nuestra instancia del servidor. Los siguientes son los parámetros para que el servidor trabaje correctamente:
 
-It	might	be	worthwhile	to	have	a	slightly	more	sophisticated	setup,	with	a	staging environment	alongside	the	production	environment. 
+- addons_path: Es una lista separada por coma de las rutas de directorios donde se buscarán los módulos, usando los directorios de izquierda a derecha. Esto significa que los directorios mas a la izquierda tienen mayor prioridad.
 
-With	this,	we	could	fetch	the	latest	source	code	version	and	test	it	in	the	staging environment,	without	disturbing	the	production	environment.	When	we’re	happy	with	the new	version,	we	would	deploy	it	from	staging	to	production. 
+- xmlrpc_port: Es el número de puerto en el cual escuchara el servidor. De forma predeterminada es el puerto 8069.
 
-Let’s	consider	the	repository	at	~/odoo-dev/odoo	to	be	our	staging	environment.	It	was cloned	from	GitHub,	so	that	a	git	pull	inside	it	will	fetch	and	merge	the	latest	changes. But	it	is	also	a	repository	itself,	and	we	can	clone	it	for	our	production	environment,	as shown	in	the	following	example: 
-```
-$	mkdir	~/odoo-prd	&&	cd	~/odoo-prd 
-$	git	clone	~/odoo-dev/odoo	~/odoo-prd/odoo/  
-```
-This	will	create	the	production	repository	at	~/odoo-prd/odoo	cloned	from	the	staging 
-~/odoo-dev/odoo.	It	will	be	set	to	track	that	repository,	so	that	a	git	pull	inside	production will	fetch	and	merge	the	last	versions	from	staging.	Git	is	smart	enough	to	know	that	this is	a	local	clone	and	uses	hard	links	to	the	parent	repository	to	save	disk	space,	so	the	`--depth`	option	is	unnecessary. 
-
-Whenever	a	problem	found	in	production	needs	troubleshooting,	we	can	checkout	in	the staging	environment	the	version	of	the	production	code,	and	then	debug	to	diagnose	and solve	the	issue,	without	touching	the	production	code.	Later,	the	solution	patch	can	be committed	to	the	staging	Git	history,	and	then	deployed	to	the	production	repository	using a	git	pull	command	on	it. 
-
-*Note*  
-*Git	will	surely	be	an	invaluable	tool	to	manage	the	versions	of	your	Odoo	deployments. We	just	scratched	the	surface	of	what	can	be	done	to	manage	code	versions.	If	you’re	not already	familiar	with	Git,	it’s	worth	learning	more	about	it.	A	good	starting	point	is  [http://git-scm.com/doc](http://git-scm.com/doc).* 
- 
-
-**Setting	up	the	configuration	file**
-
-Adding	the	--save	option	when	starting	an	Odoo	server	saves	the	configuration	used	to the	~/.openerp_serverrc	file.	We	can	use	the	file	as	a	starting	point	for	our	server configuration,	which	will	be	stored	on	/etc/odoo,	as	shown	in	the	following	code: 
-```
-$	sudo	mkdir	/etc/odoo $	sudo	chown	$(whoami)	/etc/odoo $	cp	~/.openerp_serverrc	/etc/odoo/openerp-server.conf  
-```
-This	will	have	the	configuration	parameters	to	be	used	by	our	server	instance. 
-The	following	are	the	parameters	essential	for	the	server	to	work	correctly: 
-
-- addons_path:	This	is	a	comma-separated	list	of	the	paths	where	modules	will	be looked	up,	using	the	directories	from	left	to	right.	This	means	that	the	leftmost directories	in	the	list	have	a	higher	priority. 
-- xmlrpc_port:	This	is	the	port	number	at	which	the	server	will	listen.	By	default,	port 8069	is	used. 
-- log_level:	This	is	the	log	verbosity.	The	default	is	the	info	level,	but	using	the 
-debug_rpc	level,	while	more	verbose,	adds	important	information	to	monitor	server performance. 
-
-The	following	settings	are	also	important	for	a	production	instance: 
-
-- admin_passwd:	This	is	the	master	password	to	access	the	web	client	database management	functions. It’s	critical	to	set	this	with	a	strong	password	or	an	empty value	to	deactivate	the	function. 
-- dbfilter:	This	is	a	Python-interpreted	regex	expression	to	filter	the	databases	to	be listed.	For	the	user	to	not	be	prompted	to	select	a	database,	it	should	be	set	with 
-`^dbname$`,	for	example,	`dbfilter	=	^v8dev$`. 
-- logrotate=True:	This	will	split	the	log	into	daily	files	and	keep	only	one	month	of log	history. 
-- data_dir:	This	is	the	path	where	the	attachment	files	are	stored.	Remember	to	have backups	on	it. 
-- without_demo=True:	This	should	be	set	in	production	environments	so	that	new databases	do	not	have	demo	data	on	them. 
-
-When	using	a	reverse	proxy,	the	following	settings	should	be	considered: 
-
-- proxy_mode=True:	This	is	important	to	set	when	using	a	reverse	proxy.
-- xmlrpc-interface:	This	sets	the	addresses	that	will	be	listened	to.	By	default,	it listens	to	all	0.0.0.0,	but	when	using	a	reverse	proxy,	it	can	be	set	to	127.0.0.1	in order	to	respond	only	to	local	requests. 
-
-A	production	instance	is	expected	to	handle	significant	workload.	By	default,	the	server runs	one	process	and	is	capable	of	handling	only	one	request	at	a	time.	However,	a multiprocess	mode	is	available	so	that	concurrent	requests	can	be	handled.	The	option 
-workers=N	sets	the	number	of	worker	processes	to	use.	As	a	guideline,	you	can	try	setting it	to	1+2*P,	where	P	is	the	number	of	processors.	The	best	setting	to	use	needs	to	be	tuned for	each	case,	since	it	depends	on	the	server	load	and	what	other	services	are	running	on the	server	(such	as	PostgreSQL). 
-
-We	can	check	the	effect	of	the	settings	made	by	running	the	server	with	the	-c	or	-- 
-config	option	as	follows: 
-```
-$	./odoo.py	-c	/etc/odoo/openerp-server.conf  
-```
-
-**Setting	up	as	a	system	service**
-
-Next,	we	will	want	to	set	up	Odoo	as	a	system	service	and	have	it	started	automatically when	the	system	boots. 
-
-The	Odoo	source	code	includes	an	init	script,	used	for	the	Debian	packaged	distribution. We	can	use	it	as	our	service	init	script	with	minor	modifications	as	follows: 
-```
-$	sudo	cp	~/odoo-prd/odoo/debian/init	/etc/init.d/odoo 
-$	sudo	chmod	+x	/etc/init.d/odoo  
-```
-At	this	point,	you	might	want	to	check	the	content	of	the	init	script.	The	key	parameters are	assigned	to	variables	at	the	top	of	the	file.	A	sample	is	as	follows: 
-```
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin DAEMON=/usr/bin/openerp-server NAME=odoo DESC=odoo CONFIG=/etc/odoo/openerp-server.conf LOGFILE=/var/log/odoo/odoo-server.log PIDFILE=/var/run/${NAME}.pid USER=odoo 
-```
-The	USER	variable	is	the	system	user	under	which	the	server	will	run,	and	you	probably want	to	change	it.	The	other	variables	should	be	adequate	and	we	will	prepare	the	rest	of the	setup	having	their	default	values	in	mind.	DAEMON	is	the	path	to	the	server	executable, 
-CONFIG	is	the	configuration	file	to	use,	and	LOGFILE	is	the	log	file	location. 
-
-The	DAEMON	executable	can	be	a	symbolic	link	to	our	actual	Odoo	location,	as	shown	in	the following: 
-```
-$	sudo	ln	-s	~/odoo-prd/odoo/odoo.py	/usr/bin/openerp-server $	sudo	chown	$(whoami)	/usr/bin/openerp-server  
-```
-Next	we	must	create	the	LOGFILE	directory	as	follows: 
-```
-$	sudo	mkdir	/var/log/odoo $	sudo	chown	$(whoami)	/etc/odoo  
-```
-Now	we	should	be	able	to	start	and	stop	our	Odoo	service	as	follows: 
-```
-$	sudo	/etc/init.d/odoo	start Starting	odoo:	ok  
-```
-We	should	now	be	able	to	get	a	response	from	the	server	and	see	no	errors	in	the	log	file, as	shown	in	the	following: 
-```
-$	curl	http://localhost:8069 <html><head><script>window.location	=	'/web'	+	location.hash;</script> </head></html> $	less	/var/log/odoo/odoo-server.log		#	show	the	log	file  
-```
-Stopping	the	service	is	done	in	a	similar	way,	as	shown	in	the	following: 
-```
-$	sudo	/etc/init.d/odoo	stop Stopping	odoo:	ok  
-```
-
-*Tip*  
-*Ubuntu	provides	the	easier	to	remember	service	command	to	manage	services.	If	you prefer,	you	can	instead	use	sudo	service	odoo	start	and	sudo	service	odoo	stop.*
-
-We	now	only	need	to	make	this	service	start	automatically	on	system	boot: 
-```
-$	sudo	update-rc.d	odoo	defaults  
-```
-After	this,	when	we	reboot	our	server,	the	Odoo	service	should	be	started	automatically and	with	no	errors.	It’s	a	good	time	to	check	that	all	is	working	as	expected. 
- 
-
-**Using	a	reverse	proxy**
-
-While	Odoo	itself	can	serve	web	pages,	it	is	strongly	recommended	to	have	a	reverse proxy	in	front	of	it.	A	reverse	proxy	acts	as	an	intermediary	managing	the	traffic	between the	clients	sending	requests	and	the	Odoo	servers	responding	to	them.	Using	a	reverse proxy	has	several	benefits. 
-
-On	the	security	side,	it	can	do	the	following: 
-
-Handle	(and	enforce)	HTTPS	protocols	to	encrypt	traffic Hide	the	internal	network	characteristics Act	an	“application	firewall”	limiting	the	URLs	accepted	for	processing 
-
-And	on	the	performance	side,	it	can	provide	significant	improvements: 
-
-Cache	static	content,	thus	reducing	the	load	on	the	Odoo	servers Compress	content	to	speed	up	loading	times Act	as	a	load	balancer	distributing	load	between	several	servers 
-
-Apache	is	a	popular	option	to	use	as	reverse	proxy.	Nginx	is	a	recent	alternative	with	good technical	arguments.	Here	we	will	choose	to	use	nginx	as	a	reverse	proxy	and	show	how	it can	be	used	perform	the	functions	mentioned	above. 
+- log_level: Este es la cantidad de información en el regirstro. De forma predeterminada es el nivel “info”, pero al usar el nivel “debug_rpc”, más descriptivo, agrega información importante para el monitoreo del desempaño del servidor.
 
 
-**Setting	up	nginx	for	reverse	proxy**
+Las configuraciones siguientes también son importantes para una instancia de producción:
 
-First,	we	should	install	nginx.	We	want	it	to	listen	on	the	default	HTTP	ports,	so	we	should make	sure	they	are	not	already	taken	by	some	other	service.	Performing	this	command should	result	in	an	error,	as	shown	in	the	following: 
+- admin_passwd: Es la contraseña maestra para acceder a las funciones de gestión de base de datos del cliente web. Es importante fijarlo con una contraseña segura o con un valor vacío para desactivar la función.
+
+- dbfilter: Es una expresión regular interpretada por Python para filtrar la lista de base de datos. Para que no sea requerido que el usuario o la usuaria seleccione una base de datos, debe fijarse con `^dbname$`, por ejemplo, `dbfilter = ^v8dev$`.
+
+- `logrotate = True`: Divide el registro en archivos diarios y mantendrá solo un historias de registro mensual.
+
+- data_dir: Es la ruta donde son almacenados los archivos adjuntos. Recuerde tener respaldo de estos.
+
+- `withput_demo = True`: Se fija en los entornos de producción para que las bases de datos nuevas no tengan datos de demostración.
+
+Cuando se usa un proxy inverso (reverse proxy), se deben considerar las siguientes configuraciones:
+
+- `proxy_mode = True`: Es importante fijarlo cuando se usa un proxy inverso.
+
+- xmlrpc-interface: Este fija las direcciones que serán escuchadas. De forma predeterminada escucha todo 0.0.0.0, pero cuando se usa un proxy inverso, puede configurarse a 127.0.0.1 para responder solo a solicitudes locales.
+
+Se espera que una instancia de producción gestione una carga de trabajo significativa. De forma predeterminada, el servidor ejecuta un proceso y es capaz de gestionar solo una solicitud al mismo tiempo. De todas maneras, el modo multiproceso esta disponible para que puedan gestionarse solicitudes concurrentes. 
+
+La opción `workers=N` fija el número de procesos de trabajo que serán usados. Como guía puede intentar fijarlo a `1+2*P` donde P es el número de procesos. Es necesario afinar la mejor configuración para cada caso, debido a que depende de la carga del servidor y que otros servicios son ejecutados en el servidor (como PostgreSQL).
+
+Podemos verificar el efecto de las configuraciones ejecutando el servidor con la opción `-c` o `--config` como se muestra a continuación:
 ```
-$	curl	http://localhost curl:	(7)	Failed	to	connect	to	localhost	port	80  
+$ ./odoo.py -c /etc/odoo/openerp-server.conf 
 ```
-If	not,	you	should	disable	or	remove	that	service	to	allow	nginx	to	use	those	ports.	For example,	to	stop	an	existing	Apache	server	you	should: 
+
+
+**Configurar como un servicio del sistema**
+
+Ahora, queremos configurar Odoo como un servicio del sistema y que sea ejecutado automáticamente cuando el sistema sea iniciado.
+
+El código fuente de Odoo incluye un script de inicio, usado para las distribuciones Debian. Podemos usarlo como nuestro script de inicio con algunas modificaciones menores, como se muestra a continuación:
 ```
-$	sudo	/etc/init.d/apache2	stop  
+$ sudo cp ~/odoo-prd/odoo/debian/init /etc/init.d/odoo 
+$ sudo chmo +x /etc/init.d/odoo  
 ```
-Now	we	can	install	nginx,	which	is	done	in	the	expected	way: 
+En este momento, quizás quiera verificar el contenido del script de inicio. Los parámetros claves son a variables al inicio del archivo. A continuación se muestra un ejemplo:
 ```
-$	sudo	apt-get	install	nginx  
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin 
+DAEMON=/usr/bin/openerp-server 
+NAME=odoo 
+DESC=odoo 
+CONFIG=/etc/odoo/openerp-server.conf 
+LOGFILE=/var/log/odoo/odoo-server.log 
+PIDFILE=/var/run/${NAME}.pid 
+USER=odoo 
 ```
-To	confirm	that	it	is	working	correctly,	we	should	see	a	“Welcome	to	nginx”	page	when visiting	the	server	address	with	a	browser	or	using	curl	http://localhost	in	the	server. 
-Nginx	configuration	files	follow	the	same	approach	as	Apache:	they	are	stored	in /etc/nginx/available-sites/	and	activated	by	adding	a	symbolic	link	in  /etc/nginx/enabled-sites/.	We	should	also	disable	the	default	configuration	provided by	the	nginx	installation,	as	shown	in	the	following: 
+La variable USER es el usuario del sistema bajo el cual se ejecutara el servidor, y probablemente quiera cambiarlo. Las otras variables deberían ser las correctas y prepararemos el resto de la configuración teniendo en mente estos valores predeterminados. DEAMON es la ruta a el ejecutable del servidor, CONFIG es el archivo de configuración que será usado, y LOGFILE es la ubicación del archivo de registro.
+
+Los ejecutables en DEAMON pueden ser un enlace simbólico a nuestra ubicación actual de Odoo, como se muestra a continuación:
 ```
-$	sudo	rm	/etc/nginx/sites-enabled/default 
-$	sudo	touch	/etc/nginx/sites-available/odoo 
-$	sudo	ln	-s	/etc/nginx/sites-available/odoo	/etc/nginx/sites-enabled/odoo  
+$ sudo ln -s ~/odoo-prd/odoo/odoo.py /usr/bin/openerp-server 
+$ sudo chown $(whoami) /usr/bin/openerp-server  
 ```
-Using	an	editor,	such	as	nano	or	vi,	we	should	edit	our	nginx	configuration	file	as	follows: 
+Luego debemos crear el directorio LOGFILE como sigue:
 ```
-$	sudo	nano	/etc/nginx/sites-available/odoo  
+$ sudo mkdir /var/log/odoo
+$ sudo chown $(whoami) /etc/odoo  
 ```
-First	we	add	the	upstreams,	the	backend	servers	nginx	will	redirect	traffic	to,	the	Odoo server	in	our	case,	which	is	listening	on	port	8069,	shown	in	the	following: 
+Ahora deberíamos poder iniciar y parar el servicio de Odoo:
 ```
-upstream	backend-odoo	{ 		server	127.0.0.1:8069; } server	{ 		location	/	{ 				proxy_pass	http://backend-odoo; 		} } 
+$ sudo /etc/init.d/odoo start 
+Starting odoo: ok  
 ```
-To	test	if	the	edited	configuration	is	correct,	use	the	following: 
+Deberíamos ser capaces de obtener una respuesta del servidor sin ningún error en la archivo de registro, como se muestra a continuación:
 ```
-$	sudo	nginx	-t  
+$ curl http://localhost:8069 <html><head><script>window.location	= '/web' + location.hash;</script> </head></html> 
+$ less /var/log/odoo/odoo-server.log     # show the log file  
 ```
-In	case	you	find	errors,	confirm	the	configuration	file	is	correctly	typed.	Also,	a	common problem	is	for	the	default	HTTP	to	be	taken	by	another	service,	such	as	Apache	or	the default	nginx	website.	Double-check	the	instructions	given	before	to	make	sure	that	this	is not	the	case,	then	restart	nginx.	After	this,	we	can	have	nginx	to	reload	the	new configuration	as	follows: 
+La parada del servicio se hace de forma similar:
+```
+$ sudo /etc/init.d/odoo stop 
+Stopping odoo: ok  
+```
+
+*Tip*
+*Ubuntu proporciona el comando más fácil de recordar para gestionar los servicios, si lo prefiere puede usar `sudo service odoo start` y `sudo service odoo stop`. *
+
+Ahora solo necesitamos que el servicio se ejecute automáticamente cuando se inicia el sistema:
+```
+$ sudo update-rc.d odoo defaults  
+```
+Luego de esto, al reiniciar el servidor, el servicio de Odoo debería comenzar a ejecutarse automáticamente son errores. Es un buen momento para verificar que todo este funcionando como se espera. 
+
+
+**Usar un proxy inverso**
+
+Mientras que Odoo puede entregar páginas web por si mismo, es recomendable usar un proxy inverso delante de Odoo. Un proxy inverso actúa como un intermediario que gestiona el tráfico entre los clientes que envían solicitudes y el servidor Odoo que responde a esas solicitudes. Usar un proxy inverso tiene múltiples beneficios.
+
+De cara a la seguridad, puede hacer lo  siguiente:
+
+- Gestionar (y reforzar) los protocolos HTTPS para cifrar el tráfico.
+- Esconder las características internas de la red.
+- Actuar como un “aplicación firewall” limitando el número de URLs aceptados para su procesamiento.
+
+Y del lado del desempeño, puede proveer mejoras significativas:
+
+- Contenido estático cache, por lo tanto reduce la carga en los servidores Odoo.
+- Comprime el contenido para acelerar el tiempo de carga.
+- Balancea la carga distribuyendo la entre varios servidores.
+
+Apache es una opción popular que se usa como proxy inverso. Nginx es una alternativa reciente con buenos argumentos técnicos. Aquí usaremos nginx como proxy inverso y mostraremos como puede usarse para ejecutar las funciones mencionadas anteriormente.
+
+
+**Configurar nginx como proxy inverso**
+
+Primero, debemos instalar nginx. Queremos que escuche en los puertos HTTP predeterminados, así que debemos asegurarnos que no estén siendo usados por otro servicio. Ejecutar el siguiente comando debe arrojar un error, como se muestra a continuación:
+```
+$ curl http://localhost 
+curl:	(7) Failed to connect to localhost port 80  
+```
+De lo contrario, deberá deshabilitar o eliminar ese servicio para permitir que nginx use esos puertos. Por ejemplo, para parar un servidor Apache existente, deberá hacer lo siguiente:
+```
+$ sudo /etc/init.d/apache2 stop  
+```
+Ahora podemos instalar nginx, lo cual es realizado de la forma esperada:
+```
+$ sudo apt-get install nginx  
+```
+Para conformar que este funcionando correctamente, deberíamos ver una página que diga “Welcome to nginx” cuando se ingrese la dirección del servidor en la navegador o usarndo `curl http://localhost`
+
+Los archivos de configuración de nginx siguen el mismo enfoque que los de Apache: son almacenados en `/etc/nginx/available-sites/` y se activan agregando un enlace simbólico en `/etc/nginx/enabled-sites/`. Deberíamos deshabilitar la configuración predeterminada que provee la instalación de nginx, como se muestra a continuación:
+```
+$ sudo rm /etc/nginx/sites-enabled/default 
+$ sudo touch /etc/nginx/sites-available/odoo 
+$ sudo ln -s /etc/nginx/sites-available/odoo /etc/nginx/sites-enabled/odoo  
+```
+Usando un editor, como nano o vi, editamos nuestros archivo de configuración nginx como sigue:
+```
+$ sudo nano /etc/nginx/sites-available/odoo 
+```
+Primero agregamos los “upstreams”, los servidores traseros hacia los cuales nginx redireccionara el tráfico, en nuestro caso el servidor Odoo, el cual escucha en el puerto 8069, como se muestra a continuación:
+```
+upstream backend-odoo {
+    server 127.0.0.1:8069; 
+} 
+
+server {
+    location / {
+        proxy_pass http://backend-odoo;
+    } 
+} 
+```
+Para probar que la configuración es correcta, use lo siguiente:
+```
+$ sudo nginx -t  
+```
+En caso que se encuentren errores, verifique que el archivo de configuración esta bien escrito. Además, un problema común es que el HTTP este tomado de forma predeterminada por otro servicio, como Apache o la página web predeterminada de nginx. Realice una doble revisión de las instrucciones dadas anteriormente para asegurarse que este no sea el caso, luego reinicio nginx. Luego de esto, podremos hacer que nginx cargue la nueva configuración: 
 ``` 
-$	sudo	/etc/init.d/nginx	reload  
+$ sudo /etc/init.d/nginx reload  
 ```
-We	can	now	confirm	that	nginx	is	redirecting	traffic	to	the	backend	Odoo	server,	as	shown in	the	following: 
+Ahora podemos verificar que nginx este redirigiendo el tráfico al servidor de Odoo, como se muestra a continuación:
 ```
-$	curl	http://localhost <html><head><script>window.location	=	'/web'	+	location.hash;</script> </head></html>  
-``` 
-
-
-**Enforcing	HTTPS**
-
-Next	we	should	install	a	certificate	to	be	able	to	use	SSL.	To	create	a	self-signed certificate,	follow	the	following	steps: 
-```
-$	sudo	mkdir	/etc/nginx/ssl	&&	cd	/etc/nginx/ssl 
-$	sudo	openssl	req	-x509	-newkey	rsa:2048	-keyout	key.pem	-out	cert.pem	- days	365	-nodes 
-$	sudo	chmod	a-wx	*												#	make	files	read	only 
-$	sudo	chown	www-data:root	*			#	access	only	to	www-data	group  
-```
-This	creates	an	ssl/	directory	inside	the	/etc/nginx/	directory	and	creates	a	password less	self-signed	SSL	certificate.	When	running	the	openssl	command,	some	additional information	will	be	asked,	and	a	certificate	and	key	files	are	generated.	Finally,	the ownership	of	these	files	is	given	to	the	user	www-data	used	to	run	the	web	server. 
-
-*Note*  
-*Using	self-signed	certificated	can	pose	some	security	risks,	such	as	man-in-the-middle attacks,	and	may	even	not	be	allowed	by	some	browsers.	For	a	robust	solution,	you	should use	a	certificate	signed	by	a	recognized	certificate	authority.	This	is	particularly	important if	you	are	running	a	commercial	or	e-commerce	website.*
-
-Now	that	we	have	an	SSL	certificate,	we	are	ready	to	configure	nginx	to	use	it. 
-To	enforce	HTTPS,	we	will	redirect	all	HTTP	traffic	to	it.	Replace	the	server	directive	we defined	previously	with	the	following: 
-```
-server	{ 		listen	80; 		add_header	Strict-Transport-Security	max-age=2592000; 		rewrite	^/.*$	https://$host$request_uri?	permanent; } 
-```
-If	we	reload	the	nginx	configuration	now	and	access	the	server	with	a	web	browser,	we will	see	that	the	http://	address	will	be	converted	into	an	https://	address. 
-But	it	won’t	return	any	content	before	we	configure	the	HTTPS	service	properly,	by adding	the	following	server	configuration: 
-```
-server	{ 		listen	443	default; 		#	ssl	settings 		ssl	on; 		ssl_certificate					/etc/nginx/ssl/cert.pem; 		ssl_certificate_key	/etc/nginx/ssl/key.pem; 		keepalive_timeout	60; 		#	proxy	header	and	settings 		proxy_set_header	Host	$host; 		proxy_set_header	X-Real-IP	$remote_addr; 		proxy_set_header	X-Forward-For	$proxy_add_x_forwarded_for; 		proxy_set_header	X-Forwarded-Proto	$scheme; 		proxy_redirect	off; 	 
- 
- 		location	/	{ 				proxy_pass	http://backend-odoo; 		} } 
-```
-This	will	listen	to	the	HTTPS	port	and	use	the	/etc/nginx/ssl/	certificate	files	to	encrypt the	traffic.	We	also	add	some	information	to	the	request	header	to	let	the	Odoo	backend service	know	it’s	being	proxied.	For	security	reasons,	it’s	important	for	Odoo	to	make	sure the	proxy_mode	parameter	is	set	to	True.	At	the	end,	the	location	directive	defines	that	all request	are	passed	to	the	backend-odoo	upstream. 
-
-Reload	the	configuration,	and	we	should	have	our	Odoo	service	working	through	HTTPS, as	shown	in	the	following: 
-```
-$	sudo	nginx	-t nginx:	the	configuration	file	/etc/nginx/nginx.conf	syntax	is	ok nginx:	configuration	file	/etc/nginx/nginx.conf	test	is	successful 
-$	sudo	service	nginx	reload	 	*	Reloading	nginx	configuration	nginx 			...done. 
-$	curl	-k	https://localhost	 <html><head><script>window.location	=	'/web'	+	location.hash;</script> </head></html>  
-```
-The	last	output	confirms	that	the	Odoo	web	client	is	being	served	over	HTTPS. 
- 
-
-**Nginx	optimizations**
-
-Now,	it	is	time	for	some	fine-tuning	of	the	nginx	settings.	They	are	recommended	to enable	response	buffering	and	data	compression	that	should	improve	the	speed	of	the website.	We	also	set	a	specific	location	for	the	logs. 
-
-The	following	configurations	should	be	added	inside	the	server	listening	on	port	443,	for example,	just	after	the	proxy	definitions: 
-```
-#	odoo	log	files access_log	/var/log/nginx/odoo-access.log; error_log		/var/log/nginx/odoo-error.log; 
-#	increase	proxy	buffer	size proxy_buffers	16	64k; proxy_buffer_size	128k; 
-#	force	timeouts	if	the	backend	dies proxy_next_upstream	error	timeout	invalid_header	http_500	http_502	 http_503; 
-#	enable	data	compression gzip	on; gzip_min_length	1100; gzip_buffers	4	32k; gzip_types	text/plain	application/x-javascript	text/xml	text/css; gzip_vary	on; 
-```
-We	can	also	activate	static	content	caching	for	faster	responses	to	the	types	of	requests mentioned	in	the	preceding	code	example	and	to	avoid	their	load	on	the	Odoo	server. After	the	location	/	section,	add	the	following	second	location	section: 
-```
-location	~*	/web/static/	{ 		#	cache	static	data 		proxy_cache_valid	200	60m; 		proxy_buffering	on; 		expires	864000; 		proxy_pass	http://backend-odoo; } 
-```
-With	this,	the	static	data	is	cached	for	60	minutes.	Further	requests	on	those	requests	in that	interval	will	be	responded	to	directly	by	nginx	from	the	cache. 
- 
-
-**Long	polling**
-
-Long	polling	is	used	to	support	the	instant	messaging	app,	and	when	using multiprocessing	workers,	it	is	handled	on	a	separate	port,	which	is	8072	by	default. 
-
-For	our	reverse	proxy,	this	means	that	the	longpolling	requests	should	be	passed	to	this port.	To	support	this,	we	need	to	add	a	new	upstream	to	our	nginx	configuration,	as	shown in	the	following	code: 
-```
-upstream	backend-odoo-im	{	server	127.0.0.1:8072;	} 
-```
-Next,	we	should	add	another	location	to	the	server	handling	the	HTTPS	requests,	as shown	in	the	following	code: 
-```
-		location	/longpolling	{	proxy_pass	http://backend-odoo-im;} 
-```
-With	these	settings,	nginx	should	pass	these	requests	to	the	proper	Odoo	server	port. 
- 
-
-**Server	and	module	updates**
-
-Once	the	Odoo	server	is	ready	and	running,	there	will	come	a	time	when	you	need	to install	updates	on	Odoo.	This	involves	two	steps:	first,	to	get	the	new	versions	of	the source	code	(server	or	modules),	and	second,	to	install	them. 
-
-If	you	have	followed	the	approach	described	in	the	*Installing	from	the	source	code*	section, we	can	fetch	and	test	the	new	versions	in	the	staging	repository.	It	is	strongly	advised	that you	make	a	copy	of	the	production	database	and	test	the	upgrade	on	it.	If	v8dev	were	our production	database,	this	could	be	done	with	the	following	commands: 
-```
-$	dropdb	v8test	;	createdb	v8test 
-$	pg_dump	v8dev	|	psqlpsql	-d	v8test 
-$	cd	~/odoo-dev/odoo/ 
-$	./odoo.py	-d	v8test	--xmlrpc-port=8080	-c	/etc/odoo/openerp-server.conf	- u	all  
-```
-If	everything	goes	OK,	it	should	be	safe	to	perform	the	upgrade	on	the	production	service. Remember	to	make	a	note	of	the	current	version	Git	reference,	in	order	to	be	able	to	roll back	by	checking	out	this	version	again.	Keeping	a	backup	of	the	database	before performing	the	upgrade	is	also	highly	advised. 
-
-After	this,	we	can	pull	the	new	versions	to	the	production	repository	using	Git	and complete	the	upgrade,	as	shown	here: 
-```
-$	cd	~/odoo-prd/odoo/ 
-$	git	pull 
-$	./odoo.py	-c	/etc/odoo/openerp-server.conf	--stop-after-init	-d	v8dev	-u	 all 
-$	sudo	/etc/init.d/odoo	restart  
+$ curl http://localhost <html><head><script>window.location = '/web' + location.hash;</script> </head></html>  
 ``` 
 
-**Summary**
 
-In	this	chapter,	you	learned	about	the	additional	steps	to	set	up	and	run	Odoo	in	a	Debian- based	production	server.	The	most	important	settings	in	the	configuration	file	were	visited, and	you	learned	how	to	take	advantage	of	the	multiprocessing	mode. 
+**Reforzar el HTTPS**
 
-For	improved	security	and	scalability,	you	also	learned	how	to	use	nginx	as	a	reverse proxy	in	front	of	our	Odoo	server	processes. 
+Ahora, deberíamos instalar un certificado para poder usar SSL. Para crear un certificado auto-firmado, siga los pasos a continuación:
+```
+$ sudo mkdir /etc/nginx/ssl && cd /etc/nginx/ssl 
+$ sudo openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem – days 365 -nodes 
+$ sudo chmod a-wx *                     # make files read only 
+$ sudo chown www-data:root *            # access only to www-data group  
+```
+Esto crea un directorio `ssl/` dentro del directorio `/etc/nginx/` y un certificado auto-firmado sin contraseña. Cuando se ejecute el comando openssl, se solicitara más información, y se generaran un certificado y archivos llave. Finalmente, estos archivos serán propiedad del usuario www-data, usado para ejecutar el servidor web.  
 
-We	hope	this	covers	the	essentials	of	what	is	needed	to	run	an	Odoo	server	and	provide	a stable	and	secure	service	to	your	users. 
+*Nota*
+*Usar un certificado auto-firmado puede plantear algunos riesgos de seguridad, como ataques “man-in-the-middle”, y pueden no ser permitidos por algunos navegadores. Para una solución más robusta, debe usar un certificado firmado por una autoridad de certificación reconocida. Esto es particularmente importante si se esta ejecutando un sitio web comercial o de e-commerce. *
+
+Ahora que tenemos un certificado SSL, podemos configurar nginx para usarlo. 
+
+Para reforzar HTTPS, redireccionaremos todo el tráfico HTTP. Reemplace la directiva “server” que definimos anteriormente con lo siguiente:
+```
+server {
+    listen 80; 
+    add_header Strict-Transport-Security max-age=2592000;
+    rewrite ^/.*$ https://$host$request_uri? permanent; 
+} 
+```
+Si recargamos la configuración de nginx y accedemos al servidor con el navegador web, veremos que la dirección `http://` se convierte en `https://`.
+
+Pero no devolverá ningún contenido antes que configuremos el servicio HTTPS apropiadamente, agregando la siguiente configuración a “server”:
+```
+server {
+    listen 443 default;              
+    # ssl settings
+    ssl on;
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+    keepalive_timeout 60;
+    # proxy header and settings
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forward-For $proxy_add_x_forwarded_for; 		
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_redirect off; 	 
+ 
+    location / {
+        proxy_pass http://backend-odoo;
+    } 
+} 
+```
+Esto escuchara al puerto HTTPS y usará los archivos del certificado `/etc/nginx/ssl/` para cifrar el tráfico. También agregamos alguna información al encabezado de solicitud para hacer que el servicio de Odoo sepa que esta pasando a través de un proxy. Por razones de seguridad, es importante para Odoo asegurarse que el parámetro `proxy_mode` este fijado a True. Al final, la directiva “location” define que todas las solicitudes sean pasadas al upstream “backend-oddo”.
+
+Recargue la configuración, y deberíamos poder tener nuestro servicio Odoo trabajando a través de HTTPS, como se muestra a continuación:
+```
+$ sudo nginx -t 
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok 
+nginx: configuration file /etc/nginx/nginx.conf	test is successful 
+$ sudo service nginx reload * 
+Reloading nginx configuration nginx ...done. 
+$ curl -k https://localhost  
+<html><head><script>window.location	= '/web' + location.hash;</script></head></html>
+```
+La última salida confirma que el cliente Odoo esta siendo servido sobre HTTPS.
+
+
+**Optimización de Nginx**
+
+Es hora para algunas mejoras en las configuraciones de nginx. Estas son recomendadas para habilitar el búfer de respuesta y compresión de datos que debería mejorar la velocidad del sitio web. También fijamos una localización específica para los registros.
+
+Las siguientes configuraciones deberían ser agregadas dentro de “server” que escucha en el puerto 443, por ejemplo, justo despues de las definiciones del proxy:
+```
+# odoo log files access_log /var/log/nginx/odoo-access.log;
+error_log /var/log/nginx/odoo-error.log; 
+# increase proxy buffer size 
+proxy_buffers 16 64k;
+proxy_buffer_size 128k; 
+# force timeouts if the backend dies
+proxy_next_upstream error timeout invalid_header http_500 http_502 http_503; 
+# enable data compression 
+gzip on; 
+gzip_min_length 1100; 
+gzip_buffers 4 32k;
+gzip_types text/plain application/x-javascript text/xml text/css;
+gzip_vary on; 
+```
+También podemos activar el caché de contenido para respuestas más rápidas para los tipos de solicitudes mencionados en el código anterior y para impedir su carga en el servidor Odoo. Después de la sección `location /`, agregue una segunda sección “location”:
+```
+location ~* /web/static/ {
+    # cache static data
+    proxy_cache_valid 200 60m;
+    proxy_buffering on;
+    expires 864000;
+    proxy_pass http://backend-odoo;
+} 
+```
+Con esto, se hace caché de los datos estáticos por 60 minutos. Las solicitudes siguientes de esas solicitudes en este intervalo de tiempo serán respondidas directamente por nginx desde el caché.
+
+
+**Long polling**
+
+“Long polling” es usada para soportar la aplicación de mensajería instantánea, y cuando se usan trabajos multiproceso, esta es gestionada en un puerto separado, el cual de forma predeterminada es el puerto 8072.
+
+Para nuestro proxy inverso, esto significa que las solicitudes “longpolling” deberían ser pasadas por este puerto. Para soportar esto, necesitamos agregar un nuevo “upstream” a nuestra configuración nginx, como se muestra en el siguiente código:
+```
+upstream backend-odoo-im { server 127.0.0.1:8072; } 
+```
+Luego, deberíamos agregar otra “location” al “server” que gestiona las solicitudes HTTPS, como se muestra a continuación:
+```
+location /longpolling { proxy_pass http://backend-odoo-im; } 
+```
+Con estas configuraciones, nginx debería pasar estas solicitudes al puerto apropiado del servidor Odoo.
+ 
+
+**Actualización del servidor y módulos**
+
+Una vez que el servidor Odoo este listo y ejecutándose, llegara el momento en que necesite instalar actualizaciones. Lo cual involucra dos pasos: primero, obtener las nuevas versiones del código fuente (servidor o módulos), y segundo, instalar las. 
+
+Si ha seguido el enfoque descrito en la sección * Instalación desde el código fuente *, podemos buscar y probar las nuevas versiones dentro del repositorio de preparación. Es altamente recomendable hacer una copia de la base de datos de producción y probar la actualización en ella. Si `v8dev` es nuestra base de datos de producción, esto podría ser realizado con los siguientes comandos:
+```
+$ dropdb v8test ; createdb v8test 
+$ pg_dump v8dev | psqlpsql -d v8test 
+$ cd ~/odoo-dev/odoo/ 
+$ ./odoo.py -d v8test –xmlrpc-port=8080 -c /etc/odoo/openerp-server.conf –u all  
+```
+Si todo resulta bien, debería ser seguro realizar la actualización en el servicio en producción. Recuerde colocar una nota de la versión actual de referencia Git, con el fin de poder regresar, revisando esta versión otra vez. Hacer un respaldo de la base de datos antes de realizar la actualización es también recomendable.
+
+Luego de esto, podemos hacer un “pull” de las nuevas versiones al repositorio de producción usando Git y completando la actualización, como se muestra aquí:
+```
+$ cd ~/odoo-prd/odoo/
+$ git pull 
+$ ./odoo.py -c /etc/odoo/openerp-server.conf –stop-after-init -d v8dev -u all 
+$ sudo /etc/init.d/odoo restart 
+``` 
+
+
+**Resumen**
+
+En este capítulo, aprendió sobre los pasos adicionales para configurar y ejecutar Odoo en un servidor de producción basado en Debian. Fueron vistas las configuraciones más importantes del archivo de configuración, y aprendió como aprovechar el modo multiproceso.
+
+También aprendió como usar nginx como un proxy inverso frente a nuestro servidor Odoo, para mejorar la seguridad y la escalabilidad.
+
+Esperamos que esto cubra lo esencial de lo que es necesario para ejecutar un servidor Odoo y proveer un servicio estable y seguro a sus usuarios y usuarias.
