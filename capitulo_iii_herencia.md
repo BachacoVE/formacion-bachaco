@@ -262,7 +262,7 @@ Para la vista de búsqueda, agregaremos una búsqueda por usuario, y filtros pre
 No se preocupe demasiado por la sintaxis específica de las vistas. Describiremos esto con más detalle en el Capítulo 6.
 
 
-** Más sobre el uso de la herencia para ampliar los modelos **
+**Más sobre el uso de la herencia para ampliar los modelos**
 
 Hemos visto lo básico en lo que se refiere a la ampliación de modelos “in place”, lo cual es la forma más frecuente de uso de la herencia. Pero la herencia usando el atributo `_inherit` tiene mayores capacidades, como la mezcla de clases.
 
@@ -271,7 +271,7 @@ También tenemos disponible el método de herencia delegada, usando el atributo 
 Exploremos esas posibilidades en más detalle.
  
 
-** Copiar características usando herencia por prototipo **
+**Copiar características usando herencia por prototipo**
 
 El método que usamos anteriormente para ampliar el modelo solo usa el atributo `_inherit`. Definimos una clase que hereda el modelo `todo.task`, y le agregamos algunas características. La clase `_name` no fue fijada explícitamente; implícitamente fue también `todo.task`.
 
@@ -293,7 +293,7 @@ Los campos que definen solo serán creados en aquellos modelos regulares que her
 Odoo proporciona un mecanismo de herencia delegada, el cual impide la duplicación de estructuras de datos, por lo que es usualmente usada cuando se hereda de modelos regulares. Veamos esto con mayor detalle.
  
 
-** Integrar Modelos usando herencia delegada **
+**Integrar Modelos usando herencia delegada**
 
 La herencia delegada es el método de extensión de modelos usado con menos frecuencia, pero puede proporcionar soluciones muy convenientes. Es usada a través del atributo `_inherits` (note la 's' adicional) con un mapeo de diccionario de modelos heredados con campos relacionados a él.
 
