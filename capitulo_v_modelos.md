@@ -259,7 +259,7 @@ Veamos con mayor detalle las definiciones de los campos relacionales.
 
 **Relaciones Muchos a uno**
 
-Many2many, acepta dos argumentos de posición: el modelo relacionado (que corresponde al argumento de palabra clave del comodelo) y la cadena de título. Este crea un campo en la table de la base de datos con una clave foránea a la tabla relacionada.
+Many2one, acepta dos argumentos de posición: el modelo relacionado (que corresponde al argumento de palabra clave del comodelo) y la cadena de título. Este crea un campo en la table de la base de datos con una clave foránea a la tabla relacionada.
 
 Algunos nombres adicionales de argumentos también están disponibles para ser usados con estos tipos de campo:
 
