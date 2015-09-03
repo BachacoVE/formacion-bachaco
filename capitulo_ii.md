@@ -391,7 +391,7 @@ Los elementos `<field>` definen definen campos que también son buscados cuando 
 Ahora agregaremos lógica a nuestros botones. Edite el archivo Python `todo_model.py` para agregar a la clase los métodos llamados por los botones.
 
 Usaremos la API nueva introducida en Odoo 8.0. Para compatibilidad con versiones anteriores, de forma predeterminada Odoo espera la API anterior, por lo tanto para crear métodos usando la API nueva se necesitan en ellos decoradores Python. Primero necesitamos una declaración `import` al principio del archivo:
-```
+```Python
 from openerp import models, fields, api
 ```
 La acción del botón **Toggle Done** es bastante simple: solo cambia de estado (marca o desmarca) la señal **Is Done?**. La forma más simple para agregar la lógica a un registro, es usar el decorador `@api.one`. Aquí `self` representara un registro. Si la acción es llamada para un conjunto de registros, la API gestionara esto lanzando el método para cada uno de los registros.
@@ -439,7 +439,8 @@ Esto es realizado usualmente usando un archivo CSV llamado `security/ir.model.ac
 
 Ahora que tenemos todo lo que necesitamos saber, vamos a agregar el archivo nuevo con el siguiente contenido:
 ```
-id,name,model_id: id,group_id:id,perm_read,perm_write,perm_create,perm_unlink access_todo_task_group_user,todo.task.user,model_todo_task,base.group_user,1,1,1,1 
+id,name,model_id: id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_todo_task_group_user,todo.task.user,model_todo_task,base.group_user,1,1,1,1 
 ```
 No debemos olvidar agregar la referencia a este archivo nuevo en el atributo “data” del descriptor en `__openerp__.py`, de la siguiente manera:
 ```Python
