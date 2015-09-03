@@ -58,7 +58,7 @@ $ mkdir	~/odoo-dev/custom-addons/todo_app
 $ touch	~/odoo-dev/custom-addons/todo_app/__init__.py  
 ```
 Luego necesitamos crear el archivo descriptor. Debe contener unicamente un diccionario Python y puede contener alrededor de una docena de atributos, de los cuales solo el atributo `name` es requerido. Son recomendados los atributos `description`, para una descripción más larga, y `author`. Ahora agregamos un archivo `__openerp__.py` junto al archivo `__init__.py` con el siguiente contenido:
-```
+```python
 {
 	'name': 'To-Do Application',
     'description': 'Manage your personal Tasks with this module.',
@@ -101,7 +101,7 @@ La opción `--save` guarda la configuración usada en un archivo de configuraci�
 Mira detenidamente en el registro del servidor. Debería haber una línea **INFO ? openerp: addons paths:** (…), y debería incluir nuestro directorio `custom-addons`.
 
 Recuerde incluir cualquier otro directorio que pueda estar usando. Por ejemplo, si siguió las instrucciones del último capítulo para instalar el repositorio department, puede querer incluirlo y usar la opción:
-```
+```Python
 --addons-path="custom-addons,department,odoo/addons"  
 ```
 Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
@@ -149,7 +149,7 @@ Los modelos son implementados usando clases Python derivadas de una plantilla de
 Algunas personas consideran como buena práctica mantener los archivos Python para los modelos dentro de un subdirectorio. Por simplicidad no seguiremos esta sugerencia, así que vamos a crear un archivo `todo_model.py` en el directorio raíz del módulo `todo_app`.
 
 Agregar el siguiente contenido:
-```
+```Python
 #-*- coding: utf-8 -*-
 from openerp import models, fields
 
@@ -194,7 +194,7 @@ Ahora que tenemos un modelo en el cual almacenar nuestros datos, hagamos que est
 Todo lo que necesitamos hacer es agregar una opción de menú para abrir el modelo de "To-do Task" para que pueda ser usado. Esto es realizado usando un archivo XML. Igual que en el caso de los modelos, algunas personas consideran como una buena practica mantener las definiciones de vistas en en un subdirectorio separado.
 
 Crearemos un archivo nuevo `todo_view.xml` en el directorio raíz del módulo, y este tendrá la declaración de un ítem de menú y la acción ejecutada por este:
-```
+```XML
 <?xml version="1.0" encoding="UTF-8"?>
 	<openerp>
 		<data>
@@ -250,7 +250,7 @@ Todas las vistas son almacenadas en la base de datos, en el modelo `ir.model.vie
 ####Creando una vista formulario
 
 Edite el XML que recién hemos creado para agregar el elemento `<record>` después de la apertura de la etiqueta `<data>`: 
-```
+```XML
 <record	id="view_form_todo_task" model="ir.ui.view">
 	<field name="name">To-do Task Form</field>
 	<field name="model">todo.task</field>
@@ -270,7 +270,7 @@ El atributo más importante es `arch`, que contiene la definición de la vista. 
 ####Formatear como un documento de negocio
 
 Lo anterior proporciona una vista de formulario básica, pero podemos hacer algunos cambios para mejorar su apariencia. Para los modelos de documentos Odoo tiene un estilo de presentación que asemeja una página de papel. El formulario contiene dos elementos: una `<head>`, que contiene botones de acción, y un `<sheet>`, que contiene los campos de datos:
-```
+```XML
 <form>
 	<header>
 		<!-- Buttons go here-->
@@ -290,7 +290,7 @@ Los formularios pueden tener botones que ejecuten acciones. Estos son capaces de
 Estos pueden ser colocados en cualquier parte dentro de un formulario, pero para formularios con estilo de documentos, el sitio recomendado es en la sección `<header>`.
 
 Para nuestra aplicación, agregaremos dos botones para ejecutar métodos del modelo `todo.task`:
-```
+```XML
 <header>
 	<button name="do_toggle_done" type="object" string="Toggle Done" class="oe_highlight" />
 	<button name="do_clear_done" type="object" string="Clear All Done" />
@@ -303,7 +303,7 @@ Los atributos básicos para un botón son: `string` con el texto que se muestra 
 La etiqueta `<group>` permite organizar el contenido del formulario. Colocando los elementos `<group>` dentro de un elemento `<group>` crea una disposición de dos columnas dentro del grupo externo. Se recomienda que los elementos Group tengan un nombre para hacer más fácil su extensión en otros módulos.
 
 Usaremos esto para mejorar la organización de nuestro contenido. Cambiemos el contenido de `<sheet>` de nuestro formulario:
-```
+```XML
 <sheet>
 	<group name="group_top">
 		<group name="group_left">
@@ -320,7 +320,7 @@ Usaremos esto para mejorar la organización de nuestro contenido. Cambiemos el c
 ####La vista de formulario completa
 
 En este momento, nuestro registro en `todo_view.xml` para la vista de formulario de `todo.task` debería lucir así:
-```
+```XML
 <record id="view_form_todo_task" model="ir.ui.view">
 	<field name="name">To-do Task Form</field>
 	<field name="model">todo.task</field>
@@ -354,7 +354,7 @@ Ahora, agreguemos la lógica de negocio para las acciones de los botónes.
 Cuando un modelo se visualiza como una lista, se esta usando una vista `<tree>` Las vistas de árbol son capaces de mostrar líneas organizadas por jerarquía, pero la mayoría de las veces son usadas para desplegar listas planas.
 
 Podemos agregar la siguiente definición de una vista de árbol a `todo_view.xml`: 
-```
+```XML
 <record id="view_tree_todo_task" model="ir.ui.view">
 	<field name="name">To-do Task Tree</field>
 	<field name="model">todo.task</field>
@@ -371,7 +371,7 @@ Hemos definido una lista con solo dos columnas, `name` y `is_done`. Tambien agre
 En la parte superior derecha de la lista Odoo muestra una campo de búsqueda. Los campos de búsqueda predefinidos y los filtros disponibles pueden ser predeterminados por una vista `<search>`. 
 
 Como lo hicimos anteriormente, agregaremos esto a `todo_view.xml`:
-```
+```XML
 <record id="view_filter_todo_task" model="ir.ui.view">
 	<field name="name">To-do Task Filter</field>
 	<field name="model">todo.task</field>
@@ -397,7 +397,7 @@ from openerp import models, fields, api
 La acción del botón **Toggle Done** es bastante simple: solo cambia de estado (marca o desmarca) la señal **Is Done?**. La forma más simple para agregar la lógica a un registro, es usar el decorador `@api.one`. Aquí `self` representara un registro. Si la acción es llamada para un conjunto de registros, la API gestionara esto lanzando el método para cada uno de los registros.
 
 Dentro de la clase `TodoTask` agregue:
-```
+```Python
 @api.one def do_toggle_done(self):
 	self.is_done = not self.is_done
 	return True
@@ -407,7 +407,7 @@ Como puede observar, simplemente modifica el campo `is_done`, invirtiendo su val
 Despues de esto, si reiniciamos el servidor Odoo para cargar nuevamente el archivo Python, el botón **Toggle Done** debe funcionar. 
 
 Para el botón **Clear All Done** queremos ir un poco más lejos. Este debe buscar todos los registros activos que estén finalizados, y desactivarlos. Los botones de formulario se suponen que solo actúen sobre los registros seleccionados, pero para mantener las cosas simples haremos un poco de trampa, y también actuara sobre los demás botones:
-```
+```Python
 @api.multi def do_clear_done(self):
 	done_recs = self.search([('is_done', '=', True)])
 	done_recs.write({'active': False})
@@ -442,7 +442,7 @@ Ahora que tenemos todo lo que necesitamos saber, vamos a agregar el archivo nuev
 id,name,model_id: id,group_id:id,perm_read,perm_write,perm_create,perm_unlink access_todo_task_group_user,todo.task.user,model_todo_task,base.group_user,1,1,1,1 
 ```
 No debemos olvidar agregar la referencia a este archivo nuevo en el atributo “data” del descriptor en `__openerp__.py`, de la siguiente manera:
-```
+```Python
 'data': [
 	'todo_view.xml',
 	'security/ir.model.access.csv',
@@ -458,8 +458,8 @@ Las reglas de registro son definidas en el modelo `ir.rule`. Como es de constumb
 Finalmente, las reglas pueden ser globales (el campo `global` el fijado a `True`) o solo para grupos particulares de seguridad. En nuestro caso, puede ser una regla global, pero para ilustrar el caso más común, la haremos como una regla específica para un grupo, aplicada solo al grupo empleados.
 
 Debemos crear un archivo `security/todo_access_rules.xml` con el siguiente contenido:
-```
-<?xml	version="1.0" encoding="utf-8"?>
+```XML
+<?xml version="1.0" encoding="utf-8"?>
 	<openerp>
 		<data noupdate="1">
 			<record id="todo_task_user_rule" model="ir.rule">
@@ -478,7 +478,7 @@ Nota el atributo `noupdate="1"`. Esto significa que ésta data no será actualiz
 En el campo de `groups`, también encontraras una expresión especial. Es un campo de relación uno a muchos, y tienen una sintaxis especial para operar con ellos. En este caso la tupla `(4,x)` indica agregar `x` a los registros, y `x` es una referencia al grupo empleados, identificado por `base.group_user`.
 
 Como se hizo anteriormente, debemos agregar el archivo a `__openerp__.py` antes que pueda ser cargado al módulo:	module: 
-```
+```Python
 'data':	[
 	'todo_view.xml',
 	'security/ir.model.access.csv',
