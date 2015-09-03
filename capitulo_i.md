@@ -49,8 +49,8 @@ Si esta usando Ubuntu, probablemente no necesite esto ya que el proceso de insta
 Primero, asegúrese que Odoo este instalado. Su usuario de trabajo lo necesitara. Si ha accedido como root:
 
 ```
-# apt-get update & apt-get upgrade 	# Instalar actualizaciones del sistema
-# apt-get install	sudo 	# Asegurarse que 'sudo'	esta instalada 
+# apt-get update & apt-get upgrade # Instalar actualizaciones del sistema
+# apt-get install sudo # Asegurarse que 'sudo' esta instalada 
 ```
 Los siguientes comandos creará un usuario odoo:
 ```
@@ -78,11 +78,11 @@ $ echo $HOME
 ```
 Ahora es posible usar este script. Muestra como instalar Odoo desde el código fuente en un sistema Debian:
 ```
-$ sudo apt-get update &	sudo apt-get upgrade # Instala las actualizaciones del sistema
+$ sudo apt-get update & sudo apt-get upgrade # Instala las actualizaciones del sistema
 $ sudo apt-get install git # Instala Git
-$ mkdir	~/odoo-dev # Crear el diretorio de trabajo
-$ cd	~/odoo-dev  # Ingresar en el directorio de trabajo
-$ git clone	https://github.com/odoo/odoo.git -b 8.0 # Obtiene el código fuente de Odoo
+$ mkdir ~/odoo-dev # Crear el diretorio de trabajo
+$ cd ~/odoo-dev # Ingresar en el directorio de trabajo
+$ git clone https://github.com/odoo/odoo.git -b 8.0 # Obtiene el código fuente de Odoo
 $ ./odoo/odoo.py setup_deps # Instala las dependencias del sistema Odoo
 $ ./odoo/odoo.py setup_pg # Instala PostgreSQL y el usuario administrador para un usuario unix 
 ```
@@ -102,15 +102,15 @@ Pero aprenderá como inicializar bases de datos nuevas desde la línea de comand
 
 Para poder crear una base de datos nueva, su usuario debe ser un superusuario de PostgreSQL. Lo siguiente hace esto por usted `./odoo.py setup_pg`; de lo contrario use el siguiente comando para crear un superusuario PostgreSQL para el usuario Unix actual:
 ```
-$ sudo createuser --superuser	$(whoami) 
+$ sudo createuser --superuser $(whoami) 
 ```
 Para crear una base de datos nueva use este el comando `createdb`. Cree la base de datos `v8dev`:
 ```
-$ createdb v8dev  
+$ createdb v8dev
 ```
 Para inicializar ésta base de datos con el esquema de datos de Odoo debe ejecutar Odoo en la base de datos vacía usando la opción `-d`:
 ```
-$	~/odoo-dev/odoo/odoo.py	-d	v8dev 
+$ ~/odoo-dev/odoo/odoo.py -d v8dev 
 ```
 Tomará unos minutos inicializar la base de datos `v8dev`, y terminará con un mensaje de log INFO **Modules loaded**. Luego el servidor estará listo para atender las peticiones del cliente.
 
@@ -176,13 +176,13 @@ Vale la pena tener una idea general de las más importantes.
 
 La mayoría de las opciones pueden ser guardadas en un archivo de configuración. De forma predeterminada, Odoo usará el archivo `.openerp-serverrc` en su directorio home. Convenientemente, existe una opción `--save` para guardar la instancia actual de configuración dentro de ese archivo:
 ```
-$ ~/odoo-dev/odoo/odoo.py --save --stop-after-init # guarda la configuración en	archivo 
+$ ~/odoo-dev/odoo/odoo.py --save --stop-after-init # guarda la configuración en archivo 
 ```
 Aquí también se usa la opción	`--stop-after-init`, para que el servidor se detenga al finalizar las acciones. Ésta opción es usada frecuentemente para ejecutar pruebas y solicitar la ejecución de actualización de un módulo para verificar que se instala correctamente.
 
 Ahora se puede inspeccionar lo que se guardo en este archivo de configuración:
 ```
-$ more ~/.openerp_serverrc # mostrar el archivo de configuración 
+$ more ~/.openerp_serverrc # mostrar el archivo de configuración
 ```
 Esto mostrara todas las opciones de configuración disponibles con sus valores predeterminados. La edición se hará efectiva la próxima vez que inicie una instancia de Odoo.	Escriba	`q`	para salir y retornar a la línea de comandos.
 
@@ -248,11 +248,11 @@ $ sudo nano /etc/samba/smb.conf
 En el archivo de configuración, busque la sección `[homes]`. Edite las líneas de configuración para que sean iguales a los siguientes ajustes: 
 ```
 [homes] 			
-  comment	= Home Directories	
-  browseable	= yes 			
-  read	only	= no 			
-  create mask = 0640 			
-  directory mask = 0750 
+    comment = Home Directories
+    browseable = yes
+    read only = no
+    create mask = 0640
+    directory mask = 0750 
 ```
 Para que estos cambios en la configuración tengan efecto, reinicie el servicio: 
 ```
@@ -320,7 +320,7 @@ Afortunadamente, es posible asignar no uno, si no una lista de directorios donde
 Se ejecutará el servidor con una ruta de complemento incluyendo el nuevo directorio de módulos: 
 ```
 $ cd ~/odoo-dev/odoo
-$ ./odoo.py	-d v8dev --addons-path=”/department,./addons”
+$ ./odoo.py -d v8dev --addons-path=”/department,./addons”
 ```
 Si se observa en profundidad el registro del servidor notará una línea reportando la ruta de los complementos en uso: **INFO ? Openerp: addons paths:** (…). Confirmando que la instancia contiene nuestro directorio `department`. 
 
