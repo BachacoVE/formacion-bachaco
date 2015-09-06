@@ -1,4 +1,4 @@
-#Capítulo 2. Construyendo tu primera aplicación con Odoo 
+# Capítulo 2. Construyendo tu primera aplicación con Odoo 
 
 Desarrollar en Odoo la mayoría de las veces significa crear nuestros propios módulos. En este capítulo, se creará la primera aplicación con Odoo, y aprenderá los pasos necesarios para habilitarlas e instalarlas en Odoo. 
 
@@ -22,11 +22,11 @@ Las vistas del cliente web ejecutan acciones de datos persistentes a través de 
 
 Con este enfoque, podrá ser capaz de aprender gradualmente sobre los bloques básicos de desarrollo que conforman una aplicación y experimentar el proceso iterativo del desarrollo de módulos en Odoo desde cero.
 
-###Entender las aplicaciones y los módulos
+### Entender las aplicaciones y los módulos
 
 Es común escuchar hablar sobre los módulos y las aplicaciones en Odoo. Pero, ¿Cual es exactamente la diferencia entre un módulo y una aplicación? Los **módulos** son bloques para la construcción de las aplicaciones en Odoo. Un módulo puede agregar o modificar características en Odoo. Esto es soportado por un directorio que contiene un archivo de manifiesto o descriptor (llamado `__openerp__.py`) y el resto de los archivos que implementan sus características. A veces, los módulos pueden ser llamados “add-ons”. Las **aplicaciones** no son diferentes de los módulos regulares, pero funcionalmente, éstas proporcionan una característica central, alrededor de la cual otros módulos agregan características u opciones. Ellas proveen los elementos base para un área funcional, como contabilidad o RRHH, sobre las cuales otros módulos agregan características. Por esto son resaltadas en el menú Apps de Odoo.
 
-###Modificar un módulo existente
+### Modificar un módulo existente
 
 En el ejemplo que sigue a continuación, crearemos un módulo nuevo con tan pocas dependencias como sea posible. 
 
@@ -38,7 +38,7 @@ Por el contrario, debemos crear módulos nuevos que sean aplicados encima de los
 
 Ahora, crearemos un módulo nuevo completo, sin extender ningún módulo existente, para enfocarnos en las diferentes partes y pasos involucrados en la creación de un módulo. Solo daremos una breve mirada a cada parte, ya que cada una será estudiada en detalle en los siguientes capítulos. Una vez estemos a gusto con la creación de un módulo nuevo, podremos sumergirnos dentro de los mecanismos de herencia, los cuales serán estudiados en el siguiente capítulo.
 
-###Crear un módulo nuevo
+### Crear un módulo nuevo
 
 Nuestro módulo será una aplicación muy simple para gestionar las tareas por hacer. Estas tareas tendrán un único campo de texto, para la descripción, y una casilla de verificación para marcarlas como culminadas. También tendremos un botón para limpiar la lista de tareas de todas aquellas finalizadas.
 
@@ -48,14 +48,14 @@ Basta de charla, comencemos a escribir código y crear nuestro módulo nuevo.
 
 Siguiendo las instrucciones del *Capítulo 1, Comenzando con Odoo*, debemos tener el servidor Odoo en `/odoo-dev/odoo/`. Para mantener las cosas ordenadas, crearemos un directorio junto a este para guardas nuestros módulos personalizados: 
 ```
-$ mkdir	~/odoo-dev/custom-addons
+$ mkdir ~/odoo-dev/custom-addons
 ```
 Un módulo en Odoo es un directorio que contiene un archivo descriptor `__openerp__.py`. Esto es una herencia de cuando Odoo se llamaba OpenERP, y en el futuro se espera se convierta en `__odoo__.py`. Es necesario que pueda ser importado desde Python, por lo que debe tener un archivo `__init__.py`. 
 
 El nombre del directorio del módulo será su nombre técnico. Usaremos `todo_app` para el nombre. El nombre técnico debe ser un identificador Python valido: debe comenzar con una letra y puede contener letras, números y el caracter especial guión bajo. Los siguientes comandos crean el directorio del módulo y el archivo vacío `__init__.py` dentro de el: 
 ```
-$ mkdir	~/odoo-dev/custom-addons/todo_app 
-$ touch	~/odoo-dev/custom-addons/todo_app/__init__.py  
+$ mkdir ~/odoo-dev/custom-addons/todo_app
+$ touch ~/odoo-dev/custom-addons/todo_app/__init__.py  
 ```
 Luego necesitamos crear el archivo descriptor. Debe contener unicamente un diccionario Python y puede contener alrededor de una docena de atributos, de los cuales solo el atributo `name` es requerido. Son recomendados los atributos `description`, para una descripción más larga, y `author`. Ahora agregamos un archivo `__openerp__.py` junto al archivo `__init__.py` con el siguiente contenido:
 ```python
@@ -85,7 +85,7 @@ Estos descriptores también están disponibles:
 
 Desde Odoo 8.0, en vez de la clave `description` podemos usar un archivo `README.rst` o `README.md` en el directorio raíz del módulo.
 
-###Agregar el módulo a la ruta de complementos 
+### Agregar el módulo a la ruta de complementos 
 
 Ahora que tenemos un módulo nuevo, incluso si es muy simple, queremos que esté disponible en Odoo. Para esto, debemos asegurarnos que el directorio que contiene el módulo sea parte de la ruta de complementos addons. Y luego tenemos que actualizar la lista de módulos de Odoo.
 
@@ -94,21 +94,21 @@ Ambas operaciones han sido explicadas en detalle en el capítulo anterior, pero 
 Nos posicionamos dentro del directorio de trabajo e iniciamos el servidor con la configuración de la ruta de complementos o addons:
 ```
 $ cd ~/odoo-dev 
-$ odoo/odoo.py -d v8dev	--addons-path="custom-addons,odoo/addons" --save  
+$ odoo/odoo.py -d v8dev --addons-path="custom-addons,odoo/addons" --save
 ```
 La opción `--save` guarda la configuración usada en un archivo de configuración. Esto evita repetirlo cada vez que el servidor es iniciado: simplemente ejecute ./odoo.py y serán ejecutadas las últimas opciones guardadas.
 
 Mira detenidamente en el registro del servidor. Debería haber una línea **INFO ? openerp: addons paths:** (…), y debería incluir nuestro directorio `custom-addons`.
 
 Recuerde incluir cualquier otro directorio que pueda estar usando. Por ejemplo, si siguió las instrucciones del último capítulo para instalar el repositorio department, puede querer incluirlo y usar la opción:
-```Python
---addons-path="custom-addons,department,odoo/addons"  
+```
+--addons-path="custom-addons,department,odoo/addons"
 ```
 Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
 
 Para esto, En la sección **Módulos** del menú **Configuraciones**, seleccione la opción **Actualizar Lista de Módulos**. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de **Características Técnicas** para nuestra cuenta de usuario.
 
-###Instalar el módulo nuevo
+### Instalar el módulo nuevo
 
 La opción **Módulos Locales** nos muestran la lista de módulos disponibles. De forma predeterminada solo muestra los módulos de **Apps**. Debido a que creamos un módulo de aplicación no es necesario remover este filtro. Escriba "todo" en la campo de búsqueda y debe ver nuestro módulo nuevo, listo para ser instalado.
 
@@ -116,7 +116,7 @@ La opción **Módulos Locales** nos muestran la lista de módulos disponibles. D
 
 Haga clic en el botón **Instalar** y listo!
 
-###Actualizar un módulo
+### Actualizar un módulo
 
 El desarrollo de un módulo es un proceso iterativo, y puede querer que los cambios hechos en los archivos fuente sean aplicados y estén visibles en Odoo.
 
@@ -130,7 +130,7 @@ Pero afortunadamente, existe una mejor forma. La forma más simple y rápida par
 
 Para hacer que el servidor inicie la actualización del módulo `todo_app` en la base de datos v8dev, usaremos: 
 ```
-$ ./odoo.py -d v8dev -u todo_app  
+$ ./odoo.py -d v8dev -u todo_app
 ```
 La opción `-u` (o `--update` en su forma larga) requiere la opción `-d` y acepta una lista separada por comas de módulos para actualizar. Por ejemplo, podemos usar: `-u todo_app,mail`. 
 
@@ -138,7 +138,7 @@ En el momento en que necesita actualizar un módulo en proceso de desarrollo a l
 
 Desafortunadamente, la actualización de la lista de módulos y la desinstalación son acciones que no están disponibles a través de la línea de comandos. Esto debe ser realizado a través de la interfaz web, en el menú Configuraciones.
 
-###Crear un modelo de aplicación
+### Crear un modelo de aplicación
 
 Ahora que Odoo sabe sobre la disponibilidad de nuestro módulo nuevo, comencemos a agregarle un modelo simple.
 
@@ -170,7 +170,7 @@ Observe que éste y las siguientes líneas tienen una sangría. Si no conoce muy
 Las últimas tres líneas definen los campos del modelo. Vale la pena señalar que `name` y `active` son nombres de campos especiales. De forma predeterminada Odoo usara el campo `name` como el título del registro cuando sea referenciado desde otros modelos. El campo `active` es usado para desactivar registros, y de forma predeterminada solo los registros activos son mostrados. Lo usaremos para quitar las tareas finalizadas sin eliminarlas definitivamente de la base de datos.
 
 Todavía, este archivo, no es usado por el módulo. Debemos decirle a Odoo que lo cargue con el módulo en el archivo `__init__.py`. Editemos el archivo para agrear la siguiente línea:
-```
+```Python
 from . import todo_model
 ```
 Esto es todo. para que nuestros cambios tengan efecto el módulo debe ser actualizado. Encuentre la aplicación **To-Do** en **Módulos Locales** y haga clic en el botón **Actualizar**.
@@ -187,7 +187,7 @@ También podemos ver algunos campos adicionales que no declaramos. Estos son cin
 * `create_date` y `create_uid`: Estos nos indican cuando el registro fue creado y quien lo creó, respectivamente.
 * `write_date` y `write_uid`: Estos nos indican cuando fue la última vez que el registro fue modificado y quien lo modificó, respectivamente.
 
-###Agregar entradas al menú
+### Agregar entradas al menú
 
 Ahora que tenemos un modelo en el cual almacenar nuestros datos, hagamos que este disponible en la interfaz con el usuario y la usuaria.
 
@@ -239,7 +239,7 @@ Hasta ahora vamos bien. Mejoremos nuestra interfaz con los usuarios y las usuari
 
 >*En caso que una actualización falle debido a un error en el XML, ¡no entre en pánico! Comente las últimas porciones de XML editadas, o elimine el archivo XML del `__openerp__.py`, y repita la actualización. El servidor debería iniciar correctamente. Luego lea detenidamente el mensaje de error en los registros del servidor - debería decirle donde esta el problema.*
 
-###Crear vistas - formulario, árbol y búsqueda
+### Crear vistas - formulario, árbol y búsqueda
 
 Como hemos visto, si ninguna vista es definida, Odoo automáticamente generara vistas básicas para que puedas continuar. Pero seguramente le gustaría definir las vistas del módulo, así que eso es lo que haremos. 
 
@@ -267,7 +267,7 @@ Esto agregara un registro al modelo `ir.ui.view` con el identificador `view_form
 
 El atributo más importante es `arch`, que contiene la definición de la vista. Aquí decimos que es un formulario, y que contiene tres campos, y que decidimos hacer al campo `active` de solo lectura.
 
-####Formatear como un documento de negocio
+#### Formatear como un documento de negocio
 
 Lo anterior proporciona una vista de formulario básica, pero podemos hacer algunos cambios para mejorar su apariencia. Para los modelos de documentos Odoo tiene un estilo de presentación que asemeja una página de papel. El formulario contiene dos elementos: una `<head>`, que contiene botones de acción, y un `<sheet>`, que contiene los campos de datos:
 ```XML
@@ -283,7 +283,7 @@ Lo anterior proporciona una vista de formulario básica, pero podemos hacer algu
 </form>
 ```
 
-####Agregar botones de acción
+#### Agregar botones de acción
 
 Los formularios pueden tener botones que ejecuten acciones. Estos son capaces de desencadenar acciones de flujo de trabajo, ejecutar Acciones de Ventana, como abrir otro formulario, o ejecutar funciones Python definidas en el modelo.
 
@@ -298,7 +298,7 @@ Para nuestra aplicación, agregaremos dos botones para ejecutar métodos del mod
 ```
 Los atributos básicos para un botón son: `string` con el texto que se muestra en el botón, `type` que hace referencia al tipo de acción que ejecuta, y `name` que es el identificador para esa acción. El atributo `class` puede aplicar estilos CSS, como un HTML común.
 
-####Organizar formularios usando grupos
+#### Organizar formularios usando grupos
 
 La etiqueta `<group>` permite organizar el contenido del formulario. Colocando los elementos `<group>` dentro de un elemento `<group>` crea una disposición de dos columnas dentro del grupo externo. Se recomienda que los elementos Group tengan un nombre para hacer más fácil su extensión en otros módulos.
 
@@ -317,7 +317,7 @@ Usaremos esto para mejorar la organización de nuestro contenido. Cambiemos el c
 </sheet>
 ```
 
-####La vista de formulario completa
+#### La vista de formulario completa
 
 En este momento, nuestro registro en `todo_view.xml` para la vista de formulario de `todo.task` debería lucir así:
 ```XML
@@ -349,7 +349,7 @@ Recuerde que para que los cambios tengan efecto en la base de datos de Odoo, es 
 
 Ahora, agreguemos la lógica de negocio para las acciones de los botónes.
 
-###Agregar vistas de lista y búsqueda
+### Agregar vistas de lista y búsqueda
 
 Cuando un modelo se visualiza como una lista, se esta usando una vista `<tree>` Las vistas de árbol son capaces de mostrar líneas organizadas por jerarquía, pero la mayoría de las veces son usadas para desplegar listas planas.
 
@@ -386,7 +386,7 @@ Como lo hicimos anteriormente, agregaremos esto a `todo_view.xml`:
 ```
 Los elementos `<field>` definen definen campos que también son buscados cuando se escribe en el campo de búsqueda. Los elementos `<filter>` agregan condiciones predefinidas de filtro, usando la sintaxis de dominio que puede ser seleccionada por el usuario o la usuaria con un clic.
 
-###Agregar la lógica de negocio
+### Agregar la lógica de negocio
 
 Ahora agregaremos lógica a nuestros botones. Edite el archivo Python `todo_model.py` para agregar a la clase los métodos llamados por los botones.
 
@@ -421,7 +421,7 @@ El método `write` fija los valores de todos los elementos en el conjunto de una
 
 Note que `@api.one` no es lo más eficiente para estas acciones, ya que se ejecutará para cada uno de los registros seleccionados. La `@api.multi` se asegura que nuestro código sea ejecutado una sola vez incluso si hay más de un registro seleccionado. Esto puede pasar si una opción para ello es agregada a la lista.
 
-###Configurando la seguridad en el control de acceso
+### Configurando la seguridad en el control de acceso
 
 Debe haber notado, desde que cargamos nuestro módulo, un mensaje de alerta en en registro del servidor: **The model todo.task has no access rules, consider adding one**.
 
@@ -451,7 +451,7 @@ No debemos olvidar agregar la referencia a este archivo nuevo en el atributo “
 ```
 Como se hizo anteriormente, actualice el módulo para estos cambios tengan efecto. El mensaje de advertencia debería desaparecer, y puede confirmar que los permisos sean **correctos** accediendo con la cuenta de usuario demo (la contraseña es también demo) e intentar ejecutar la característica de “to-do tasks”. 
 
-###Reglas de acceso de nivel de fila
+### Reglas de acceso de nivel de fila
 
 Odoo es un sistema multi-usuario, y queremos que la aplicación **to-do task** sea privada para cada usuario. Afortunadamente, Odoo soporta reglas de acceso de nivel de fila. En el menú **Técnico** pueden encontrarse en la opción **Reglas de Registro**, junto a la **Lista de Control de Acceso**.
 Las reglas de registro son definidas en el modelo `ir.rule`. Como es de constumbre, necesitamos un nombre distintivo. También necesitamos el modelo en el cual operan y el dominio para forzar la restricción de acceso. El filtro de dominio usa la misma sintaxis de dominio mencionada anteriormente, y usado a lo largo de Odoo.
@@ -487,7 +487,7 @@ Como se hizo anteriormente, debemos agregar el archivo a `__openerp__.py` antes 
 ],
 ``` 
 
-###Agregar un ícono al módulo
+### Agregar un ícono al módulo
 
 Nuestro módulo se ve genial. ¿Por qué no añadir un ícono para que se vea aún mejor? Para esto solo debemos agregar al módulo el archivo `static/description/icon.png` con el ícono que usaremos.
 
@@ -499,7 +499,7 @@ $ cp ../odoo/addons/note/static/description/icon.png ./
 ```
 Ahora, si actualizamos la lista de módulos, nuestro módulo debe mostrarse con el ícono nuevo.
 
-###Resumen
+### Resumen
 
 Creamos un módulo nuevo desde cero, cubriendo los elementos más frecuentemente usados en un módulo: modelos, los tres tipos base de vistas (formulario, lista y búsqueda), la lógica de negocio en los métodos del modelo, y seguridad en el acceso.
 
