@@ -1,4 +1,4 @@
-#Capítulo 1.	Comenzando con Odoo
+# Capítulo 1. Comenzando con Odoo
 
 Antes de sumergirse en el desarrollo de Odoo, es necesario configurar el entorno de desarrollo, y para esto se debe aprender las tareas básicas de administración.
 
@@ -8,7 +8,7 @@ Se aprenderá a configurar sistemas Debian o Ubuntu para alojar las instancias d
 
 Odoo esta desarrollado usando el lenguaje de programación Python y usa PostgreSQL como base de datos para almacenar datos, estos son los requisitos principales para trabajar con Odoo. Para ejecutar Odoo desde el código fuente, es necesario instalar las librerías Python de las cuales depende. Luego el código fuente de Odoo debe descargarse desde GitHub y ejecutado desde el código fuente. Aunque es posible descargar un zip o tarball, es mejor obtener el código fuente usando GitHub,	así además tendremos Odoo instalado en nuestro equipo.
 
-###Configurar un equipo como servidor Odoo
+### Configurar un equipo como servidor Odoo
 
 Preferimos usar sistemas Debian/Ubuntu para el servidor Odoo, aunque puede trabajar desde el sistema operativo de su preferencia, sea Windows,	Macintosh, o Linux.
 
@@ -22,7 +22,7 @@ En este capítulo, se aprenderá a configurar y trabajar con Odoo sobre un siste
 
 >*Tenga en cuenta que estas instrucciones tienen como objetivo configurar un nuevo sistema para desarrollo. Si desea probarlas en un sistema existente, haga un respaldo a tiempo que le permita recuperar el sistema en caso de algún problema.*
 
-####Disposiciones para un equipo Debian
+#### Disposiciones para un equipo Debian
 
 Como se explicó antes, será necesario un equipo con Debian para alojar nuestro servidor Odoo versión 8.0.	Si estos son sus primeros pasos con Linux, le gustará saber que Ubuntu es una distribución Linux basada en Debian, por lo tanto son muy similares.
 
@@ -44,7 +44,7 @@ Si ingresa usado `root`, su primera tarea será crear un usuario para ser usado 
 
 Si esta usando Ubuntu, probablemente no necesite esto ya que el proceso de instalación le habrá guiado en la creación de un usuario personal.
 
-####Creando una cuenta de usuario para Odoo
+#### Creando una cuenta de usuario para Odoo
 
 Primero, asegúrese que Odoo este instalado. Su usuario de trabajo lo necesitara. Si ha accedido como root:
 
@@ -61,7 +61,7 @@ Puede cambiar odoo por cualquier nombre que desee. La opción `-m` crea el direc
 
 Ahora puede acceder con el nuevo usuario y configurar Odoo.
 
-###Instalar Odoo desde el código fuente
+### Instalar Odoo desde el código fuente
 
 Los paquetes de Odoo listos para instalar pueden ser encontrados en [nightly.odoo.com](http://nightly.odoo.com), disponibles para Windows (.exe), Debian (.deb), CentOS (.rpm), y código fuente (.tar.gz).
 
@@ -98,7 +98,7 @@ De forma predeterminada, las instancias de Odoo escuchan a través del puerto 80
 
 Pero aprenderá como inicializar bases de datos nuevas desde la línea de comando, ahora presione *Ctrl* + *C* para detener el servidor y volver a la línea de comandos.
 
-###Inicializar una base de datos nueva en Odoo
+### Inicializar una base de datos nueva en Odoo
 
 Para poder crear una base de datos nueva, su usuario debe ser un superusuario de PostgreSQL. Lo siguiente hace esto por usted `./odoo.py setup_pg`; de lo contrario use el siguiente comando para crear un superusuario PostgreSQL para el usuario Unix actual:
 ```
@@ -124,7 +124,7 @@ La cuenta de usuario predeterminada es `admin` con la contraseña `admin`. Una v
 
 En cualquier momento que desee detener la instancia del servidor Odoo y volver a la línea de comando, presione *Ctrl* +	*C*. En consola, presiona la tecla de flecha Arriba para mostrar el comando anterior ejecutado,	esta es una forma rápida de iniciar Odoo con las mismas opciones. Notará que *Ctrl* + *C* seguido de la flecha Arriba y *Enter* es una combinación frecuentemente usada para re-iniciar el servidor Odoo durante el desarrollo.
 
-####Gestionar la base de datos
+#### Gestionar la base de datos
 
 Ha visto como crear e inicializar bases de datos nuevas en Odoo desde la línea de comando. Existen más comandos que valen la pena conocer para gestionar bases de datos.
 
@@ -152,7 +152,7 @@ Ahora ya conoce lo básico para trabajar con varias bases de datos. Para aprende
 
 >*Eliminar una base de datos destruirá los datos de forma irrevocable. Tenga cuidado al ejecutar esta acción y mantenga siempre respaldos de sus bases de datos.*
 
-###Unas palabras sobre las versiones de Odoo
+### Unas palabras sobre las versiones de Odoo
 
 A la fecha de publicación, la última versión estable de Odoo es la 8, marcada en GitHub como branch 8.0. Ésta es la versión con la que se trabajará a lo largo de éste libro.
 
@@ -164,7 +164,7 @@ Por otro lado, los lanzamientos principales (7.0, 8.0) reciben actualizaciones f
 
 Sea consciente que la versión en la rama master se convertirá en la próxima versión principal estable, pero hasta entonces no será “estable para la API” y no debe usarla para construir módulos personalizados. Hacer esto es como moverse en arena movediza: no hay formar de asegurar cuando algún cambio introducido hará que su módulo falle.
 
-###Más opciones de configuración del servidor
+### Más opciones de configuración del servidor
 
 El servidor Odoo soporta unas pocas opciones más. Es posible verificar todas las opciones disponibles con la opción `--help`:
 ```
@@ -172,7 +172,7 @@ $ ./odoo.py --help
 ```
 Vale la pena tener una idea general de las más importantes.
 
-####Archivos de configuración del servidor Odoo
+#### Archivos de configuración del servidor Odoo
 
 La mayoría de las opciones pueden ser guardadas en un archivo de configuración. De forma predeterminada, Odoo usará el archivo `.openerp-serverrc` en su directorio home. Convenientemente, existe una opción `--save` para guardar la instancia actual de configuración dentro de ese archivo:
 ```
@@ -188,7 +188,7 @@ Esto mostrara todas las opciones de configuración disponibles con sus valores p
 
 También es posible seleccionar un archivo específico de configuración, usando la opción `--conf=<filepath>`. Los archivos de configuración no necesitan tener todas las opciones de configuración que ha visto hasta ahora. Solo es necesario que estén aquellas opciones que cambian los valores predeterminados.
 
-####Cambiar el puerto de escucha
+#### Cambiar el puerto de escucha
 
 El comando `--xmlrpc-server=<port>` permite cambiar el puerto predeterminado 8069 desde donde la instancia del servidor escucha las peticiones. Esto puede ser usado para ejecutar más de una instancia al mismo tiempo, en el mismo servidor.
 
@@ -202,7 +202,7 @@ $ ~/odoo-dev/odoo.py --xmlrpc-port=8071
 ```
 Y allí lo tiene: dos instancias de Odoo en el mismo servidor escuchando a través de diferentes puertos. Las dos instancias pueden ser usadas en la misma o en diferentes base de datos. Y ambas pueden ejecutar versiones iguales o diferentes de Odoo.
 
-####Registro
+#### Registro
 
 La opción `--log-level` permite configurar el nivel de detalle del registro. Esto puede ser muy útil para entender lo que esta pasando en el servidor. Por ejemplo, para habilitar el nivel de registro de depuración utilice: `--log-level=debug` 
 
@@ -215,7 +215,7 @@ La salida del registro es enviada de forma predeterminada a la salida estándar 
 
 Finalmente, la opción `--debug` le enviará al depurador Python (pdb) cuando aparezca una excepción.	Es útil hacer un análisis post-mortem de un error del servidor. Note que esto no tiene ningún efecto en el nivel de detalle del registro. Se pueden encontrar más detalles sobre los comandos del depurador de Python aquí: [https://docs.python.org/2/library/pdb.html#debugger-commands](https://docs.python.org/2/library/pdb.html#debugger-commands).
 
-###Desarrollar desde la estación de trabajo
+### Desarrollar desde la estación de trabajo
 
 Puede ejecutar Odoo con un sistema Debian/Ubuntu, en una máquina virtual local o en un servidor remoto. Pero posiblemente prefiera hacer el trabajo de desarrollo en su estación de trabajo personal, usando su editor de texto o IDE favorito. 
 
@@ -223,7 +223,7 @@ Puede ejecutar Odoo con un sistema Debian/Ubuntu, en una máquina virtual local 
 
 Una solución para esto es habilitar el uso compartido de archivos en el servidor Odoo, así los archivos son fáciles de editar desde su estación de trabajo. Para las operaciones del servidor Odoo, como reiniciar el servidor, es posible usar un intérprete de comando SSH (como PUTTY en Windows) junto a su editor favorito.
 
-####Usar un editor de texto Linux
+#### Usar un editor de texto Linux
 
 Tarde o temprano, será necesario editar archivos desde la línea de comandos. En muchos sistemas Debian el editor de texto predeterminado es vi. Si no se siente a gusto con éste, puede usar una alternativa más amigable. En sistemas Ubuntu el editor de texto predeterminado es nano. Puede que prefiera usar éste ya que es más fácil de usar. En caso que no esté disponible en su servidor, puede instalarlo con: 
 ```
@@ -231,7 +231,7 @@ $ sudo apt-get install nano
 ```
 En las siguientes secciones se asumirá como el editor de preferencia. Si prefiere cualquier otro editor, siéntase libre de adaptar los comandos de acuerdo a su elección. 
 
-####Instalar y configurar Samba
+#### Instalar y configurar Samba
 
 El proyecto Samba proporciona a Linux servicios para compartir archivos compatibles con sistemas Microsoft Windows. Se puede instalar en el servidor Debian/Ubuntu con: 
 ```
@@ -259,7 +259,7 @@ Para que estos cambios en la configuración tengan efecto, reinicie el servicio:
 $ sudo /etc/init.d/smbd restart  
 ```
 
-###Habilitar las herramientas técnicas
+### Habilitar las herramientas técnicas
 
 Odoo incluye algunas herramientas que son muy útiles para las personas que desarrollan, y haremos uso de estas a lo largo del libro. Estas son las Características Técnicas y el Modo de Desarrollo. 
 
@@ -267,7 +267,7 @@ Estas están deshabilitadas de forma predeterminada, así que aprenderemos como 
 
 ![70_1](/images/Odoo Development Essentials - Daniel Reis-70_1.jpg)
 
-####Activar las Características Técnicas
+#### Activar las Características Técnicas
 
 Las Características Técnicas proporcionan herramientas avanzadas de configuración del servidor. 
 
@@ -279,7 +279,7 @@ Ahora es necesario recargar la página en el navegador web. Deberá poder ver en
 
 La opción del menú **Técnico** permite inspeccionar y editar todas las configuraciones de Odoo almacenadas en la base de datos, desde la interfaz de usuario, a la seguridad y otros parámetros del sistema. Aprenderá mas sobre esto a lo largo del libro.
 
-####Activar el modo de Desarrollo
+#### Activar el modo de Desarrollo
 
 El modo de Desarrollo habilita una caja de selección cerca de la parte superior de la ventana Odoo, haciendo accesible algunas opciones de configuración avanzadas en toda la aplicación. También deshabilita la modificación del código JavaScript y CSS usado por el cliente web, haciendo mas fácil la depuración del comportamiento del lado del cliente. 
 
@@ -287,11 +287,11 @@ Para habilitarlo, abra el menú desplegable en la esquina superior derecha de la
 
 Luego de esto, verá una caja de selección **Vista de Depuración** en la parte superior izquierda del área actual del formulario. 
 
-###Instalar módulos de terceras partes
+### Instalar módulos de terceras partes
 
 Hacer que nuevos módulos estén disponibles en una instancia de Odoo para que puedan ser instalados es algo que puede resultar confuso para las personas nuevas. Pero no necesariamente tiene que ser así, así que a continuación se desmitificará esta suposición. 
 
-####Encontrar módulos de la comunidad
+#### Encontrar módulos de la comunidad
 
 Existen muchos módulos para Odoo disponibles en Internet. El sitio web [https://www.odoo.com/apps](https://www.odoo.com/apps) es un catalogo de módulos que pueden ser descargados e instalados. La Odoo Community Association (OCA) coordina las contribuciones de la comunidad y mantiene unos pocos repositorios en GitHub,	en [https://github.com/OCA](https://github.com/OCA).
 
@@ -312,7 +312,7 @@ Pero debido a que en el momento de escribir esto la versión 8.0 en la rama pred
 
 Luego, se tendrá un directorio `/department` nuevo junto al directorio `/odoo`, que contendrá los módulos. Ahora es necesario hacer saber a Odoo sobre este nuevo directorio. 
 
-####Configurar la ruta de complementos
+#### Configurar la ruta de complementos
 
 El servidor Odoo tiene una opción llamada `addons-path` que define donde buscar los módulo. De forma predeterminada este apunta al directorio `/addons` del servidor Odoo que se esta ejecutando. 
 
@@ -326,7 +326,7 @@ Si se observa en profundidad el registro del servidor notará una línea reporta
 
 ![76_1](/images/Odoo Development Essentials - Daniel Reis-76_1.jpg)
 
-####Actualizar la lista de módulos
+#### Actualizar la lista de módulos
 
 Es necesario pedirle a Odoo que actualice su lista de módulos antes que estos módulos nuevos estén disponibles para ser instalados.
 
@@ -334,7 +334,7 @@ Para esto es necesario habilitar el menú **Técnico**, debido a que esta provee
 
 Luego de ejecutar la actualización de la lista de módulos se puede confirmar que los módulos nuevos están disponibles para ser instalados. En la lista de **Módulos Locales**, quite el filtro de `Aplicaciones` y busque `department`. Debería poder ver los nuevos módulos disponibles.
 
-###Resumen
+### Resumen
 
 En este capítulo, aprendió como configurar un sistema Debian para alojar Odoo e instalarlo desde GitHub. También aprendió como crear bases de datos en Odoo y ejecutar instancias Odoo. Para permitir que las personas que desarrollan usen sus herramientas favoritas en sus estaciones de trabajo, se explicó como configurar archivos compartidos en el servidor Odoo. 
 
