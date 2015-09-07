@@ -10,13 +10,13 @@ Odoo esta desarrollado usando el lenguaje de programación Python y usa PostgreS
 
 ### Configurar un equipo como servidor Odoo
 
-Preferimos usar sistemas Debian/Ubuntu para el servidor Odoo, aunque puede trabajar desde el sistema operativo de su preferencia, sea Windows,	Macintosh, o Linux.
+Preferimos usar sistemas Debian/Ubuntu para el servidor Odoo, aunque puede trabajar desde el sistema operativo de su preferencia, sea Windows, Macintosh, o Linux.
 
 Odoo puede ser ejecutado en una gran variedad de sistemas operativos, entonces ¿por qué elegir Debian por encima de otros sistemas operativos? Debido a que Odoo es desarrollado principalmente para sistemas Debian/Ubuntu, el soporte para Odoo es mejor. Por lo tanto será más fácil encontrar ayuda y recursos adicionales si se trabaja con Debian/Ubuntu.
 
 También son las plataformas más usadas por las personas que desarrollan aplicaciones, y donde se dan a conocer más implementaciones. Por esta razón, inevitablemente, se espera que las desarrolladoras y los desarrolladores de Odoo se sientan a gusto con esta plataforma. Incluso quienes tiene una historial de trabajo con Windows, es importante que tengan algún conocimiento sobre estas plataformas.
 
-En este capítulo, se aprenderá a configurar y trabajar con Odoo sobre un sistema Debian, usando unicamente la línea de comando. Para quienes están acostumbrados a sistemas Windows,	se describirá como configurar una máquina virtual para alojar un servidor Odoo. Adicionalmente, las técnicas aprendidas servirán para gestionar servidores Odoo en la nube donde el único acceso será a través de una **Shell Segura (SSH).**
+En este capítulo, se aprenderá a configurar y trabajar con Odoo sobre un sistema Debian, usando unicamente la línea de comando. Para quienes están acostumbrados a sistemas Windows, se describirá como configurar una máquina virtual para alojar un servidor Odoo. Adicionalmente, las técnicas aprendidas servirán para gestionar servidores Odoo en la nube donde el único acceso será a través de una **Shell Segura (SSH).**
 
 >**Nota**
 
@@ -24,19 +24,19 @@ En este capítulo, se aprenderá a configurar y trabajar con Odoo sobre un siste
 
 #### Disposiciones para un equipo Debian
 
-Como se explicó antes, será necesario un equipo con Debian para alojar nuestro servidor Odoo versión 8.0.	Si estos son sus primeros pasos con Linux, le gustará saber que Ubuntu es una distribución Linux basada en Debian, por lo tanto son muy similares.
+Como se explicó antes, será necesario un equipo con Debian para alojar nuestro servidor Odoo versión 8.0. Si estos son sus primeros pasos con Linux, le gustará saber que Ubuntu es una distribución Linux basada en Debian, por lo tanto son muy similares.
 
 >**Nota**
 
->*Odoo asegura su funcionamiento con la versión estable de Debian o Ubuntu. Al momento de elegir este libro, las versión estable para Debian es la versión 7 “Wheezy” y para Ubuntu la versión 14.04 “Trusty	Tahr”. Ambas se distribuyen con Python 2.7, necesario para ejecutar	Odoo.*
+>*Odoo asegura su funcionamiento con la versión estable de Debian o Ubuntu. Al momento de escribir este libro, la versión estable para Debian es la versión 7 “Wheezy” y para Ubuntu la versión 14.04 “Trusty	Tahr”. Ambas se distribuyen con Python 2.7, necesario para ejecutar	Odoo.*
 
 Si ya está ejecutando Ubuntu u otra distribución basada en Debian, todo esta listo para comenzar; ésta máquina también puede ser usada para alojar Odoo.
 
 Para los sistemas operativos	Windows y Macintosh, es posible tener Python, PostgreSQL, y todas las dependencias instaladas, y luego ejecutar Odoo desde el código fuente de forma nativa.
 
-Sin embargo, esto puede ser un gran reto, por lo que nuestra recomendación es usar una máquina virtual ejecutando Debian o Ubuntu	Server. Puede usar su software de virtualización preferido para hacer funcionar Debian en una máquina virtual. Si necesita alguna ayuda, aqui hay algunos consejos: en lo que se refiere a software de vistualización, tiene muchas opciones, como Microsoft Hyper-V (disponible para algunas versiones de Windows), Oracle VirtualBox, o VMWare	Player (o VMWare Fusion para	Macintosh).	VMWare Player es probablemente el más fácil de usar, y puede descargarse gratuitamente	en [https://my.vmware.com/web/vmware/downloads](https://my.vmware.com/web/vmware/downloads)
+Sin embargo, esto puede ser un gran reto, por lo que nuestra recomendación es usar una máquina virtual ejecutando Debian o Ubuntu	Server. Puede usar su software de virtualización preferido para hacer funcionar Debian en una máquina virtual. Si necesita alguna ayuda, aqui hay algunos consejos: en lo que se refiere a software de virtualización, tiene muchas opciones, como Microsoft Hyper-V (disponible para algunas versiones de Windows), Oracle VirtualBox, o VMWare Player (o VMWare Fusion para Macintosh). VMWare Player es probablemente el más fácil de usar, y puede descargarse gratuitamente	en [https://my.vmware.com/web/vmware/downloads](https://my.vmware.com/web/vmware/downloads)
 
-Con relación a la imagen Linux a usar, Ubuntu Server es más amigable para las usuarias y usuarios para instalar que Debian. Si esta comenzando con Linux, es recomendable que use una distribución lista para usar. TurnKey Linux provee imágenes facil de usar, preinstaladas en distintos formatos, incluyendo ISO. El formato ISO funcionara con cualquier software de vistualización de su preferencia, o incluso en cualquier equipo actual. Una buena opción sería una imagen	LAPP,	que puede hallarse en [http://www.turnkeylinux.org/lapp](http://www.turnkeylinux.org/lapp).
+Con relación a la imagen Linux a usar, Ubuntu Server es más amigable a las usuarias y usuarios para instalar que Debian. Si esta comenzando con Linux, es recomendable que use una distribución lista para usar. TurnKey Linux provee imágenes facil de usar, preinstaladas en distintos formatos, incluyendo ISO. El formato ISO funcionara con cualquier software de virtualización de su preferencia, o incluso en cualquier equipo actual. Una buena opción sería una imagen	LAPP,	que puede hallarse en [http://www.turnkeylinux.org/lapp](http://www.turnkeylinux.org/lapp).
 
 Una vez instalado el sistema e iniciado, debería ser capaz de ingresar en la línea de comando.
 
@@ -46,13 +46,13 @@ Si esta usando Ubuntu, probablemente no necesite esto ya que el proceso de insta
 
 #### Creando una cuenta de usuario para Odoo
 
-Primero, asegúrese que Odoo este instalado. Su usuario de trabajo lo necesitara. Si ha accedido como root:
+Primero, asegúrese que sudo este instalado. Su usuario de trabajo lo necesitara. Si ha accedido como root ejecute los siguientes comandos:
 
 ```
 # apt-get update & apt-get upgrade # Instalar actualizaciones del sistema
 # apt-get install sudo # Asegurarse que 'sudo' esta instalada 
 ```
-Los siguientes comandos creará un usuario odoo:
+Los siguientes comandos crearán un usuario odoo:
 ```
 # useradd -m -g sudo -s /bin/bash odoo # Crea un usuario 'Odoo' con poderes sudo
 # passwd odoo # Solicita y configura una contraseña para el nuevo usuario 
@@ -104,23 +104,23 @@ Para poder crear una base de datos nueva, su usuario debe ser un superusuario de
 ```
 $ sudo createuser --superuser $(whoami) 
 ```
-Para crear una base de datos nueva use este el comando `createdb`. Cree la base de datos `v8dev`:
+Para crear una base de datos nueva use este comando `createdb`. Cree la base de datos `v8dev`:
 ```
 $ createdb v8dev
 ```
-Para inicializar ésta base de datos con el esquema de datos de Odoo debe ejecutar Odoo en la base de datos vacía usando la opción `-d`:
+Para inicializar esta base de datos con el esquema de datos de Odoo debe ejecutar Odoo en la base de datos vacía usando la opción `-d`:
 ```
 $ ~/odoo-dev/odoo/odoo.py -d v8dev 
 ```
 Tomará unos minutos inicializar la base de datos `v8dev`, y terminará con un mensaje de log INFO **Modules loaded**. Luego el servidor estará listo para atender las peticiones del cliente.
 
-Por defecto, éste método inicializará la base de datos con los datos de demostración, lo cual frecuentemente es útil en el desarrollo de base de datos. Para inicializar una base de datos sin los datos de demostración, agregue la siguiente opción al comando anterior: `--without-demo-data=all`.
+Por defecto, éste método inicializará la base de datos con los datos de demostración, lo cual frecuentemente es útil en bases de datos de desarrollo. Para inicializar una base de datos sin los datos de demostración, agregue la siguiente opción al comando anterior: `--without-demo-data=all`.
 
 Para mostrar la pantalla de acceso abra en un navegador web `http://<server-name>:8069`. Si no conoce el nombre de su servidor, escriba el comando `hostname` en la terminal para averiguarlo, o el comando `ifconfig` para conocer la dirección IP.
 
-Si esta alojando Odoo en una máquina virtual probablemente necesite hacer algunas configuraciones de red para poder usarlo como servidor. La solución más simple es cambiar el tipo de red de la VM de NAT a Bridged. Con esto, en vez de compartir la dirección IP del equipo, la VM huésped tendrá su propia dirección IP. También es posible usar NAT, pero esto requiere que configure el enrutamiento de puerto, así su sistema sabrá que algunos puertos, como el 8069, deben ser controlados por la VM. En caso de algún problema, con suerte estos detalles puedan ayudarle a encontrar ayuda en la documentación del software de virtualización de su preferencia.
+Si esta alojando Odoo en una máquina virtual probablemente necesite hacer algunas configuraciones de red para poder usarlo como servidor. La solución más simple es cambiar el tipo de red de la VM, de NAT a Bridged. Con esto, en vez de compartir la dirección IP del equipo, la VM huésped tendrá su propia dirección IP. También es posible usar NAT, pero esto requiere que configure el enrutamiento de puerto, así su sistema sabrá que algunos puertos, como el 8069, deben ser controlados por la VM. En caso de algún problema, con suerte estos detalles puedan ayudarle a encontrar ayuda en la documentación del software de virtualización de su preferencia.
 
-La cuenta de usuario predeterminada es `admin` con la contraseña `admin`. Una vez acceda se mostrará el menú	**Configuración**, revelando los módulos instalados. Elimine el filtro de	**Instalado** y podrá ver e instalar cualquiera de los módulos oficiales.
+La cuenta de usuario predeterminada es `admin` con la contraseña `admin`. Una vez acceda se mostrará el menú	**Configuración**, revelando los módulos instalados. Elimine el filtro de **Instalado** y podrá ver e instalar cualquiera de los módulos oficiales.
 
 En cualquier momento que desee detener la instancia del servidor Odoo y volver a la línea de comando, presione *Ctrl* +	*C*. En consola, presiona la tecla de flecha Arriba para mostrar el comando anterior ejecutado,	esta es una forma rápida de iniciar Odoo con las mismas opciones. Notará que *Ctrl* + *C* seguido de la flecha Arriba y *Enter* es una combinación frecuentemente usada para re-iniciar el servidor Odoo durante el desarrollo.
 
