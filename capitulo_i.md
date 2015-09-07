@@ -45,15 +45,15 @@ Si está usando Ubuntu, probablemente no necesite esto ya que el proceso de inst
 Primero, asegúrese que Odoo esté instalado. Su usuario de trabajo lo necesitará. Si ha accedido como root:
 
 ```
-# apt-get update & apt-get upgrade # Instalar actualizaciones del sistema
-# apt-get install sudo # Asegurarse que 'sudo' esta instalada
+$ apt-get update & apt-get upgrade # Instalar actualizaciones del sistema
+$ apt-get install sudo # Asegurarse que 'sudo' esta instalada
 ```
 
 Los siguientes comandos creará un usuario odoo:
 
 ```
-# useradd -m -g sudo -s /bin/bash odoo # Crea un usuario 'Odoo' con poderes sudo
-# passwd odoo # Solicita y configura una contraseña para el nuevo usuario
+$ useradd -m -g sudo -s /bin/bash odoo # Crea un usuario 'Odoo' con poderes sudo
+$ passwd odoo # Solicita y configura una contraseña para el nuevo usuario
 ```
 
 Puede cambiar odoo por cualquier nombre que desee. La opción `-m` crea el directorio home. El `-g sudo` agrega al nuevo usuario a la lista de usuarios sudo, por lo tanto podrá ejecutar comandos como root, y `-s /bin/bash` configura la línea de comando predeterminada a bash, la cual es mas amigable de usar que la fijada por omisión estándar `sh`.
@@ -273,11 +273,11 @@ En el archivo de configuración, busque la sección `[homes]`. Edite las líneas
 
 ```
 [homes]
- comment = Home Directories
- browseable = yes
- read only = no
- create mask = 0640
- directory mask = 0750
+   comment = Home Directories
+   browseable = yes
+   read only = no
+   create mask = 0640
+   directory mask = 0750
 ```
 
 Para que estos cambios en la configuración tengan efecto, reinicie el servicio:
