@@ -44,14 +44,14 @@ Si está usando Ubuntu, probablemente no necesite esto ya que el proceso de inst
 ### Creando una cuenta de usuario para Odoo
 Primero, asegúrese que Odoo esté instalado. Su usuario de trabajo lo necesitará. Si ha accedido como root:
 
-```
+```shell
 $ apt-get update & apt-get upgrade # Instalar actualizaciones del sistema
 $ apt-get install sudo # Asegurarse que 'sudo' esta instalada
 ```
 
 Los siguientes comandos creará un usuario odoo:
 
-```
+```shell
 $ useradd -m -g sudo -s /bin/bash odoo # Crea un usuario 'Odoo' con poderes sudo
 $ passwd odoo # Solicita y configura una contraseña para el nuevo usuario
 ```
@@ -69,7 +69,7 @@ Para mantener el orden de las cosas, se trabaja en el directorio `/odoo-dev` que
 
 Primero, asegúrese que ha accedido con el usuario creado anteriormente, o durante el proceso de instalación, y no como root. Asumiendo que su usuario es `odoo`, puede confirmar esto con el siguiente comando:
 
-```
+```shell
 $ whoami
 odoo
 $ echo $HOME
@@ -78,7 +78,7 @@ $ echo $HOME
 
 Ahora es posible usar este script. Muestra como instalar Odoo desde el código fuente en un sistema Debian:
 
-```
+```shell
 $ sudo apt-get update & sudo apt-get upgrade # Instala las actualizaciones del sistema
 $ sudo apt-get install git # Instala Git
 $ mkdir ~/odoo-dev # Crear el diretorio de trabajo
@@ -92,7 +92,7 @@ Al finalizar, Odoo estará listo para ser usado. El símbolo `~` es un atajo par
 
 Para iniciar una instancia del servidor Odoo, simplemente ejecute `odoo.py`:
 
-```
+```shell
 $ ~/odoo-dev/odoo/odoo.py
 ```
 
@@ -105,19 +105,19 @@ Pero aprenderá como inicializar bases de datos nuevas desde la línea de comand
 ## Inicializar una base de datos nueva en Odoo
 Para poder crear una base de datos nueva, su usuario debe ser un superusuario de PostgreSQL. Lo siguiente hace esto por usted `./odoo.py setup_pg`; de lo contrario use el siguiente comando para crear un superusuario PostgreSQL para el usuario Unix actual:
 
-```
+```shell
 $ sudo createuser --superuser $(whoami)
 ```
 
 Para crear una base de datos nueva use este el comando `createdb`. Cree la base de datos `v8dev`:
 
-```
+```shell
 $ createdb v8dev
 ```
 
 Para inicializar ésta base de datos con el esquema de datos de Odoo debe ejecutar Odoo en la base de datos vacía usando la opción `-d`:
 
-```
+```shell
 $ ~/odoo-dev/odoo/odoo.py -d v8dev
 ```
 
@@ -140,7 +140,7 @@ Ya sabe como usar el comando `createdb` para crear una base de datos vacía, per
 
 Asegúrese que su instancia de Odoo este detenida y no tenga otra conexión abierta con la base de datos `v8dev` creada anteriormente, y ejecute:
 
-```
+```shell
 $ createdb --template=v8dev v8test
 ```
 
@@ -148,7 +148,7 @@ De hecho, cada vez que se crea una base de datos, es usada una plantilla. Si no 
 
 Para listar las bases de datos existentes en su sistema use la utilidad `psql` de PostgreSQL con la opción `-l`:
 
-```
+```shell
 $ psql -l
 ```
 
@@ -156,7 +156,7 @@ Al ejecutar esto se debe listar las dos bases de datos creadas hasta los momento
 
 Para eliminar una base de datos que ya no necesite (o necesita crear nuevamente), use el comando `dropdb`:
 
-```
+```shell
 $ dropdb v8test
 ```
 
@@ -180,7 +180,7 @@ Sea consciente que la versión en la rama master se convertirá en la próxima v
 ## Más opciones de configuración del servidor
 El servidor Odoo soporta unas pocas opciones más. Es posible verificar todas las opciones disponibles con la opción `--help`:
 
-```
+```shell
 $ ./odoo.py --help
 ```
 
@@ -189,7 +189,7 @@ Vale la pena tener una idea general de las más importantes.
 ### Archivos de configuración del servidor Odoo
 La mayoría de las opciones pueden ser guardadas en un archivo de configuración. De forma predeterminada, Odoo usará el archivo `.openerp-serverrc` en su directorio home. Convenientemente, existe una opción `--save` para guardar la instancia actual de configuración dentro de ese archivo:
 
-```
+```shell
 $ ~/odoo-dev/odoo/odoo.py --save --stop-after-init # guarda la configuración en archivo
 ```
 
@@ -197,7 +197,7 @@ Aquí también se usa la opción `--stop-after-init`, para que el servidor se de
 
 Ahora se puede inspeccionar lo que se guardó en este archivo de configuración:
 
-```
+```shell
 $ more ~/.openerp_serverrc # mostrar el archivo de configuración
 ```
 
@@ -210,13 +210,13 @@ El comando `--xmlrpc-server=<port>` permite cambiar el puerto predeterminado 806
 
 Intentemos esto. Abra dos ventanas de la terminal. En la primera ejecute:
 
-```
+```shell
 $ ~/odoo-dev/odoo.py --xmlrpc-port=8070
 ```
 
 y en la otra ejecute:
 
-```
+```shell
 $ ~/odoo-dev/odoo.py --xmlrpc-port=8071
 ```
 
@@ -244,7 +244,7 @@ Una solución para esto es habilitar el uso compartido de archivos en el servido
 ### Usar un editor de texto Linux
 Tarde o temprano, será necesario editar archivos desde la línea de comandos. En muchos sistemas Debian el editor de texto predeterminado es vi. Si no se siente a gusto con éste, puede usar una alternativa más amigable. En sistemas Ubuntu el editor de texto predeterminado es nano. Puede que prefiera usar éste ya que es más fácil de usar. En caso que no esté disponible en su servidor, puede instalarlo con:
 
-```
+```shell
 $ sudo apt-get install nano
 ```
 
@@ -253,19 +253,19 @@ En las siguientes secciones se asumirá como el editor de preferencia. Si prefie
 ### Instalar y configurar Samba
 El proyecto Samba proporciona a Linux servicios para compartir archivos compatibles con sistemas Microsoft Windows. Se puede instalar en el servidor Debian/Ubuntu con:
 
-```
+```shell
 $ sudo apt-get install samba samba-common-bin
 ```
 
 El paquete `samba` instala el servicio para compartir archivos y el paquete `samba-common-bin` es necesario para la herramienta `smbpasswd`. De forma predeterminada los usuarios autorizados para acceder a los archivos compartido necesitan ser registrados. Es necesario registrar el usuario odoo y asignarle una contraseña para su acceso a los archivos compartidos:
 
-```
+```shell
 $ sudo smbpasswd -a odoo
 ```
 
 Después de esto el usuario odoo podrá acceder a un recurso compartido de archivos para su directorio home, pero será de solo lectura. Se requiere el acceso a escritura, así que es necesario editar los archivos de configuración de Samba para cambiar eso:
 
-```
+```shell
 $ sudo nano /etc/samba/smb.conf
 ```
 
@@ -282,7 +282,7 @@ En el archivo de configuración, busque la sección `[homes]`. Edite las líneas
 
 Para que estos cambios en la configuración tengan efecto, reinicie el servicio:
 
-```
+```shell
 $ sudo /etc/init.d/smbd restart
 ```
 
@@ -325,7 +325,7 @@ Como ejemplo, se descargará el proyecto `department` de OCA y sus módulos se h
 
 Para obtener el código fuente desde GitHub:
 
-```
+```shell
 $ cd ~/odoo-dev
 $ git clone https://github.com/OCA/department.git -b 8.0
 ```
@@ -341,7 +341,7 @@ El servidor Odoo tiene una opción llamada `addons-path` que define donde buscar
 
 Afortunadamente, es posible asignar no uno, sino una lista de directorios donde se pueden encontrar los módulos. Esto permite mantener los módulos personalizados en un directorio diferente, sin mezclarlos con los complementos oficiales. Se ejecutará el servidor con una ruta de complemento incluyendo el nuevo directorio de módulos:
 
-```
+```shell
 $ cd ~/odoo-dev/odoo
 $ ./odoo.py -d v8dev --addons-path=”/department,./addons”
 ```
