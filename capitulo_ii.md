@@ -15,7 +15,7 @@ La capa vista describe la interfaz con el usuario o la usuaria. Las vistas son d
 Las vistas del cliente web ejecutan acciones de datos persistentes a través de la interacción con el servidor ORM. Estas pueden ser operaciones básicas como escribir o eliminar, pero pueden también invocar métodos definidos en los objetos Python del ORM, ejecutando lógica de negocio más compleja. A esto es a lo que nos referimos cuando se habla de la capa modelo.
 
 > **Nota**
-
+>
 > _Note que el concepto de controlador mencionado aquí es diferente al desarrollo de controladores web de Odoo. Aquellos son programas finales a los cuales las páginas web pueden llamar para ejecutar acciones._
 
 Con este enfoque, podrá ser capaz de aprender gradualmente sobre los bloques básicos de desarrollo que conforman una aplicación y experimentar el proceso iterativo del desarrollo de módulos en Odoo desde cero.
@@ -55,10 +55,9 @@ El nombre del directorio del módulo será su nombre técnico. Usaremos `todo_ap
 $ mkdir ~/odoo-dev/custom-addons/todo_app
 $ touch ~/odoo-dev/custom-addons/todo_app/__init__.py
 ```
+Luego necesitamos crear el archivo descriptor. Debe contener únicamente un diccionario Python y puede contener alrededor de una docena de atributos, de los cuales solo el atributo `name` es obligatorio. Son recomendados los atributos `description`, para una descripción más larga, y `author`. Ahora agregamos un archivo `__openerp__.py` junto al archivo `__init__.py` con el siguiente contenido:
 
-Luego necesitamos crear el archivo descriptor. Debe contener unicamente un diccionario Python y puede contener alrededor de una docena de atributos, de los cuales solo el atributo `name` es obligatorio. Son recomendados los atributos `description`, para una descripción más larga, y `author`. Ahora agregamos un archivo `__openerp__.py` junto al archivo `__init__.py` con el siguiente contenido:
-
-```python
+```Python
 {
     'name': 'To-Do Application',
     'description': 'Manage your personal Tasks with this module.',
@@ -70,14 +69,15 @@ Luego necesitamos crear el archivo descriptor. Debe contener unicamente un dicci
 
 El atributo `depends` puede tener una lista de otros módulos requeridos. Odoo los instalará automáticamente cuando este módulo sea instalado. No es un atributo obligatorio pero se recomienda tenerlo siempre. Si no es requerida alguna dependencia en particular, debería existir alguna dependencia a un módulo base especial. Debe tener cuidado de asegurarse que todas las dependencias sean explícitamente fijadas aquí, de otra forma el módulo podría fallar al instalar una base de datos vacía (debido a dependencias insatisfechas) o tener errores en la carga, si otros módulos necesarios son cargados después.
 
-Para nuestra aplicación, queremos que dependa del módulo **mail** debido a que este agrega el menú **Mensajes** en la parte superior, y queremos incluir nuestro nuevo menú de opciones allí.
+Para nuestra aplicación, queremos que dependa del módulo **mail** debido a que este agrega el menú **Mensajería** en la parte superior de la ventana, y queremos incluir nuestro nuevo menú de opciones allí.
 
 Para precisar, escogimos pocas claves del descriptor, pero en el mundo real es recomendable usar claves adicionales, ya que estas son relevantes para la app-store de Odoo:
-- `summary`, muestra un subtitulo del módulo.
-- `version`, de forma predeterminada, es 1.0. Se debe seguir las reglas de versionamiento semántico (para más detalles ver [semver.org](http://semver.org/lang/es/)).
-- `license`, de forma predeterminada es AGPL-3.
-- `website`, es una URL para encontrar más información sobre el módulo. Esta puede servir a las personas a encontrar documentación, informar sobre errores o hacer sugerencias.
-- `category`, es la categoría funcional del módulo, la cual de forma predeterminada es Sin Categoría. La lista de las categorías existentes puede encontrarse en el formato de Grupos (Configuraciones | Usuario | menú Grupos), en la lista desplegable del campo Aplicación.
+
+* `summary`, muestra un subtitulo del módulo.
+* `version`, de forma predeterminada, es 1.0. Se debe seguir las reglas de versionamiento semántico (para más detalles ver [semver.org](http://semver.org/lang/es/)). 
+* `license`, de forma predeterminada es AGPL-3. 
+* `website`, es una URL para encontrar más información sobre el módulo. Esta puede servir a las personas a encontrar documentación, informar sobre errores o hacer sugerencias.
+* `category`, es la categoría funcional del módulo, la cual de forma predeterminada es Sin Categoría. La lista de las categorías existentes puede encontrarse en el formato de Grupos (Configuraciones | Usuarios | menú Grupos), en la lista desplegable del campo Aplicación.
 
 Estos descriptores también están disponibles:
 - `installable`, de forma predeterminada es `True`, pero puede ser fijada `False` para deshabilitar el módulo.
@@ -109,10 +109,11 @@ Recuerde incluir cualquier otro directorio que pueda estar usando. Por ejemplo, 
 
 Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
 
-Para esto, En la sección **Módulos** del menú **Configuraciones**, seleccione la opción **Actualizar Lista de Módulos**. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de **Características Técnicas** para nuestra cuenta de usuario.
+Para esto, En la sección **Módulos** del menú **Configuración**, seleccione la opción **Actualizar lista de módulos**. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de **Características técnicas** para nuestra cuenta de usuario.
 
 ## Instalar el módulo nuevo
-La opción **Módulos Locales** nos muestran la lista de módulos disponibles. De forma predeterminada solo muestra los módulos de **Apps**. Debido a que creamos un módulo de aplicación no es necesario remover este filtro. Escriba "todo" en la campo de búsqueda y debe ver nuestro módulo nuevo, listo para ser instalado.
+
+La opción **Módulos locales** nos muestra la lista de módulos disponibles. De forma predeterminada solo muestra los módulos de **Aplicaciones en línea**. Debido a que creamos un módulo de aplicación no es necesario remover este filtro. Escriba "todo" en la campo de búsqueda y debe ver nuestro módulo nuevo, listo para ser instalado.
 
 ![90_1](/images/Odoo Development Essentials - Daniel Reis-90_1.jpg)
 
@@ -137,7 +138,7 @@ $ ./odoo.py -d v8dev -u todo_app
 
 La opción `-u` (o `--update` en su forma larga) requiere la opción `-d` y acepta una lista separada por comas de módulos para actualizar. Por ejemplo, podemos usar: `-u todo_app,mail`.
 
-En el momento en que necesita actualizar un módulo en proceso de desarrollo a lo largo del libro, la manera mas segura de hacerlo es ir a una ventana de terminal donde se este ejecutando Odoo, detener el servidor, y reiniciarlo con el comando visto anteriormente. Usualmente será suficiente con presionar la tecla de flecha arriba, esto debería devolver el último comando usado para iniciar el servidor.
+En el momento en que necesite actualizar un módulo en proceso de desarrollo a lo largo del libro, la manera mas segura de hacerlo es ir a una ventana de terminal donde se este ejecutando Odoo, detener el servidor, y reiniciarlo con el comando visto anteriormente. Usualmente será suficiente con presionar la tecla de flecha arriba, esto debería devolver el último comando usado para iniciar el servidor.
 
 Desafortunadamente, la actualización de la lista de módulos y la desinstalación son acciones que no están disponibles a través de la línea de comandos. Esto debe ser realizado a través de la interfaz web, en el menú Configuraciones.
 
@@ -165,7 +166,7 @@ class TodoTask(models.Model):
 
 La primera línea es un marcador especial que le dice al interprete de Python que ese archivo es UTF-8, por lo que puede manejar y esperarse caracteres non-ASCII. No usaremos ninguno, pero es mas seguro usarlo.
 
-la segunda línea hace que estén disponibles los modelos y los objetos campos del núcleo de Odoo.
+La segunda línea hace que estén disponibles los modelos y los objetos campos del núcleo de Odoo.
 
 la tercera línea declara nuestro nuevo modelo. Es una clase derivada de `models.Model`. La siguiente línea fija el atributo `_name` definiendo el identificador que será usado por Odoo para referirse a este modelo. Note que el nombre real de la clase Python no es significativo para los otros módulos de Odoo. El valor de `_name` es lo que será usado como identificador.
 
@@ -275,7 +276,7 @@ Esto agregará un registro al modelo `ir.ui.view` con el identificador `view_for
 El atributo más importante es `arch`, que contiene la definición de la vista. Aquí decimos que es un formulario, y que contiene tres campos, y que decidimos hacer al campo `active` de solo lectura.
 
 ### Formatear como un documento de negocio
-Lo anterior proporciona una vista de formulario básica, pero podemos hacer algunos cambios para mejorar su apariencia. Para los modelos de documentos Odoo tiene un estilo de presentación que asemeja una página de papel. El formulario contiene dos elementos: una `<head>`, que contiene botones de acción, y un `<sheet>`, que contiene los campos de datos:
+Lo anterior proporciona una vista de formulario básica, pero podemos hacer algunos cambios para mejorar su apariencia. Para los modelos de documentos Odoo tiene un estilo de presentación que asemeja una hoja de papel. El formulario contiene dos elementos: una `<head>`, que contiene botones de acción, y un `<sheet>`, que contiene los campos de datos:
 
 ```XML
 <form>
@@ -434,9 +435,9 @@ En los métodos decorados con `@api.multi` el `self` representa un conjunto de r
 
 El `search` es un método de la API que devuelve los registros que cumplen con algunas condiciones. Estas condiciones son escritas en un dominio, esto es una lista de tríos. Exploraremos con mayor detalle los dominios más adelante.
 
-El método `write` fija los valores de todos los elementos en el conjunto de una vez. Los valores a escribir son definidos usando un diccionario. Usan `write` aquí es más eficiente que iterar a través de un conjunto de registros para asignar el valor uno por uno.
+El método `write` fija los valores de todos los elementos en el conjunto de una vez. Los valores a escribir son definidos usando un diccionario. Usar `write` aquí es más eficiente que iterar a través de un conjunto de registros para asignar el valor uno por uno.
 
-Note que `@api.one` no es lo más eficiente para estas acciones, ya que se ejecutará para cada uno de los registros seleccionados. La `@api.multi` se asegura que nuestro código sea ejecutado una sola vez incluso si hay más de un registro seleccionado. Esto puede pasar si una opción para ello es agregada a la lista.
+Note que `@api.one` no es lo más eficiente para estas acciones, ya que se ejecutará para cada uno de los registros seleccionados. La `@api.multi` se asegura que nuestro código sea ejecutado una sola vez incluso si hay más de un registro seleccionado. Esto puede pasar si una opción es agregada a la vista de lista.
 
 ## Configurando la seguridad en el control de acceso
 Debe haber notado, desde que cargamos nuestro módulo, un mensaje de alerta en en registro del servidor: **The model todo.task has no access rules, consider adding one**.
