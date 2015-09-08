@@ -1,6 +1,6 @@
 # Capítulo 3. Herencia - Extendiendo la Funcionalidad de las Aplicaciones Existentes
 
-Una de las características más poderosas de Odoo es la capacidad para agregar características son modificar directamente los objetos subyacentes. Esto se logra a través de mecanismos de herencia, que funcionan como capas para la modificación por encima de los objetos existentes.
+Una de las características más poderosas de Odoo es la capacidad para agregar características sin modificar directamente los objetos subyacentes. Esto se logra a través de mecanismos de herencia, que funcionan como capas para la modificación por encima de los objetos existentes.
 
 Estas modificaciones puede suceder en todos los niveles: modelos, vistas, y lógica de negocio. En vez de modificar directamente un módulo existente, creamos un módulo nuevo para agregar las modificaciones previstas.
 
@@ -16,7 +16,7 @@ Haremos esto con un módulo nuevo para ampliar la funcionalidad de la aplicació
 
 #### Camino a seguir para las características colaborativas
 
-Aquí esta nuestro plan de trabajo para la implementar la extensión de funcionalidades:
+Aquí esta nuestro plan de trabajo para implementar la extensión de funcionalidades:
 
 * Agregar campos al modelo **Task**, como el usuario quien posee la tarea.
 * Modificar la lógica de negocio para operar solo en la tarea actual del usuario, en vez de todas las tareas disponibles para ser vistas por el usuario.
@@ -39,7 +39,7 @@ Ahora creamos el archivo `__openerp__.py`, con el siguiente código:
 ```
 No hemos hecho esto, pero incluir las claves “summary” y “category” puede ser importante cuando se publican módulos en la tienda de aplicaciones en línea de Odoo.
 
-Ahora, podemos instalarlo. Debe ser suficiente con solo actualizar el **Lista de Módulos** desde el menú **Configuraciones**, encuentre el módulo nuevo en la lista de **Módulos Locales** y haga clic en el botón Instalar. Para instrucciones más detalladas sobre como encontrar e instalar un módulo puede volver al Capítulo 1.
+Ahora, podemos instalarlo. Debe ser suficiente con solo actualizar el **Lista de módulos** desde el menú **Configuración**, encuentre el módulo nuevo en la lista de **Módulos locales** y haga clic en el botón Instalar. Para instrucciones más detalladas sobre como encontrar e instalar un módulo puede volver al Capítulo 1.
 
 Ahora, comencemos a agregar le las nuevas características.
 
@@ -76,7 +76,7 @@ Aun nos falta agregar al archivo `__init__.py` la declaración “import” para
 ```
 from . import todo_task
 ```
-Para tener los campos nuevos agregados a la tabla de la base de datos soportada por el modelo, necesitamos ejecutar una actualización al módulo. Si todo sale como es esperado, debería poder ver los campos nuevos cuando revise el modelo `todo.task`, en el menú **Técnico**, **Estructura de Base de Datos | Modelos**.
+Para tener los campos nuevos agregados a la tabla de la base de datos soportada por el modelo, necesitamos ejecutar una actualización al módulo. Si todo sale como es esperado, debería poder ver los campos nuevos cuando revise el modelo `todo.task`, en el menú **Técnico**, **Estructura de base de datos | Modelos**.
 
 #### Modificar los campos existentes
 
