@@ -34,7 +34,7 @@ Sin embargo, éste no es el caso típico. Lo más frecuente serán situaciones d
 
 La regla de oro dice que no debemos cambiar módulos existentes modificandolos directamente. Esto es considerado una mala practica. Especialmente cierto para los módulos oficiales proporcionados por Odoo. Hacer esto no permitirá una clara separación entre el módulo original y nuestras modificaciones, y hace difícil la actualización.
 
-Por el contrario, debemos crear módulos nuevos que sean aplicados encima de los módulos que queremos modificar, e implementar esos cambios. Esta es una de las principales fortalezas de Odoo: provee mecanismos de "herencia" que permiten a los módulos personalizados extender los módulos existentes, bien sean oficiales o de la comunidad. La herencia el posible en todos los niveles, modelo de datos, lógica de negocio, e interfaz con el usuario o usuaria. 
+Por el contrario, debemos crear módulos nuevos que sean aplicados encima de los módulos que queremos modificar, e implementar esos cambios. Esta es una de las principales fortalezas de Odoo: provee mecanismos de "herencia" que permiten a los módulos personalizados extender los módulos existentes, bien sean oficiales o de la comunidad. La herencia es posible en todos los niveles, modelo de datos, lógica de negocio, e interfaz con el usuario o usuaria. 
 
 Ahora, crearemos un módulo nuevo completo, sin extender ningún módulo existente, para enfocarnos en las diferentes partes y pasos involucrados en la creación de un módulo. Solo daremos una breve mirada a cada parte, ya que cada una será estudiada en detalle en los siguientes capítulos. Una vez estemos a gusto con la creación de un módulo nuevo, podremos sumergirnos dentro de los mecanismos de herencia, los cuales serán estudiados en el siguiente capítulo.
 
@@ -58,18 +58,18 @@ $ mkdir ~/odoo-dev/custom-addons/todo_app
 $ touch ~/odoo-dev/custom-addons/todo_app/__init__.py  
 ```
 Luego necesitamos crear el archivo descriptor. Debe contener unicamente un diccionario Python y puede contener alrededor de una docena de atributos, de los cuales solo el atributo `name` es requerido. Son recomendados los atributos `description`, para una descripción más larga, y `author`. Ahora agregamos un archivo `__openerp__.py` junto al archivo `__init__.py` con el siguiente contenido:
-```python
+```
 {
-	'name': 'To-Do Application',
+    'name': 'To-Do Application',
     'description': 'Manage your personal Tasks with this module.',
     'author': 'Daniel Reis',
     'depends': ['mail'], 				
-	'application': True,
+    'application': True,
 }
 ```
 El atributo `depends` puede tener una lista de otros módulos requeridos. Odoo los instalará automáticamente cuando este módulo sea instalado. No es un atributo obligatorio pero se recomienda tenerlo siempre. Si no es requerida alguna dependencia en particular, debería existir alguna dependencia a un módulo base especial. Debe tener cuidado de asegurarse que todas las dependencias sean explícitamente fijadas aquí, de otra forma el módulo podría fallar al instalar una base de datos vacía (debido a dependencias insatisfechas) o tener errores en la carga, si otros módulos necesarios son cargados después.
 
-Para nuestra aplicación, queremos que dependa del módulo **mail** debido a que este agrega **Mensajes** el menú en la parte superior, y queremos incluir nuestro nuevo menú de opciones allí.
+Para nuestra aplicación, queremos que dependa del módulo **mail** debido a que este agrega el menú **Mensajería** en la parte superior de la ventana, y queremos incluir nuestro nuevo menú de opciones allí.
 
 Para precisar, escogimos pocas claves del descriptor, pero en el mundo real es recomendable usar claves adicionales, ya que estas son relevantes para la app-store de Odoo:
 
@@ -77,7 +77,7 @@ Para precisar, escogimos pocas claves del descriptor, pero en el mundo real es r
 * `version`, de forma predeterminada, es 1.0. Se debe seguir las reglas de versionamiento semántico (para más detalles ver [semver.org](http://semver.org/lang/es/)). 
 * `license`, de forma predeterminada es AGPL-3. 
 * `website`, es una URL para encontrar más información sobre el módulo. Esta puede servir a las personas a encontrar documentación, informar sobre errores o hacer sugerencias.
-* `category`, es la categoría funcional del módulo, la cual de forma predeterminada es Sin Categoría. La lista de las categorías existentes puede encontrarse en el formato de Grupos (Configuraciones | Usuario | menú Grupos), en la lista desplegable del campo Aplicación.
+* `category`, es la categoría funcional del módulo, la cual de forma predeterminada es Sin Categoría. La lista de las categorías existentes puede encontrarse en el formato de Grupos (Configuraciones | Usuarios | menú Grupos), en la lista desplegable del campo Aplicación.
 
 Estos descriptores también están disponibles:
 * `installable`, de forma predeterminada es `True`, pero puede ser fijada `False` para deshabilitar el módulo.
@@ -106,11 +106,11 @@ Recuerde incluir cualquier otro directorio que pueda estar usando. Por ejemplo, 
 ```
 Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
 
-Para esto, En la sección **Módulos** del menú **Configuraciones**, seleccione la opción **Actualizar Lista de Módulos**. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de **Características Técnicas** para nuestra cuenta de usuario.
+Para esto, En la sección **Módulos** del menú **Configuración**, seleccione la opción **Actualizar lista de módulos**. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de **Características técnicas** para nuestra cuenta de usuario.
 
 ### Instalar el módulo nuevo
 
-La opción **Módulos Locales** nos muestran la lista de módulos disponibles. De forma predeterminada solo muestra los módulos de **Apps**. Debido a que creamos un módulo de aplicación no es necesario remover este filtro. Escriba "todo" en la campo de búsqueda y debe ver nuestro módulo nuevo, listo para ser instalado.
+La opción **Módulos locales** nos muestran la lista de módulos disponibles. De forma predeterminada solo muestra los módulos de **Aplicaciones**. Debido a que creamos un módulo de aplicación no es necesario remover este filtro. Escriba "todo" en la campo de búsqueda y debe ver nuestro módulo nuevo, listo para ser instalado.
 
 ![90_1](/images/Odoo Development Essentials - Daniel Reis-90_1.jpg)
 
@@ -134,7 +134,7 @@ $ ./odoo.py -d v8dev -u todo_app
 ```
 La opción `-u` (o `--update` en su forma larga) requiere la opción `-d` y acepta una lista separada por comas de módulos para actualizar. Por ejemplo, podemos usar: `-u todo_app,mail`. 
 
-En el momento en que necesita actualizar un módulo en proceso de desarrollo a lo largo del libro, la manera mas segura de hacerlo es ir a una ventana de terminal donde se este ejecutando Odoo, detener el servidor, y reiniciarlo con el comando visto anteriormente. Usualmente será suficiente con presionar la tecla de flecha arriba, esto debería devolver el último comando usado para iniciar el servidor.
+En el momento en que necesite actualizar un módulo en proceso de desarrollo a lo largo del libro, la manera mas segura de hacerlo es ir a una ventana de terminal donde se este ejecutando Odoo, detener el servidor, y reiniciarlo con el comando visto anteriormente. Usualmente será suficiente con presionar la tecla de flecha arriba, esto debería devolver el último comando usado para iniciar el servidor.
 
 Desafortunadamente, la actualización de la lista de módulos y la desinstalación son acciones que no están disponibles a través de la línea de comandos. Esto debe ser realizado a través de la interfaz web, en el menú Configuraciones.
 
@@ -161,11 +161,11 @@ class TodoTask(models.Model):
 ```
 La primera línea es un marcador especial que le dice al interprete de Python que ese archivo es UTF-8, por lo que puede manejar y esperarse caracteres non-ASCII. No usaremos ninguno, pero es mas seguro usarlo.
 
-la segunda línea hace que estén disponibles los modelos y los objetos campos del núcleo de Odoo.
+La segunda línea hace que estén disponibles los modelos y los objetos campos del núcleo de Odoo.
 
-la tercera línea declara nuestro nuevo modelo. Es una clase derivada de `models.Model`. La siguiente línea fija el atributo `_name` definiendo el identificador que sera usado por Odoo para referirise a este modelo. Note que el nombre real de la clase Python no es siginificativo para los otros módulos de Odoo. El valor de `_name` es lo que será usado como identificador.
+La tercera línea declara nuestro nuevo modelo. Es una clase derivada de `models.Model`. La siguiente línea fija el atributo `_name` definiendo el identificador que sera usado por Odoo para referirise a este modelo. Note que el nombre real de la clase Python no es siginificativo para los otros módulos de Odoo. El valor de `_name` es lo que será usado como identificador.
 
-Observe que éste y las siguientes líneas tienen una sangría. Si no conoce muy bien Python debe saber que esto es sumamente importante: la sangría define un bloque de código anidado, por lo tanto estas cuatro líneas deben tener la misma sangría.
+Observe que esta y las siguientes líneas tienen una sangría. Si no conoce muy bien Python debe saber que esto es sumamente importante: la sangría define un bloque de código anidado, por lo tanto estas cuatro líneas deben tener la misma sangría.
 
 Las últimas tres líneas definen los campos del modelo. Vale la pena señalar que `name` y `active` son nombres de campos especiales. De forma predeterminada Odoo usara el campo `name` como el título del registro cuando sea referenciado desde otros modelos. El campo `active` es usado para desactivar registros, y de forma predeterminada solo los registros activos son mostrados. Lo usaremos para quitar las tareas finalizadas sin eliminarlas definitivamente de la base de datos.
 
@@ -198,14 +198,14 @@ Crearemos un archivo nuevo `todo_view.xml` en el directorio raíz del módulo, y
 <?xml version="1.0" encoding="UTF-8"?>
 	<openerp>
 		<data>
-			<!-- Action to open To-do Task list -->
+			<!-- Acción para abrir la lista de tareas por hacer -->
 			<act_window 
 				id="action_todo_task" 
 				name="To-do Task" 
 				res_model="todo.task" 
 				view_mode="tree,form"
 			/>
-			<!-- Menu item to open To-do Task list -->
+			<!-- Item de menú para abrir la lista de tareas por hacer -->
 			<menuitem 
 				id="menu_todo_task" 
 				name="To-Do Tasks" 
@@ -269,14 +269,14 @@ El atributo más importante es `arch`, que contiene la definición de la vista. 
 
 #### Formatear como un documento de negocio
 
-Lo anterior proporciona una vista de formulario básica, pero podemos hacer algunos cambios para mejorar su apariencia. Para los modelos de documentos Odoo tiene un estilo de presentación que asemeja una página de papel. El formulario contiene dos elementos: una `<head>`, que contiene botones de acción, y un `<sheet>`, que contiene los campos de datos:
+Lo anterior proporciona una vista de formulario básica, pero podemos hacer algunos cambios para mejorar su apariencia. Para los modelos de documentos Odoo tiene un estilo de presentación que se asemeja a una hoja de papel. El formulario contiene dos elementos: una `<head>`, que contiene botones de acción, y un `<sheet>`, que contiene los campos de datos:
 ```XML
 <form>
 	<header>
-		<!-- Buttons go here-->
+		<!-- Los botones van aquí: -->
 	</header>
 	<sheet>
-		<!-- Content goes here: -->
+		<!-- El contenido va aquí: -->
 		<field name="name"/>
 		<field name="is_done"/>
 	</sheet>
@@ -398,7 +398,8 @@ La acción del botón **Toggle Done** es bastante simple: solo cambia de estado 
 
 Dentro de la clase `TodoTask` agregue:
 ```Python
-@api.one def do_toggle_done(self):
+@api.one 
+def do_toggle_done(self):
 	self.is_done = not self.is_done
 	return True
 ```
@@ -408,7 +409,8 @@ Despues de esto, si reiniciamos el servidor Odoo para cargar nuevamente el archi
 
 Para el botón **Clear All Done** queremos ir un poco más lejos. Este debe buscar todos los registros activos que estén finalizados, y desactivarlos. Los botones de formulario se suponen que solo actúen sobre los registros seleccionados, pero para mantener las cosas simples haremos un poco de trampa, y también actuara sobre los demás botones:
 ```Python
-@api.multi def do_clear_done(self):
+@api.multi 
+def do_clear_done(self):
 	done_recs = self.search([('is_done', '=', True)])
 	done_recs.write({'active': False})
 	return True
@@ -417,9 +419,9 @@ En los métodos decorados con `@api.multi` el `self` representa un conjunto de r
 
 El `search` es un método de la API que devuelve los registros que cumplen con algunas condiciones. Estas condiciones son escritas en un dominio, esto es una lista de tríos. Exploraremos con mayor detalle los dominios más adelante.
 
-El método `write` fija los valores de todos los elementos en el conjunto de una vez. Los valores a escribir son definidos usando un diccionario. Usan `write` aquí es más eficiente que iterar a través de un conjunto de registros para asignar el valor uno por uno.
+El método `write` fija los valores de todos los elementos en el conjunto de una vez. Los valores a escribir son definidos usando un diccionario. Usar `write` aquí es más eficiente que iterar a través de un conjunto de registros para asignar el valor uno por uno.
 
-Note que `@api.one` no es lo más eficiente para estas acciones, ya que se ejecutará para cada uno de los registros seleccionados. La `@api.multi` se asegura que nuestro código sea ejecutado una sola vez incluso si hay más de un registro seleccionado. Esto puede pasar si una opción para ello es agregada a la lista.
+Note que `@api.one` no es lo más eficiente para estas acciones, ya que se ejecutará para cada uno de los registros seleccionados. La `@api.multi` se asegura que nuestro código sea ejecutado una sola vez incluso si hay más de un registro seleccionado. Esto puede pasar si una opción es agregada a la vista de lista.
 
 ### Configurando la seguridad en el control de acceso
 
@@ -427,7 +429,7 @@ Debe haber notado, desde que cargamos nuestro módulo, un mensaje de alerta en e
 
 El mensaje es muy claro: nuestro modelo nuevo no tiene reglas de acceso, por lo tanto puede ser usado por cualquiera, no solo por el administrador. Como super usuario el `admin` ignora las reglas de acceso, por ello somos capaces de usar el formulario sin errores. Pero debemos arreglar esto antes que otros usuarios puedan usarlo.
 
-Para tener una muestra de la información requerida para agregar reglas de acceso a un modelo, use el cliente web y diríjase a: **Configuraciones | Técnico | Seguridad |Lista de Control de Acceso**.
+Para tener una muestra de la información requerida para agregar reglas de acceso a un modelo, use el cliente web y diríjase a: **Configuración | Técnico | Seguridad |Lista de controles de acceso**.
 
 ![112_1](/images/Odoo Development Essentials - Daniel Reis-112_1.jpg)
 
@@ -435,7 +437,7 @@ Aquí podemos ver la ACL para el modelo `mail.mail`. Este indica, por grupo, las
 
 Esta información debe ser provista por el modelo, usando un archivo de datos para cargar las líneas dentro del modelo `ir.model.access`. Daremos acceso completo al modelo al grupo empleado. Empleado es el grupo básico de acceso, casi todos pertenecen a este grupo.
 
-Esto es realizado usualmente usando un archivo CSV llamado `security/ir.model.access.csv`. Los modelos generan identificadores automáticamente: para `todo.task`el identificador es `model_todo_task`. Los grupos también tienen identificadores fijados por los modelos que los crean. El grupo empleado es creado por el módulo base y tiene el identificador `base.group_user`. El nombre de la línea es solo informativo y es mejor si es único. Los módulos raíz usando una cadena separada por puntos con el nombre del modelo y el nombre del grupo. Siguiendo esta convención usaremos `todo.task.user`. 
+Esto es realizado usualmente usando un archivo CSV llamado `security/ir.model.access.csv`. Los modelos generan identificadores automáticamente: para `todo.task`el identificador es `model_todo_task`. Los grupos también tienen identificadores fijados por los modelos que los crean. El grupo empleado es creado por el módulo base y tiene el identificador `base.group_user`. El nombre de la línea es solo informativo y es mejor si es único. Los módulos raíz usan una cadena separada por puntos con el nombre del modelo y el nombre del grupo. Siguiendo esta convención usaremos `todo.task.user`. 
 
 Ahora que tenemos todo lo que necesitamos saber, vamos a agregar el archivo nuevo con el siguiente contenido:
 ```
@@ -453,10 +455,10 @@ Como se hizo anteriormente, actualice el módulo para estos cambios tengan efect
 
 ### Reglas de acceso de nivel de fila
 
-Odoo es un sistema multi-usuario, y queremos que la aplicación **to-do task** sea privada para cada usuario. Afortunadamente, Odoo soporta reglas de acceso de nivel de fila. En el menú **Técnico** pueden encontrarse en la opción **Reglas de Registro**, junto a la **Lista de Control de Acceso**.
+Odoo es un sistema multi-usuario, y queremos que la aplicación **to-do task** sea privada para cada usuario. Afortunadamente, Odoo soporta reglas de acceso de nivel de fila. En el menú **Técnico** pueden encontrarse en la opción **Reglas de registros**, junto a la **Lista de controles de acceso**.
 Las reglas de registro son definidas en el modelo `ir.rule`. Como es de constumbre, necesitamos un nombre distintivo. También necesitamos el modelo en el cual operan y el dominio para forzar la restricción de acceso. El filtro de dominio usa la misma sintaxis de dominio mencionada anteriormente, y usado a lo largo de Odoo.
 
-Finalmente, las reglas pueden ser globales (el campo `global` el fijado a `True`) o solo para grupos particulares de seguridad. En nuestro caso, puede ser una regla global, pero para ilustrar el caso más común, la haremos como una regla específica para un grupo, aplicada solo al grupo empleados.
+Finalmente, las reglas pueden ser globales (el campo `global` es fijado a `True`) o solo para grupos particulares de seguridad. En nuestro caso, puede ser una regla global, pero para ilustrar el caso más común, la haremos como una regla específica para un grupo, aplicada solo al grupo empleados.
 
 Debemos crear un archivo `security/todo_access_rules.xml` con el siguiente contenido:
 ```XML
@@ -474,7 +476,7 @@ Debemos crear un archivo `security/todo_access_rules.xml` con el siguiente conte
 		</data>
 	</openerp>
 ```
-Nota el atributo `noupdate="1"`. Esto significa que ésta data no será actualizada en las actualizaciones del módulo. Esto permitirá que sea personalizada luego, debido a que las actualizaciones del módulo no destruirán los cambios realizados. Pero ten en cuenta que esto será así mientras se esté desarrollando, por lo tanto es probable que quieras fijar `noupdate="0"` durante el desarrollo, hasta que estes feliz con el archivo de datos.
+Nota el atributo `noupdate="1"`. Esto significa que esta data no será actualizada en las actualizaciones del módulo. Esto permitirá que sea personalizada luego, debido a que las actualizaciones del módulo no destruirán los cambios realizados. Pero ten en cuenta que esto será así mientras se esté desarrollando, por lo tanto es probable que quieras fijar `noupdate="0"` durante el desarrollo, hasta que estes feliz con el archivo de datos.
 
 En el campo de `groups`, también encontraras una expresión especial. Es un campo de relación uno a muchos, y tienen una sintaxis especial para operar con ellos. En este caso la tupla `(4,x)` indica agregar `x` a los registros, y `x` es una referencia al grupo empleados, identificado por `base.group_user`.
 
@@ -503,8 +505,8 @@ Ahora, si actualizamos la lista de módulos, nuestro módulo debe mostrarse con 
 
 Creamos un módulo nuevo desde cero, cubriendo los elementos más frecuentemente usados en un módulo: modelos, los tres tipos base de vistas (formulario, lista y búsqueda), la lógica de negocio en los métodos del modelo, y seguridad en el acceso.
 
-En el proceso, te familiarizaste con el proceso de desarrollo de módulos, el cual incluye la actualización del módulo y la aplicación de reinicio del servidor para hacer efectivos en Odoo los cambios graduales.
+En el proceso, se familiarizo con el proceso de desarrollo de módulos, el cual incluye la actualización del módulo y la aplicación de reinicio del servidor para hacer efectivos en Odoo los cambios graduales.
 
-Recuerda siempre, al agregar campos en el modelo, que es necesaria una actualización del módulo. Cuando se cambia el código Python, incluyendo el archivo de manifiesto, es necesario un reinicio del servidor. Cuando de cambian archivo XML o CSV es necesaria una actualización del módulo; incluso si dudas, realiza ambas: actualización del módulo y reinicio del servidor.
+Recuerde siempre, al agregar campos en el modelo, que es necesaria una actualización del módulo. Cuando se cambia el código Python, incluyendo el archivo de manifiesto, es necesario un reinicio del servidor. Cuando de cambian archivos XML o CSV es necesaria una actualización del módulo; incluso si duda, realiza ambas: actualización del módulo y reinicio del servidor.
 
-En el siguiente capítulo, aprenderás sobre la construcción de módulos que se acoplan a otro existentes para agregar características.
+En el siguiente capítulo, aprendera sobre la construcción de módulos que se acoplan a otro existentes para agregar características.
