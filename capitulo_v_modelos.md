@@ -1,7 +1,7 @@
 Capítulo 5.	Modelos – Estructura de los Datos de la Aplicación
 ===
 
-En los capítulos anteriores, vimon un resumen de extremo a extremo sobre la creación de módulos nuevos para Odoo. En el Capítulo 2, se construyo una aplicación totalmente nueva, y en el Capítulo 3, exploramos la herencia y como usarla para crear un módulo de extensión para nuestra aplicación. En el Capítulo 4, discutimos como agregar datos iniciales y de demostración a nuestros módulos.
+En los capítulos anteriores, vimos un resumen de extremo a extremo sobre la creación de módulos nuevos para Odoo. En el Capítulo 2, se construyo una aplicación totalmente nueva, y en el Capítulo 3, exploramos la herencia y como usarla para crear un módulo de extensión para nuestra aplicación. En el Capítulo 4, discutimos como agregar datos iniciales y de demostración a nuestros módulos.
 
 En estos resúmenes, tocamos todas las capas que componen el desarrollo de aplicaciones “backend” para Odoo. Ahora, en los siguientes capítulos, es hora de explicar con más detalle todas estas capas que conforman una aplicación: modelos, vistas, y lógica de negocio.
 
@@ -32,13 +32,14 @@ La primera cosa que tenemos que comprender es como nuestra data estará estructu
 
 Esto significa que las tareas tiene una relación muchos a uno con los estados, y una relación muchos a muchos con las etiquetas. Por otra parte, las relaciones inversas son: los estados tiene una relación uno a muchos con las tareas y las etiquetas tienen una relación muchos a muchos con las tareas.
 
-Comenzaremos creando el módulo nuevo todo_ui y agregaremos los estados y los modelos de etiquetas.
+Comenzaremos creando el módulo nuevo `todo_ui` y agregaremos los estados y los modelos de etiquetas.
 
 Hemos estado usado el directorio `~/odoo-dev/custom-addons/` para alojar nuestros módulos. Para crear el módulo nuevo junto a los existentes, podemos usar estos comandos en la terminal:
 ```
 $ cd ~/odoo-dev/custom-addons 
 $ mkdir todo_ui 
 $ cd todo_ui 
+$ touch __openerp__.py
 $ touch todo_model.py 
 $ echo "from . Import todo_model" > __init__.py
 ```  
@@ -51,7 +52,7 @@ Luego, debemos editar el archivo manifiesto `__openerp__.py` con este contenido:
    'depends': ['todo_app']	
 }
 ``` 
-Note que dependemos de todo_app y no de todo_user. En general, es buena idea mantener los módulos tan independientes como sea posible. Cuando un módulo aguas arriba es modificado, puede impactar todos los demás módulos que directa o indirectamente dependen de el. Es mejor si podemos mantener al mínimo el número de dependencias, e igualmente evitar concentrar un gran número de dependencias, como: `todo_ui → todo_user → todo_app` en este caso.
+Note que dependemos de `todo_app` y no de `todo_user`. En general, es buena idea mantener los módulos tan independientes como sea posible. Cuando un módulo aguas arriba es modificado, puede impactar todos los demás módulos que directa o indirectamente dependen de el. Es mejor si podemos mantener al mínimo el número de dependencias, e igualmente evitar concentrar un gran número de dependencias, como: `todo_ui → todo_user → todo_app` en este caso.
 
 Ahora podemos instalar el módulo en nuestra base de datos de trabajo y comenzar con los modelos.
 
@@ -65,39 +66,39 @@ Agreguemos el siguiente código al archivo `todo_ui/todo_model.py`:
 #-*- coding: utf-8 -*- 
 from openerp import models, fields, api 
 
-class	Tag(models.Model):
+class Tag(models.Model):
     _name = 'todo.task.tag'
     name = fields.Char('Name', 40, translate=True) 
 
-class	Stage(models.Model):
+class Stage(models.Model):
     _name = 'todo.task.stage'
     _order = 'sequence,name'
-    _rec_name = 'name' 	# the	default
-    _table = 'todo_task_stage' #the	default
+    _rec_name = 'name' 	# predeterminado
+    _table = 'todo_task_stage' # predeterminado
     name = fields.Char('Name', 40, translate=True)
     sequence = fields.Integer('Sequence') 
 ```
 Aquí, creamos los dos Modelos nuevos a los cuales haremos referencia en las tareas por hacer.
 
-Enfocándonos en los estados de las tareas, tenemos una clase Python, Stage, basada en la clase `models.Model`, que define un modelo nuevo, `todo.task.stage`. También definimos dos campos, “name” y “sequence”. Podemos ver algunos atributos del modelo, (con la barra baja, `_`, como prefijo) esto es nuevo para nosotros. Demos le una mirada más profunda.
+Enfocándonos en los estados de las tareas, tenemos una clase Python, Stage, basada en la clase `models.Model`, que define un modelo nuevo, `todo.task.stage`. También definimos dos campos, “name” y “sequence”. Podemos ver algunos atributos del modelo, (con el grión bajo, `_`, como prefijo) esto es nuevo para nosotros. Demos le una mirada más profunda.
 
-**Atributos del Modelo**
+**Atributos del modelo**
 
 Las clases del modelo pueden tener atributos adicionales usados para controlar alguno de sus comportamientos:
 
 - `_name`: Este es el identificador interno para el modelo que estamos creando. 
 - `_order`: Este fija el orden que será usado cuando se navega por los registros del modelo. Es una cadena de texto que es usada como una clausula SQL “order by”, así que puede ser cualquier cosa permitida.
-- `_rec_name`: Este indica el campo a usar como descripción del registro cuando se hace referencia a él desde campos relacionados, como una relación muchos a uno. De forma predeterminada usa el campo de nombre, el cual esta frecuentemente presente en los modelos. Pero este atributo nos permite usar cualquier otro campo para este propósito.
-- `_table`: Este es el nombre de la tabla de la base de datos que soporta el modelo. Usualmente, se deja para que sea calculado automáticamente, y es el nombre del modelo con el carácter de piso bajo (`_`) que reemplaza a los puntos. Pero puede ser configurado para indicar un nombre de tabla específico.
+- `_rec_name`: Este indica el campo a usar como descripción del registro cuando se hace referencia a él desde campos relacionados, como una relación muchos a uno. De forma predeterminada usa el campo `name`, el cual esta frecuentemente presente en los modelos. Pero este atributo nos permite usar cualquier otro campo para este propósito.
+- `_table`: Este es el nombre de la tabla de la base de datos que soporta el modelo. Usualmente, se deja para que sea calculado automáticamente, y es el nombre del modelo con el caracter de piso bajo (`_`) que reemplaza a los puntos. Pero puede ser configurado para indicar un nombre de tabla específico.
 
-Para completar, también podemos tener atributos `inherit` y `_inherits`, como explicamos en el Capítulo 3.
+Para completar, también podemos tener atributos `inherit` e `_inherits`, como explicamos en el Capítulo 3.
  
 
-**Modelos y Clases Python**
+**Modelos y clases Python**
 
 Los modelos de Odoo son representados por las clases Python. En el código precedente, tenemos una clase Python llamada Stage, basada en la clase `models.Model`, usada para definir el modelo nuevo `todo.task.stage`.
 
-Los modelos de Odoo son mantenidos en un registro central, también denominado como piscina en las versiones anteriores. Es un diccionario que mantiene las referencias de todas las clases de modelos disponibles en la instancia, a las cuales se les puede hacer referencia por el nombre del modelo. Específicamente, el código en un método del modelo puede usar `self.env['x]` o `self.env.get('x')` para obtener la referencia a la clase que representa el modelo x.
+Los modelos de Odoo son mantenidos en un registro central, también denominado como piscina - pool - en las versiones anteriores. Es un diccionario que mantiene las referencias de todas las clases de modelos disponibles en la instancia, a las cuales se les puede hacer referencia por el nombre del modelo. Específicamente, el código en un método del modelo puede usar `self.env['x]` o `self.env.get('x')` para obtener la referencia a la clase que representa el modelo x.
 
 Puede observar que los nombres del modelo son importantes ya que son la llave para acceder al registro. La convención para los nombres de modelo es usar una lista de palabras en minúscula unidas con puntos, como `todo.task.stage`. Otros ejemplos pueden verse en los módulos raíz de Odoo `project.project`, `project.task` o `project.task.type`. 
 
@@ -105,22 +106,22 @@ Debemos usar la forma singular: `todo.task` en vez de `todo.tasks`. Por cuestion
 
 Los nombres de modelo deben ser únicos. Debido a esto, la primera palabra deberá corresponder a la aplicación principal con la cual esta relacionada el módulo. En nuestro ejemplo, es “todo”. De los módulos raíz tenemos, por ejemplo, project, crm, o sale.
 
-Por otra parte, las clases Python, son locales para el archivo Python en la cual son declaradas. El identificador usado en ellas es solo significante para el código en ese archivo.
+Por otra parte, las clases Python, son locales para el archivo Python en la cual son declaradas. El identificador usado en ellas es solo significativo para el código en ese archivo.
 
 Debido a esto, no se requiere que los identificadores de clase tengan como prefijo a la aplicación principal a la cual están relacionados. Por ejemplo, no hay problema en llamar simplemente Stage a nuestra clase para el modelo `todo.task.stage`. No hay riesgo de colisión con otras posibles clases con el mismo nombre en otros módulos.
 
-Se pueden usar dos convenciones diferentes para los identificadores de clase: “snake_case” o “CamelCase”. Históricamente, el código Odoo ha usado el “snake_case”, y es aún muy frecuente encontrar clases que usan esa convención. Pero la tendencia actual en usar “CamelCase”, debido a que es el estándar definido para Python por la convenciones de codificación PEP8. Puede haber notado que estamos usando esta última forma. 
+Se pueden usar dos convenciones diferentes para los identificadores de clase: **snake_case** o **CamelCase**. Históricamente, el código Odoo ha usado el snake_case, y es aún muy frecuente encontrar clases que usan esa convención. Pero la tendencia actual en usar CamelCase, debido a que es el estándar definido para Python por la convenciones de codificación PEP8. Puede haber notado que estamos usando esta última forma. 
 
 
-**Modelos Transitorios y Abstractos**
+**Modelos transitorios y abstractos**
 
 En el código precedente, y en la vasta mayoría de los modelos Odoo, las clases están basadas en el clase `models.Model`. Este tipo de modelos tienen bases de datos persistentes: las tablas de las bases de datos son creadas para ellos y sus registros son almacenados hasta que son borrados explícitamente.
 
-Pero Odoo proporciono otros dos tipos de modelo: modelos Transitorios y Abstractos.
+Pero Odoo proporciona otros dos tipos de modelo: modelos Transitorios y Abstractos.
 
-Los modelos transitorios están basados en la clase `models.TransientModel` y son usados para interacción con el usuario y la usuaria tipo asistente. Sus datos es aún almacenada en la base de datos, pero se espera que sea temporal. Un trabajo de aspiradora limpia periódicamente los datos viejos de esas tablas.
+Los **modelos transitorios** están basados en la clase `models.TransientModel` y son usados para interacción tipo asistente con el usuario y la usuaria. Sus datos son aún almacenados en la base de datos, pero se espera que sea temporal. Un proceso de reciclaje limpia periódicamente los datos viejos de esas tablas.
 
-Los modelos abstractos están basados en la clase `models.AbstractModel` y no tienen  almacén vinculado a ellos. Actúan como una característica de re uso configurada para ser mezclada con otros modelos. Esto es hecho usando las capacidades de herencia de Odoo.
+Los **modelos abstractos** están basados en la clase `models.AbstractModel` y no tienen  almacén vinculado a ellos. Actúan como una característica de re-uso configurada para ser mezclada con otros modelos. Esto es hecho usando las capacidades de herencia de Odoo.
  
 
 ![185_1](/images/Odoo Development Essentials - Daniel Reis-185_1.jpg)
@@ -128,12 +129,13 @@ Los modelos abstractos están basados en la clase `models.AbstractModel` y no ti
 
 **Inspeccionar modelos existentes**
 
-La información sobre los modelos y los campos creados con clases Python esta disponible a través de la interfaz. En el menú principal de Configuraciones, seleccione la opción de menú Técnico | Estructura de Base de Datos | Modelos. Allí, encontrará la lista de todos los modelos disponibles en la base de datos. Al hacer clic en un modelo de la lista se abrirá un formulario con sus detalles.
+La información sobre los modelos y los campos creados con clases Python esta disponible a través de la interfaz. En el menú principal de **Configuración**, seleccione la opción de menú **Técnico** | **Estructura de base de datos** | **Modelos**. Allí, encontrará la lista de todos los modelos disponibles en la base de datos. Al hacer clic en un modelo de la lista se abrirá un formulario con sus detalles.
 
-Esta es una buena herramienta para inspeccionar la estructura de un Modelo, ya que se tiene en un solo lugar el resultado de todas las adiciones que pueden venir de diferentes módulos. En este caso, como puede observar en el campos En Módulos, en la parte superior derecha, las definiciones de `todo.task` vienen de los módulos `todo_app` y `todo_user`.
+Esta es una buena herramienta para inspeccionar la estructura de un Modelo, ya que se tiene en un solo lugar el resultado de todas las adiciones que pueden venir de diferentes módulos. En este caso, como puede observar en el campo **En los módulos**, en la parte superior derecha, las definiciones de `todo.task` vienen de los módulos `todo_app` y `todo_user`.
+
 En el área inferior, tenemos disponibles algunas etiquetas informativas: una referencia rápida de los Campos del modelo, los Derechos de Acceso concedidos, y también lista las Vistas disponibles para este modelo.
 
-Podemos encontrar el Identificador Externo del modelo, activando el Menú de Desarrollador y accediendo a la opción Vista de Metadatos. Estos son generados automáticamente pero bastante predecibles: para el modelo `todo.task`, el Identificador Externo es `model_todo_task`.
+Podemos encontrar el Identificador Externo del modelo, activando el **Menú de Desarrollo** y accediendo a la opción **Ver metadatos**. Estos son generados automáticamente pero bastante predecibles: para el modelo `todo.task`, el Identificador Externo es `model_todo_task`.
 
 *Tip*
 * Los formularios del Modelo pueden ser editados! Es posible crear y modificar modelos, campos y vistas desde aquí. Puede usar esto para construir prototipos antes de colocarlos definitivamente dentro de los propios modelos. * 
@@ -152,37 +154,39 @@ class	Stage(models.Model):
     _name  = 'todo.task.stage'
     _order = 'sequence,name'	
 
-    # String fields:
+    # Campos de cadena de caracteres:
     name  = fields.Char('Name',40)
     desc  =	fields.Text('Description')
-    state =	fields.Selection([('draft','New'),('open','Started' ('done','Closed')],'State')
+    state =	fields.Selection([('draft','New'),('open','Started'), ('done','Closed')],'State')
     docs  = fields.Html('Documentation')
 
-    #	Numeric fields:
+    # Campos numéricos:
     sequence      = fields.Integer('Sequence')
     perc_complete = fields.Float('%	Complete',(3,2))
     
-    # Date fields:
+    # Campos de fecha:
     date_effective = fields.Date('Effective Date')
     date_changed   = fields.Datetime('Last Changed')
 
-    # Other	fields:
+    # Otros campos:
     fold  = fields.Boolean('Folded?')
-    image =	fields.Binary('Image')
+    image = fields.Binary('Image')
 ``` 
 Aquí tenemos un ejemplo de tipos de campos no relacionales disponibles en Odoo, con los argumentos básicos esperados por cada función. Para la mayoría, el primer argumento es el título del campo, que corresponde al atributo palabra clave de cadena. Es un argumento opcional, pero se recomienda colocarlo. De lo contrario, sera generado automáticamente un título por el nombre del campo.
 
-Existe una convención para los campos de fecha que usa “date” como prefijo para el nombre. Por ejemplo, deberíamos usar “date_effective” en vez de “effective_date”. Esto también puede aplicarse a otros campos, como “amount_”, “price_” o “qty_”.
+Existe una convención para los campos de fecha que usa `date` como prefijo para el nombre. Por ejemplo, deberíamos usar `date_effective` en vez de `effective_date`. Esto también puede aplicarse a otros campos, como “amount_”, “price_” o “qty_”.
+
 Algunos otros argumentos están disponibles para la mayoría de los tipos de campo:
 
-- Char, acepta un segundo argumento opcional, “size”, que corresponde al tamaño máximo del texto. Es recomendable usarlo solo si se tiene una buena razón.
-- Text, se diferencia de Char en que puede albergar texto de varias líneas, pero espera los mismos argumentos.
-- Selecction, es una lista de selección desplegable. El primer argumento es la lista de opciones seleccionables y el segundo es la cadena de título. La lista de selección es una tupla `('value', 'Title')` para el valor almacenado en la base de datos y la cadena de descripción correspondiente. Cuando se amplía a través de la herencia, el argumento “selection_add” puede ser usado para agregar opciones a la lista de selección existente.
-- Html, es almacenado como un campo de texto, pero tiene un manejo específico para presentar el contenido HTML en la interfaz.
-- Integer, solo espera un argumento de cadena de texto para el campo de título.
-- Float, tiene un argumento opcional, una tupla `(x,y)` con los campos de precisión: x como el número total de dígitos; y representa los dígitos decimales.
-- Date y Datetime, estos datos son almacenados en tiempo UTC. Se realizan conversiones automáticas, basadas en las preferencias del usuario o la usuaria, disponibles a través del contexto de la sesión de usuario. Esto es discutido con mayor detalle en el Capítulo 6.
-- Boolean, solo espera sea fijado el campo de título, incluso si es opcional. Binary también espera este único argumento.
+- **Char**, acepta un segundo argumento opcional, “size”, que corresponde al tamaño máximo del texto. Es recomendable usarlo solo si se tiene una buena razón.
+- **Text**, se diferencia de Char en que puede albergar texto de varias líneas, pero espera los mismos argumentos.
+- **Selecction**, es una lista de selección desplegable. El primer argumento es la lista de opciones seleccionables y el segundo es la cadena de título. La lista de selección es una tupla `('value', 'Title')` para el valor almacenado en la base de datos y la cadena de descripción correspondiente. Cuando se amplía a través de la herencia, el argumento `selection_add` puede ser usado para agregar opciones a la lista de selección existente.
+- **Html**, es almacenado como un campo de texto, pero tiene un manejo específico para presentar el contenido HTML en la interfaz.
+- **Integer**, solo espera un argumento de cadena de texto para el campo de título.
+- **Float**, tiene un argumento opcional, una tupla `(x,y)` con los campos de precisión: 'x' como el número total de dígitos; 'y' representa los dígitos decimales.
+- **Date y Datetime**, estos datos son almacenados en formato UTC. Se realizan conversiones automáticas, basadas en las preferencias del usuario o la usuaria, disponibles a través del contexto de la sesión de usuario. Esto es discutido con mayor detalle en el Capítulo 6.
+- **Boolean**, solo espera sea fijado el campo de título, incluso si es opcional. 
+- **Binary** también espera este único argumento.
 
 Además de estos, también existen los campos relacionales, los cuales serán introducidos en este mismo capítulo. Pero por ahora, hay mucho que aprender sobre los tipos de campos y sus atributos.
 
@@ -191,61 +195,61 @@ Además de estos, también existen los campos relacionales, los cuales serán in
 
 Los campos también tienen un conjunto de atributos los cuales podemos usar, y los explicaremos aquí con más detalle:
 
-- string, es el título del campo, usado como su etiqueta en la UI. La mayoría de las veces no es usado como palabra clave, ya que puede ser fijado como un argumento de posición.
-- default, fija un valor predefinido para el campo. Puede ser un valor estático o uno fijado anticipadamente, pudiendo ser una referencia a una función o una expresión lambda.
-- size, aplica solo para los campos Char, y pueden fijas el tamaño máximo permitido.
-- translate, aplica para los campos de texto, Char, Text y Html, y hacen que los campos puedan ser traducidos: puede tener varios valores para diferentes idiomas.
-- help, proporciona el texto de ayuda desplegable mostrado a los usuarios y usuarias.
+- `string`, es el título del campo, usado como su etiqueta en la UI. La mayoría de las veces no es usado como palabra clave, ya que puede ser fijado como un argumento de posición.
+- `default`, fija un valor predefinido para el campo. Puede ser un valor estático o uno fijado anticipadamente, pudiendo ser una referencia a una función o una expresión lambda.
+- `size`, aplica solo para los campos Char, y pueden fijar el tamaño máximo permitido.
+- `translate`, aplica para los campos de texto, Char, Text y Html, y hacen que los campos puedan ser traducidos: puede tener varios valores para diferentes idiomas.
+- `help`, proporciona el texto de ayuda desplegable mostrado a los usuarios y usuarias.
 - `readonly = True`, hace que el campo no pueda ser editado en la interfaz.
 - `required = True`, hace que el campo sea obligatorio.
 - `index = True`, creara un índice en la base de datos para el campo.
 - `copy = False`, hace que el campo sea ignorado cuando se usa la función Copiar. Los campos no relacionados de forma predeterminada pueden ser copiados.
-- groups, permite limitar la visibilidad y el acceso a los campos solo a determinados grupos. Es una lista de cadenas de texto separadas por comas, que contiene los ID XML del grupo de seguridad.
-- states, espera un diccionario para los atributos de la UI dependiendo de los valores se estado del campo. Por ejemplo: `states={'done':[('readonly', True)]}`. Los atributos que pueden ser usados son, “readonly”, “required” y “invisible”.
+- `groups`, permite limitar la visibilidad y el acceso a los campos solo a determinados grupos. Es una lista de cadenas de texto separadas por comas, que contiene los ID XML del grupo de seguridad.
+- `states`, espera un diccionario para los atributos de la UI dependiendo de los valores de estado del campo. Por ejemplo: `states={'done':[('readonly', True)]}`. Los atributos que pueden ser usados son, “readonly”, “required” e “invisible”.
 
-Para completar, a veces se usando dos atributos más cuando se actualiza entre versiones principales de Odoo:
+Para completar, a veces son usados dos atributos más cuando se actualiza entre versiones principales de Odoo:
 
 - `deprecated = True`, registra un mensaje de alerta en cualquier momento que el campo sea usado.
-- `oldname = 'field'`, es usado cuando un campo es re nombrado en una versión nueva, permitiendo que la data en el campo viejo sea copiada automáticamente dentro del campo nuevo.
+- `oldname = 'field'`, es usado cuando un campo es re-nombrado en una versión nueva, permitiendo que la data en el campo viejo sea copiada automáticamente dentro del campo nuevo.
 
 
 **Nombres de campo reservados**
 
 Unos cuantos nombres de campo estan reservados para ser usados por el ORM:
 
-- id, es un número generado automáticamente que identifica de forma única a cada registro, y es usado como clave primaria en la base de datos. Es agregado automáticamente a cada modelo.
+- `id`, es un número generado automáticamente que identifica de forma única a cada registro, y es usado como clave primaria en la base de datos. Es agregado automáticamente a cada modelo.
 
-Los siguientes campos son creados automáticamente en los modelos nuevos, a menos que el atributo `_log_access=False` sea fijado:
+Los siguientes campos son creados automáticamente en los modelos nuevos, a menos que sea fijado el atributo `_log_access=False`:
 
 - `create_uid`, para el usuario que crea el registro.
 - `created_date`, para la fecha y la hora en que el registro es creado.
 - `write_uid`, para el último usuario que modifica el registro.
 - `write_date`, para la última fecha y hora en que el registro fue modificado.
 
-Esta información esta disponible desde el cliente web, usando el menú Modo Desarrollador y seleccionando la opción Vista de Metadatos.
+Esta información esta disponible desde el cliente web, usando el **menú de Desarrollo** y seleccionando la opción **Ver metadatos**.
 
 Hay algunos efectos integrados que esperan nombres de campo específicos. Debemos evitar usarlos para otros propósitos que aquellos para los que fueron creados. Algunos de ellos incluso están reservados y no pueden ser usados para ningún otro propósito:
 
-- name, es usado de forma predeterminada como el nombre del registro que será mostrado. Usualmente es un Char, pero se permiten otros tipos de campos. Puede ser sobre escrito configurando el atributo `_rec_name` del modelo.
-- active (tipo Boolean), permite desactivar registros. Registro con `active==False` serán excluidos automáticamente de las consultas. Para acceder a ellos debe ser agregada la condición `('active','=', False)` al dominio de búsqueda o agregar `'active_test':False` al contexto actual.
-- sequence (tipo Integer),, si esta presente en una vista de lista, permite definir manualmente el orden de los registros. Para funcionar correctamente debe estar también presente en el `_order` del modelo.
-- state (tipo Selection), representa los estados básicos del ciclo de vida del registro, y puede ser usado por el atributo “field” del estado para modificar de forma dinámica la vista: algunos campos de formulario pueden ser solo lectura, requeridos o invisibles en estados específicos del registro. 
+- `name`, es usado de forma predeterminada como el nombre del registro que será mostrado. Usualmente es un Char, pero se permiten otros tipos de campos. Puede ser sobre escrito configurando el atributo `_rec_name` del modelo.
+- `active` (tipo Boolean), permite desactivar registros. Registros con `active==False` serán excluidos automáticamente de las consultas. Para acceder a ellos debe ser agregada la condición `('active','=', False)` al dominio de búsqueda o agregar `'active_test':False` al contexto actual.
+- `sequence` (tipo Integer), si esta presente en una vista de lista, permite definir manualmente el orden de los registros. Para funcionar correctamente debe estar también presente en el `_order` del modelo.
+- `state` (tipo Selection), representa los estados básicos del ciclo de vida del registro, y puede ser usado por el atributo “field” del estado para modificar de forma dinámica la vista: algunos campos de formulario pueden ser de solo lectura, requeridos o invisibles en estados específicos del registro. 
 - `parent_id`, `parent_left`, y `parent_right`; tienen significado especial para las relaciones jerárquicas padre/hijo. En un momento las discutiremos con mayor detalle.
 
-Hasta ahora hemos discutido los los valores escalares de los campos. Pero una buena parte de una estructura de datos de la aplicación es sobre la descripción de relaciones entre entidades. Veamos algo sobre esto ahora.
+Hasta ahora hemos discutido los valores escalares de los campos. Pero una buena parte de una estructura de datos de la aplicación es sobre la descripción de relaciones entre entidades. Veamos algo sobre esto ahora.
 
 
 **Relaciones entre modelos**
 
 Viendo nuestro diseño del módulo, tenemos estas relaciones:
 
-- Cada tarea tiene un estado – esta es una relación muchos a uno, también conocida como una clave foránea. La relación inversa es de uno a muchos, que ssignifica que cada estado puede tener muchas tareas. 
+- Cada tarea tiene un estado – esta es una relación muchos a uno, también conocida como una clave foránea. La relación inversa es de uno a muchos, que significa que cada estado puede tener muchas tareas. 
 
-- Cada tarea puede tener muchas etiquetas – esta es una relación muchos a muchos. La relación inversa , obviamente, es también una relación muchos a muchos, debido a que cada etiqueta puede también tener muchas tareas.
+- Cada tarea puede tener muchas etiquetas – esta es una relación muchos a muchos. La relación inversa, obviamente, es también una relación muchos a muchos, debido a que cada etiqueta puede también tener muchas tareas.
 
 Agreguemos los campos de relación correspondientes al archivo `todo_ui/todo_model.py`: 
 ```
-class	TodoTask(models.Model):
+class TodoTask(models.Model):
     _inherit = 'todo.task'
     stage_id = fields.Many2one('todo.task.stage', 'Stage')
     tag_ids = fields.Many2many('todo.task.tag', string='Tags')
