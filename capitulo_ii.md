@@ -112,7 +112,6 @@ Ahora hagamos que Odoo sepa de los módulos nuevos que hemos incluido.
 Para esto, En la sección **Módulos** del menú **Configuración**, seleccione la opción **Actualizar lista de módulos**. Esto actualizará la lista de módulos agregando cualquier módulo incluido desde la última actualización de la lista. Recuerde que necesitamos habilitar las Características Técnicas para que esta opción sea visible. Esto se logra seleccionando la caja de verificación de **Características técnicas** para nuestra cuenta de usuario.
 
 ## Instalar el módulo nuevo
-
 La opción **Módulos locales** nos muestra la lista de módulos disponibles. De forma predeterminada solo muestra los módulos de **Aplicaciones en línea**. Debido a que creamos un módulo de aplicación no es necesario remover este filtro. Escriba "todo" en la campo de búsqueda y debe ver nuestro módulo nuevo, listo para ser instalado.
 
 ![90_1](/images/Odoo Development Essentials - Daniel Reis-90_1.jpg)
