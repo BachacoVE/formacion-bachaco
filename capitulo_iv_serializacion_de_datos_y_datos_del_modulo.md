@@ -11,47 +11,47 @@ Antes de entrar en casos prácticos, primero exploraremos el concepto de identif
 
 **Entendiendo los Identificadores Externos**
 
-Todos los registros en la base de datos de Odoo tienen un identificador único, el campo ```id```
+Todos los registros en la base de datos de Odoo tienen un identificador único, el campo `id`
 
 Es un número sequencial asignado automáticamente por la base de datos. De cualquier forma, este identificador automático puede ser un desafío al momento de cargar datos interrelacionados: ¿cómo podemos hacer referencia a un registro relacionado si no podemos saber de antemano cual ID de base de datos le será asignado?
 
-La respuesta de Odoo a esto es el identificador externo. Los identificadores externos solucionan este problema asignando indentificadores con nombre a los registros de datos a ser cargados. Un identificador con nombre puede ser usado por cualquier otra pieza de dato registrada para referenciarla luego. Odoo se encargará de traducir estos nombres de identificación a los IDs reales asignados a ellos.
+La respuesta de Odoo a esto es el identificador externo. Los identificadores externos solucionan este problema asignando indentificadores con nombre a los registros de datos que serán cargados. Un identificador con nombre puede ser usado por cualquier otra pieza de dato registrada para referenciarla luego. Odoo se encargará de traducir estos nombres de identificación a los IDs reales asignados a ellos.
 
 El mecanismo detrás de esto es muy simple: Odoo mantiene una tabla con el mapeo entre los IDs externos con nombre y sus correspondiente IDs numéricos en la base de datos. Ese es el modelo `ir.model.data`.
 
-Para inspeccionar la existencia de mapeo, se dirige a la seccion Tecnico en el menu Configuración, y seleccione Secuencias & identificadores	| el item de menu  Identificadores externos. 
+Para inspeccionar la existencia de mapeo, dirijase a la sección **Tecnico** en el menu **Configuración**, y seleccione **Secuencias e identificadores**	| el item de menu **Identificadores externos**. 
 
-Por ejemplo, si volvemos a visitar la lista de identificadores externos	y filtramos por el modulo	`todo_app`,veremos los identificadores externos creados previamente por el modulo.
+Por ejemplo, si volvemos a visitar la lista de identificadores externos	y filtramos por el modulo	`todo_app`, veremos los identificadores externos creados previamente por el modulo.
 
 Puede notar que los identificadores externos tienen una etiqueta ID completa. Esta compuesta por el nombre del modulo y el nombre de identificador unido por un punto, por ejemplo, `todo_app.action_todo_task`.
 
-Debido a que el ID Completo es obligatorio que sea único, el nombre del módulo sirve como namespace para los identificadores. Esto significa que el mismo identificador puede repetirse en diferentes módulos, y no tenemos que preocuparnos por identificadores en nuestro módulo que colicionen con identificadores en otros módulos.
+Debido a que solo es obligatorio que el ID completo sea único, el nombre del módulo sirve como namespace para los identificadores. Esto significa que el mismo identificador puede repetirse en diferentes módulos, y no tenemos que preocuparnos por identificadores en nuestro módulo que colicionen con identificadores en otros módulos.
 
 ![151_1](/images/Odoo Development Essentials - Daniel Reis-151_1.jpg)
 
-Al principio de la lista, puedes ver el ID de `todo_app.action_todo_task`. Esta es la accción del menú que creamos para el módulo, el cual también es referenciado en el elemento de menú correspondiente. Haciendo click en él, puedes abrir un formulario con sus detalles: el `action_todo_task` en el módulo `todo_app` mapea hacia un ID de un registro específico en el modelo `ir.actions.act_window`.
+Al principio de la lista, puedes ver el ID de `todo_app.action_todo_task`. Esta es la accción del menú que creamos para el módulo, el cual también es referenciado en el elemento de menú correspondiente. Haciendo clic en él, puede abrir un formulario con sus detalles: el `action_todo_task` en el módulo `todo_app` mapea hacia un ID de un registro específico en el modelo `ir.actions.act_window`.
  
-Ademas de proporcionar una forma de hacer referencia a un registro de una manera facil a otros registros, los	ID externos	tambien permiten evitar la duplicidad de datos en las importaciones repetidas. Si el ID externo esta presente, el registro existente se actualiza,	en ves de crear un nuevo registro.	Esto es debido a	la actualizacion de modulos subsiguientes,	los resgistros cargados previamente se actualiza en lugar de duplicarse. 
+Ademas de proporcionar una forma de hacer referencia a un registro de una manera facil a otros registros, los	ID externos	tambien permiten evitar la duplicidad de datos en las importaciones repetidas. Si el ID externo esta presente, el registro existente se actualiza,	en ves de crear un nuevo registro.	Esta es la razón de porque, en las siguientes actualizaciones del modulo,	los resgistros cargados previamente se actualizaran en lugar de duplicarse. 
 
 
 **Encontrar identificadores externos**
 
-En la demostracion y configuracion del archivo de datos para el modulo, tenemos que mirar frecuentemente la existencia de Ids Externos	que se necesitan para la referencia. 
+Cuando preparamos archivos de datos para la demostracion y configuracion del modulo, tenemos que mirar frecuentemente la existencia de IDs Externos	que se necesitan para realizar las referencias. 
 
-Podemos utilizar identificadores externos en el menu mostrado anteriormente, pero el menu desarrollado puede proporcionar un metodo para  que sea mas conveniente.	como se recordara en el Capítulo 1, 	*Getting Started	with	Odoo	Development*,	el menu Desarrollo es activado en la opción Acerca de Odoo, y entonces, estara disponible en la esquina izquierda de la vista del cliente web.
+Podemos utilizar identificadores externos en el menu mostrado anteriormente, pero el **menu de Desarrollo** puede proporcionar un metodo que sea mas conveniente.	Como recordara en el Capítulo 1, 	*Comenzando con el Desarrollo en Odoo*,	el **menu de Desarrollo** es activado en la opción **Acerca de Odoo**, y entonces, estara disponible en la esquina supeior izquierda de la vista del cliente web.
  
-Para buscar el ID externo para un registro de datos,	en el mismo formulario correspondiente,	seleccione la opcion Ver metadatos desde el menu Desarrollador.	Esto mostrara un cuadro de dialogo con el ID de la base de datos registrado y el ID externo (tambien conocido como ID HTML) 
+Para buscar el ID externo para un registro de datos,	en el mismo formulario correspondiente,	seleccione la opcion **Ver metadatos** desde el **menu de Desarrollador**.	Esto mostrara un cuadro de dialogo con el ID de la base de datos registrado y el ID externo (tambien conocido como ID XML) 
 
-Como un Ejemplo,buscamos el ID de usuario de demostracion,podemos navegar en la vista formulario	(Configuración	| Usuarios )	y seleccione la opcion Ver metadatos,	despues se mostrara lo siguiente: 
+Como Ejemplo, para buscar el ID del usuario Demo, podemos navegar hasta la vista de formulario	(**Configuración**	| **Usuarios** )	y seleccionar la opcion **Ver metadatos**,	y se mostrara lo siguiente: 
 
 ![152_1](/images/Odoo Development Essentials - Daniel Reis-152_1.jpg)
 
-Para buscar el ID externo para los elementos de vista,	como formulario,	árbol,	buscador,	y accion,	el menu de Desarrollo es tambien una ayuda.	Para esto, utilize la opción de Optener campos de vista	o abra la informacion	para la vista deseada usando la opciones Editar	<tipo de vista> ,	y seleccione la opcion Ver metadatos. 
+Para buscar el ID externo de los elementos de vista,	como formulario,	árbol,	buscador,	y acción,	el **menu de Desarrollo** es tambien de ayuda.	Para esto, utilize la opción de **Obtener Campos de Vista**	o abra la información	para la vista deseada usando la opción Editar	<tipo de vista> ,	y seleccione la opcion Ver metadatos. 
  
 
-**Exportar y Importar datos**  
+**Exportar e importar datos**  
 
-vamos a empezar a trabajar en la exportacion y importacion de datos en Odoo,	y desde alli,	vamos a pasar a los detalles tecnicos. 
+Vamos a empezar a trabajar en la exportacion e importacion de datos en Odoo,	y desde alli,	vamos a pasar a los detalles técnicos. 
 
 
 **Exportando datos**
@@ -64,7 +64,7 @@ Aqui esta un ejemplo,	utilizando las reciente tareas creadas a realizar:
 
 La opcion exportar nos lleva a un dialogo,	donde podemos elegir lo que se va a exportar.	La opcion exportar compatible se asegura de que el archivo exportado se pueda importar denuevo a Odoo. 
 
-El formato de exportacion puede ser CSV	o	Excel.	Vamos a preferir archivos	CSV	para tener una mejor comprension del formato de exportacion.	continuamos,	eligiendo las columnas que queremos exportar y hacer click en el boton Exportar a fichero.	Esto iniciara la descarga de un archivo con los datos exportados. 
+El formato de exportacion puede ser CSV	o	Excel.	Vamos a preferir archivos	CSV	para tener una mejor comprension del formato de exportacion.	Continuamos,	eligiendo las columnas que queremos exportar y hacer clic en el boton **Exportar a fichero**.	Esto iniciara la descarga de un archivo con los datos exportados. 
  
 ![156_1](/images/Odoo Development Essentials - Daniel Reis-156_1.jpg)
 
@@ -72,7 +72,7 @@ Si seguimos estas instrucciones y seleccionamos los campos que se demuestran en 
 ```
 "id","name","user_id/id","date_deadline","is_done" "__export__.todo_task_1","Install	Odoo","base.user_root","2015-01- 30","True" "__export__.todo_task_2","Create	dev	database","base.user_root","","False" 
 ```
-Observe que Odoo exporta automaticamente una columna adicional identificada.	Este es un ID externo que se genera automaticamente para cada registro.	Estos identificadores externos generados utilizan `__export__` en lugar de un nombre real de módulo.	Nuevos identificadores solo se asignan a los que no poseen uno asignado,	y ya apartir de alli,	se mantienen unidos al mismos registro.	Esto significa que las exportaciones posteriores perserverán los mismos identificadores externos. 
+Observe que Odoo exporta automaticamente una columna adicional identificada.	Este es un ID externo que se genera automaticamente para cada registro.	Estos identificadores externos generados utilizan `__export__` en lugar de un nombre real de módulo.	Nuevos identificadores solo se asignan a los que no poseen uno asignado,	y ya a partir de alli,	se mantienen unidos al mismos registro.	Esto significa que las exportaciones posteriores perserverán los mismos identificadores externos. 
  
 
 **Importar datos**
