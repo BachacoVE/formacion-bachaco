@@ -263,38 +263,39 @@ Veamos con mayor detalle las definiciones de los campos relacionales.
 
 **Relaciones Muchos a uno**
 
-Many2one, acepta dos argumentos de posición: el modelo relacionado (que corresponde al argumento de palabra clave del comodelo) y la cadena de título. Este crea un campo en la table de la base de datos con una clave foránea a la tabla relacionada.
+Many2one, acepta dos argumentos de posición: el modelo relacionado (que corresponde al argumento de palabra clave del `comodel`) y la cadena de título. Este crea un campo en la tabla de la base de datos con una clave foránea a la tabla relacionada.
 
 Algunos nombres adicionales de argumentos también están disponibles para ser usados con estos tipos de campo:
 
-- ondelete, define lo que pasa cuando el registro relacionado es eliminado. De forma predeterminada esta fijado como null, lo que significa que al ser eliminado el registro relacionado se fija a un valor vacío. Otros valores posibles son “restrict”, que arroja un error que previene la eliminación, y “cascade” que también elimina este registro.
-- context y domain, son significativos para las vistas del cliente. Pueden ser configurados en el modelo para ser usados de forma predeterminada en cualquier vista donde sea usado el campo. Estos serán explicados con más detalle en el Capítulo 6.
+- `ondelete`, define lo que pasa cuando el registro relacionado es eliminado. De forma predeterminada esta fijado como null, lo que significa que al ser eliminado el registro relacionado se fija a un valor vacío. Otros valores posibles son “restrict”, que arroja un error que previene la eliminación, y “cascade” que también elimina este registro.
+- `context` y `domain`, son significativos para las vistas del cliente. Pueden ser configurados en el modelo para ser usados de forma predeterminada en cualquier vista donde sea usado el campo. Estos serán explicados con más detalle en el Capítulo 6.
 - `auto_join = True`, permite que el ORM use uniones SQL haciendo búsquedas usando esta relación. De forma predeterminada esto esta fijado como False para reforzas las reglas de seguridad. Si son usadas uniones, las reglas de seguridad serán pasadas por alto, y el usuario podrá tener acceso a los registros relacionados que las reglas de seguridad no le permitirían, pero las consultas SQL serán más eficientes y se ejecutarán con mayor rapidez.
 
 
 **Relaciones muchos a muchos**
+
 La forma mas simple de la relación Many2many acepta un argumento para el modelo relacionado, y es recomendable también proporcionar el argumento de cadena con el título del campo.
 
 En el nivel de base de datos, esto no agrega ninguna columna a las tablas existentes. Por el contrario, automáticamente crea una tabla nueva de relación de solo dos campos con las claves foráneas de las tablas relacionadas. El nombre de la tabla de relación es el nombre de ambas tablas unidos por un símbolo de guión bajo (`_`) con `_rel` anexado.
 
-Estas configuración predeterminadas pueden del sobre escritas manualmente. Una forma de hacerlo es usar la forma larga para la definición del campo:
+Estas configuraciones predeterminadas pueden ser sobre escritas manualmente. Una forma de hacerlo es usar la forma larga para la definición del campo:
 ```
-# TodoTask class: Task <-> Tag relation (long form): 
-tag_ids = fields.Many2many( 'todo.task.tag', # related model
-                            'todo_task_tag_rel', # relation table name
-                            'task_id', # field for "this" record
-                            'tag_id', #field for "other" record
+# TodoTask class: Task <-> relación Tag (forma larga): 
+tag_ids = fields.Many2many( 'todo.task.tag', # modelo relacionado
+                            'todo_task_tag_rel', # nombre de la tabla de relación
+                            'task_id', # campo para "este" registro
+                            'tag_id', # campo para "otro" registro
                              string='Tasks')
 ``` 
 Note que los argumentos adicionales son opcionales. Podemos simplemente fijar el nombre para la tabla de relación y dejar que los nombres de los campos usen la configuración predeterminada.
 
 Si prefiere, puede usar la forma larga usando los argumentos de palabra clave:
 ```
-# TodoTask class: Task	<-> Tag relation (long form): 
-tag_ids = fields.Many2many(comodel_name='todo.task.tag', #related model
-                           relation='todo_task_tag_rel', #relation able name
-                           column1='task_id', # field for "this" record
-                           column2='tag_id', # field for "other" record
+# TodoTask class: Task	<-> relación Tag (forma larga): 
+tag_ids = fields.Many2many(comodel_name='todo.task.tag', # modelo relacionado
+                           relation='todo_task_tag_rel', # nombre de la tabla de relación
+                           column1='task_id', # campo para "este" registro
+                           column2='tag_id', # campo para "otro" registro
                            string='Tasks') 
 ```
 Como los campos muchos a uno, los campos muchos a muchos también soportan los atributos de palabra clave de dominio y contexto.
@@ -302,7 +303,7 @@ Como los campos muchos a uno, los campos muchos a muchos también soportan los a
 En algunas raras ocasiones tendremos que usar estas formas largas para sobre escribir las configuraciones automáticas predeterminadas, en particular, cuando los modelos relacionados tengan nombres largos o cuando necesitemos una segunda relación muchos a muchos entre los mismos modelos.
 
 * Tip *
-* Los nombres de las  tablas PostgreSQL tienen 63 caracteres como límite, y esto puede ser un problema su la tabla de relación generada automáticamente excede ese limite. Este es uno de los casos cuando tendremos que configurar manualmente el nombre de la tabla de relación usando el atributo “relation”.*
+* Los nombres de las  tablas PostgreSQL tienen 63 caracteres como límite, y esto puede ser un problema si la tabla de relación generada automáticamente excede ese limite. Este es uno de los casos cuando tendremos que configurar manualmente el nombre de la tabla de relación usando el atributo “relation”.*
 
 Lo inverso a la relación Many2many es también un campo Many2many. Si también agregamos un campo Many2many a las etiquetas, Odoo infiere que esta relación de muchos a muchos es la inversa a la del modelo de tareas.
 
@@ -311,25 +312,27 @@ La relación inversa entre tareas y etiquetas puede ser implementada así:
 # class Tag(models.Model): #
     _name = 'todo.task.tag' 
 
-    #Tag class relation to Tasks: 
-    task_ids = fields.Many2many( 'todo.task', # related model string='Tasks') 
+    #Tag class relación a Tasks: 
+    task_ids = fields.Many2many( 'todo.task', # modelo relacionado
+                                 string='Tasks') 
 ```
 
 
 **Relaciones inversas de uno a muchos**
 
-La inversa de Many2many puede ser agregada al otro extremo de la relación. Esto no tiene un impacto real en la estructura de la base de datos, pero nos permite navegar fácilmente desde “un” lado a “muchos” lados de los registros. Un caso típico es la relación entre un encabezado de un documento y sis líneas.
+La inversa de Many2many puede ser agregada al otro extremo de la relación. Esto no tiene un impacto real en la estructura de la base de datos, pero nos permite navegar fácilmente desde “un” lado a “muchos” lados de los registros. Un caso típico es la relación entre un encabezado de un documento y sus líneas.
 
-En nuestro ejemplo, con una relación inversa One2many en estados, fácilmente podemos listas todas las tareas que se encuentran en un estado. Para agregar esta relación inversa a los estados, agregue el código mostrado a continuación:
+En nuestro ejemplo, con una relación inversa One2many en estados, fácilmente podemos listar todas las tareas que se encuentran en un estado. Para agregar esta relación inversa a los estados, agregue el código mostrado a continuación:
 ```
 # class Stage(models.Model): #
     _name = 'todo.task.stage' 
 
-    #Stage class relation with Tasks:
-    tasks = fields.One2many('todo.task',# related model 'stage_id',#field for	
-                             "this" on related model 'Tasks in this stage') 
+    #Stage class relación con Tasks:
+    tasks = fields.One2many('todo.task',# modelo relacionado
+                            'stage_id',# campo para "este" en el modelo relacionado 
+                            'Tasks in this stage') 
 ```
-One2many acepta tres argumentos de posición: el modelo relacionado, el nombre del campo en aquel modelo que referencia este registro, y la cadena de título. Los dos primeros corresponden a los argumentos `comodel_name` y `inverse_name`.
+One2many acepta tres argumentos de posición: el modelo relacionado, el nombre del campo en aquel modelo que referencia este registro, y la cadena de título. Los dos primeros corresponden a los argumentos `comodel_name` e `inverse_name`.
 
 Los parámetros adicionales disponibles son los mismos que para el muchos a uno: contexto, dominio, ondelete (aquí actuá en el lado “muchos” de la relación), y `auto_join`.
 
@@ -340,14 +343,14 @@ Las relaciones padre-hijo pueden ser representadas usando una relación Many2one
 
 Odoo también provee soporte mejorado para estas estructuras de datos jerárquicas: navegación más rápida a través de árboles hermanos, y búsquedas más simples con el operador `child_of` en las expresiones de dominio.
 
-Para habilitar esas características debemos configurar el atributo `_parent_store` y agregar los campos de ayuda: `parent_left` y `parent_right`. Tenga en cuenta que estas operaciones adicionales traen como consecuencia penalizaciones en materia de almacenamiento y ejecución, así que es mejor usarlo cuando se espere ejecutar más lecturas que escritura, como es el caso de un árbol de categorías.
+Para habilitar esas características debemos configurar el atributo `_parent_store` y agregar los campos de ayuda: `parent_left` y `parent_right`. Tenga en cuenta que estas operaciones adicionales traen como consecuencia penalizaciones en materia de almacenamiento y ejecución, así que es mejor usarlo cuando se espere ejecutar más lecturas que escrituras, como es el caso de un árbol de categorías.
 
 Revisando el modelo de etiquetas definido en el archivo `todo_ui/todo_model.py`, ahora editaremos para que luzca así:
 ```
-class	Tags(models.Model):
+class Tags(models.Model):
     _name         = 'todo.task.tag'
-    _parent_store = True #
-    _parent_name  = 'parent_id'
+    _parent_store = True 
+    #_parent_name  = 'parent_id'
     name = fields.Char('Name')
     parent_id     = fields.Many2one('todo.task.tag','Parent Tag', ondelete='restrict')
     parent_left   = fields.Integer('Parent Left', index=True)
@@ -366,32 +369,31 @@ child_ids = fields.One2many('todo.task.tag', 'parent_id', 'Child Tags')
 
 Hasta ahora, los campos de relación que hemos visto puede solamente hacer referencia a un modelo. El tipo de campo Reference no tiene esta limitación y admite relaciones dinámicas: el mismo campo es capaz de hacer referencia a más de un modelo.
 
-Podemos usarlos para agregar un campo, “Refers to”, a Tareas por Hacer que pueda hacer referencia a un User o un Partner:
+Podemos usarlo para agregar un campo, “Refers to”, a Tareas por Hacer que pueda hacer referencia a un User o un Partner:
 ```
 # class TodoTask(models.Model):
     refers_to = fields.Reference([('res.user', 'User'),('res.partner', 'Partner')], 'Refers to') 
 ```
 Puede observar que la definición del campo es similar al campo Selection, pero aquí la lista de selección contiene los modelos que pueden ser usados. En la interfaz, el usuario o la usuaria seleccionará un modelo de la lista, y luego elegirá un registro de ese modelo.
 
-Esto puede ser llevado a otro nivel de flexibilidad: existe una tabla de configuración de Modelos Referenciables para configurar los modelos que pueden ser usados en campos Reference. Esta disponible en el menú Configuraciones | Técnico | Estructura de Base de Datos. Cuando se crea un campo como este podemos ajustarlo para que use cualquier modelo registrado allí, con la ayuda de la función `referencable_models()` en el módulo `openerp.addons.res.res_request`. En la versión 8 de Odoo, todavía se usa la versión antigua de la API, así que necesitamos  empaquetar lo para usarlo con la API nueva:
+Esto puede ser llevado a otro nivel de flexibilidad: existe una tabla de configuración de Modelos Referenciables para configurar los modelos que pueden ser usados en campos Reference. Esta disponible en el menú **Configuración** | **Técnico** | **Estructuras de base de datos**. Cuando se crea un campo como este podemos ajustarlo para que use cualquier modelo registrado allí, con la ayuda de la función `referencable_models()` en el módulo `openerp.addons.res.res_request`. En la versión 8 de Odoo, todavía se usa la versión antigua de la API, así que necesitamos  empaquetarlo para usarlo con la API nueva:
 ```
 from openerp.addons.base.res import res_request 
 
-def	referencable_models(self):
-    return res_request.referencable_model (self, self.env.cr, self.env.uid, context=self.env.context) 
+def referencable_models(self):
+    return res_request.referencable_model(self, self.env.cr, self.env.uid, context=self.env.context) 
 ```
 Usando el código anterior, la versión revisada del campo “Refers to” sera así:
 ```
 # class TodoTask(models.Model):
-    refers_to = fields.Reference( referencable_models, 'Refers to') 
+    refers_to = fields.Reference(referencable_models, 'Refers to') 
 ```
-
 
 **Campos calculados**
 
 Los campos pueden tener valores calculados por una función, en vez de simplemente leer un valor almacenado en una base de datos. Un campo calculado es declarado como un campo regular, pero tiene el argumento “compute” adicional con el nombre de la función que se usará para calcularlo.
 
-En la mayoría de los casos los campos calculados involucran alguna lógica de negocio, por lo tanto este tema se desarrollara con más profundidad en el Capítulo 7. Igual podemos explicarlo aquí, pero maneteniendo la lógica de negocio lo más simple posible.
+En la mayoría de los casos los campos calculados involucran alguna lógica de negocio, por lo tanto este tema se desarrollara con más profundidad en el Capítulo 7. Igual podemos explicarlo aquí, pero manteniendo la lógica de negocio lo más simple posible.
 
 Trabajamos en un ejemplo: los estados tienen un campo “fold”. Agregaremos a las tareas un campo calculado con la marca “Folded?” para el estado correspondiente.
 
@@ -399,7 +401,8 @@ Debemos editar el modelo TodoTask en el archivo `todo_ui/todo_model.py` para agr
 ```
 # class TodoTask(models.Model):
     stage_fold = fields.Boolean('Stage Folded?', compute='_compute_stage_fold')
-    @api.one @api.depends('stage_id.fold') 
+    @api.one 
+    @api.depends('stage_id.fold') 
 
 def _compute_stage_fold(self):
     self.stage_fold = self.stage_id.fold 
@@ -408,11 +411,11 @@ El código anterior agrega un campo nuevo `stage_fold` y el método `_compute_st
 
 Debido a que estamos usando el decorador `@api.one`, self tendrá un solo registro. Si en vez de esto usamos `@api.multi`, representara un conjunto de registros y nuestro código necesitará gestionar la iteración sobre cada registro.
 
-El `@api.depends` es necesario si el calculo usa otros campos: le dice al servidor cuando re calcular valores almacenados o en cache. Este acepta uno o mas nombres de campo como argumento y la notación de puntos puede ser usada para seguir las relaciones de campo.
+El `@api.depends` es necesario si el calculo usa otros campos: le dice al servidor cuando re-calcular valores almacenados o en cache. Este acepta uno o mas nombres de campo como argumento y la notación de puntos puede ser usada para seguir las relaciones de campo.
 
 Se espera que la función de calculo asigne un valor al campo o campos a calcular. Si no lo hace, arrojara un error. Debido a que self es un objeto de registro, nuestro calculo es simplemente para obtener el campo “Folded?” usando `self.stage_id.fold`. El resultado es conseguido asignando ese valor (escribiéndolo) en el campo calculado, `self.stage_fold`.
 
-No trabajaremos aún en las vistas para este módulo, pero puede hacer una edición rápida al formulario de tareas para confirmar si el campo calculado esta funcionando como es esperado: usando el Menú Desarrollador escoja la opción Edición de Vista y agregue el campo directamente en el XML del formulario. No se preocupe: será reemplazado por una vista limpia del módulo en la próxima actualización.
+No trabajaremos aún en las vistas para este módulo, pero puede hacer una edición rápida al formulario de tareas para confirmar si el campo calculado esta funcionando como es esperado: usando el menú de **Desarrollo** escoja la opción **Editar Vista** y agregue el campo directamente en el XML del formulario. No se preocupe: será reemplazado por una vista limpia del módulo en la próxima actualización.
 
 
 **Buscar y escribir en campos calculados**
@@ -424,7 +427,8 @@ Para hacer esto, nuestra declaración de campo calculado se convertirá en esto:
 # class TodoTask(models.Model):
 	stage_fold = fields.Boolean
         string   = 'Stage Folded?', 								
-        compute  ='_compute_stage_fold', # store=False) # the default 			 
+        compute  ='_compute_stage_fold', 
+                  # store=False) # predeterminado 			 
         search   ='_search_stage_fold', 								
         inverse  ='_write_stage_fold') 
 ```
@@ -433,10 +437,10 @@ Las funciones soportadas son:
 def _search_stage_fold(self, operator, value):
     return [('stage_id.fold', operator, value)] 
 
-def	_write_stage_fold(self):
+def _write_stage_fold(self):
     self.stage_id.fold = self.stage_fold 
 ```
-La función de búsqueda es llamada en cuando en encontrada en este campo una condición `(field, operator, value)` dentro de una expresión de dominio de búsqueda.
+La función de búsqueda es llamada en cuanto es encontrada en este campo una condición `(campo, operador, valor)` dentro de una expresión de dominio de búsqueda.
 
 La función inversa realiza la lógica reversa del cálculo, para hallar el valor que sera escrito en el campo de origen. En nuestro ejemplo, es solo escribir en `stage_id.fold`.
 
@@ -448,7 +452,7 @@ Los valores de los campos calculados también pueden ser almacenados en la base 
 
 **Campos relacionados**
 
-Los campos calculados que implementamos en la sección anterior son un caso especial que puede ser gestionado automáticamente por Odoo. El mismo efecto puede ser logrado usando campos Relacionados. Estos hace disponible, de forma directa en un módulo, los campos que pertenecen a un modelo relacionado, que son accesibles usando la notación de puntos. Esto posibilita su uso en los casos en que la notación de puntos no pueda usarse, como los formularos de UI.
+Los campos calculados que implementamos en la sección anterior son un caso especial que puede ser gestionado automáticamente por Odoo. El mismo efecto puede ser logrado usando campos Relacionados. Estos hacen disponibles, de forma directa en un módulo, los campos que pertenecen a un modelo relacionado, que son accesibles usando la notación de puntos. Esto posibilita su uso en los casos en que la notación de puntos no pueda usarse, como los formularos de UI.
 
 Para crear un campo relacionado, declaramos un campo del tipo necesario, como en los campos calculados regulares, y en vez de calcularlo, usamos el atributo “related” indicando la cadena de notación por puntos para alcanzar el campo deseado.
 
@@ -468,7 +472,7 @@ Para reforzar la integridad de los datos, los modelos también soportan dos tipo
 
 Las restricciones SQL son agregadas a la definición de la tabla en la base de datos e implementadas por PostgreSQL. Son definidas usando el atributo de clase `_sql_constraints`. Este es una lista de tuplas con el nombre del identificador de la restricción, el SQL para la restricción, y el mensaje de error que se usara.
 
-Un caso común es agregar restricciones únicas a los modelos. Suponga que no queremos permitir que el mismos usuario tenga dos tareas activas con el mismo título:
+Un caso común es agregar restricciones únicas a los modelos. Suponga que no queremos permitir que el mismo usuario tenga dos tareas activas con el mismo título:
 ```
 # class TodoTask(models.Model):
     _sql_constraints = [
@@ -476,19 +480,20 @@ Un caso común es agregar restricciones únicas a los modelos. Suponga que no qu
          'UNIQUE (name, user_id, active)',
          'Task title must be unique!')] 
 ```
-Debido a que estamos usando el campos `user_id` agregado por el modulo `todo_user`, esta dependencia debe ser agregada a la clave “depends” del archivo manifiesto `__openerp__.py`.
+Debido a que estamos usando el campo `user_id` agregado por el modulo `todo_user`, esta dependencia debe ser agregada a la clave “depends” del archivo manifiesto `__openerp__.py`.
 
 Las restricciones Python pueden usar un pedazo arbitrario de código para verificar las condiciones. La función de verificación necesita ser decorada con `@api.constrains` indicando la lista de campos involucrados en la verificación. La validación es activada cuando cualquiera de ellos es modificado, y arrojara una excepción si la condición falla:
 ```
-from openerp.exceptions import ValidationError #
+from openerp.exceptions import ValidationError
 
-class	TodoTask(models.Model):
-     @api.one @api.constrains('name') 
+# class TodoTask(models.Model):
+     @api.one 
+     @api.constrains('name') 
      def _check_name_size(self): 								
         if len(self.name) < 5:
              raise ValidationError('Must have 5 chars!') 
 ```
-El ejemplo anterior previene que el título de las tareas sean almacenado con menos de 5 caracteres.
+El ejemplo anterior previene que el título de las tareas sean almacenados con menos de 5 caracteres.
 
 
 **Resumen**
