@@ -5,12 +5,12 @@ Inspirados del notable proyecto [todomvc.com](http://todomvc.com), se desarrolla
 
 Aprenderá como Odoo sigue una arquitectura MVC, y recorrerá las siguientes capas durante la implementación de la aplicación:
 - El **modelo**, define la estructura de los datos.
-- La **vista**, describe la interfaz con el usuario o la usuaria.
+- La **vista**, describe la interfaz con el usuario.
 - El **controlador**, soporta la lógica de negocio de la aplicación.
 
 La capa modelo es definida por objetos Python cuyos datos son almacenados en una base de datos PostgreSQL. El mapeo de la base de datos es gestionado automáticamente por Odoo, y el mecanismo responsable por esto es el **modelo objeto relacional, (ORM - object relational model)**.
 
-La capa vista describe la interfaz con el usuario o la usuaria. Las vistas son definidas usando XML, las cuales son usadas por el marco de trabajo (framework) del cliente web para generar vistas HTML de datos.
+La capa vista describe la interfaz con el usuario. Las vistas son definidas usando XML, las cuales son usadas por el marco de trabajo (framework) del cliente web para generar vistas HTML de datos.
 
 Las vistas del cliente web ejecutan acciones de datos persistentes a través de la interacción con el servidor ORM. Estas pueden ser operaciones básicas como escribir o eliminar, pero pueden también invocar métodos definidos en los objetos Python del ORM, ejecutando lógica de negocio más compleja. A esto es a lo que nos referimos cuando se habla de la capa modelo.
 
@@ -30,7 +30,7 @@ Sin embargo, este no es el caso típico. Lo más frecuente serán situaciones do
 
 La regla de oro dice que no debemos cambiar módulos existentes modificándolos directamente. Esto es considerado una mala práctica. Especialmente cierto para los módulos oficiales proporcionados por Odoo. Hacer esto no permitirá una clara separación entre el módulo original y nuestras modificaciones, y hace difícil la actualización.
 
-Por el contrario, debemos crear módulos nuevos que sean aplicados encima de los módulos que queremos modificar, e implementar esos cambios. Esta es una de las principales fortalezas de Odoo: provee mecanismos de "herencia" que permiten a los módulos personalizados extender los módulos existentes, bien sean oficiales o de la comunidad. La herencia el posible en todos los niveles, modelo de datos, lógica de negocio, e interfaz con el usuario o usuaria.
+Por el contrario, debemos crear módulos nuevos que sean aplicados encima de los módulos que queremos modificar, e implementar esos cambios. Esta es una de las principales fortalezas de Odoo: provee mecanismos de "herencia" que permiten a los módulos personalizados extender los módulos existentes, bien sean oficiales o de la comunidad. La herencia el posible en todos los niveles, modelo de datos, lógica de negocio, e interfaz con el usuario.
 
 Ahora, crearemos un módulo nuevo completo, sin extender ningún módulo existente, para enfocarnos en las diferentes partes y pasos involucrados en la creación de un módulo. Solo daremos una breve mirada a cada parte, ya que cada una será estudiada en detalle en los siguientes capítulos. Una vez estemos a gusto con la creación de un módulo nuevo, podremos sumergirnos dentro de los mecanismos de herencia, los cuales serán estudiados en el siguiente capítulo.
 
